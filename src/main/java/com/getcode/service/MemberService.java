@@ -2,6 +2,7 @@ package com.getcode.service;
 
 import com.getcode.config.redis.RedisService;
 import com.getcode.domain.member.Member;
+import com.getcode.dto.EmailVerificationResultDto;
 import com.getcode.dto.SignUpDto;
 import com.getcode.repository.MemberRepository;
 import java.time.Duration;
@@ -46,6 +47,12 @@ public class MemberService {
         mailService.sendEmail(toEmail, title, authCode);
 
         redisService.setValues(AUTH_CODE_PREFIX + toEmail, authCode, Duration.ofMillis(authCodeExpirationMills));
+    }
+
+    public EmailVerificationResultDto verifiedCode(String email, String authCode) {
+        String redisAuthCode = redisService.getValue(AUTH_CODE_PREFIX + email);
+        boolean authResult = redisService.checkExistsValue(redisAuthCode) && redisAuthCode.equals(authCode);
+        return EmailVerificationResultDto.toDto(authResult);
     }
 
     // 인증번호 생성로직

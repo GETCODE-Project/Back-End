@@ -2,6 +2,7 @@ package com.getcode.controller;
 
 import com.getcode.config.redis.RedisService;
 import com.getcode.domain.member.Member;
+import com.getcode.dto.EmailVerificationResultDto;
 import com.getcode.dto.SignUpDto;
 import com.getcode.dto.SignUpResponseDto;
 import com.getcode.service.MailService;
@@ -41,5 +42,13 @@ public class MemberController {
     public ResponseEntity sendMessage(@RequestParam("email") @Valid String email) {
         memberService.sendCodeToEmail(email);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    @GetMapping("/emails/verifications")
+    public ResponseEntity<EmailVerificationResultDto> verificationEmail(@RequestParam("email") @Valid String email,
+                                            @RequestParam("code") String authCode) {
+        EmailVerificationResultDto res = memberService.verifiedCode(email, authCode);
+        return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 }
