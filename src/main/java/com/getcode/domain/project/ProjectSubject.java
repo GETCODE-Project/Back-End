@@ -3,7 +3,7 @@ package com.getcode.domain.project;
 import jakarta.persistence.*;
 
 @Entity
-public class projectSubject {
+public class ProjectSubject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
