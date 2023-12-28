@@ -81,6 +81,7 @@ public class MemberService {
         return MemberInfoDto.toDto(member);
     }
 
+    // 이메일 인증번호 보내기
     public void sendCodeToEmail(String toEmail) {
         String title = "이메일 인증 번호";
         String authCode = createCode();
@@ -90,9 +91,16 @@ public class MemberService {
         redisService.setValues(AUTH_CODE_PREFIX + toEmail, authCode, Duration.ofMillis(authCodeExpirationMills));
     }
 
+    // 이메일 인증
+    @Transactional
     public EmailVerificationResultDto verifiedCode(String email, String authCode) {
         String redisAuthCode = redisService.getValue(AUTH_CODE_PREFIX + email);
         boolean authResult = redisService.checkExistsValue(redisAuthCode) && redisAuthCode.equals(authCode);
+
+        if (authResult) {
+            Member member = memberRepository.findByEmail(email).orElseThrow(IllegalArgumentException::new);
+            member.updateEmailVerified();
+        }
         return EmailVerificationResultDto.toDto(authResult);
     }
 

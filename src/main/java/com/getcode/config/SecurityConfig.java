@@ -55,8 +55,8 @@ public class SecurityConfig {
                 .exceptionHandling((e) -> e.accessDeniedHandler(jwtAccessDeniedHandler))
                 .formLogin(f -> f.disable())
                 .httpBasic(h -> h.disable())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-//                .apply(new JwtSecurityConfig(tokenProvider));
+//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .apply(new JwtSecurityConfig(tokenProvider));
 //        http.oauth2Login(o ->o.userInfoEndpoint(u->u.userService(customOAuth2UserService)).defaultSuccessUrl("/loginInfo", true));
 
         return http.build();

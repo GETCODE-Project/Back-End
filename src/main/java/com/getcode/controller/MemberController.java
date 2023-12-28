@@ -50,6 +50,7 @@ public class MemberController {
         return "aa";
     }
 
+    // 이메일 인증번호 보내기
     @PostMapping("/emails/verification-requests")
     public ResponseEntity sendMessage(@RequestParam("email") @Valid String email) {
         memberService.sendCodeToEmail(email);

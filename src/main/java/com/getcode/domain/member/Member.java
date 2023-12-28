@@ -1,6 +1,7 @@
 package com.getcode.domain.member;
 
 import com.getcode.domain.common.BaseTimeEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -8,10 +9,12 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
@@ -35,15 +38,21 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
+    @Column(nullable = false)
+    private boolean emailVerified;
 
     @Builder
-    public Member(String email, String nickname, String password, Authority authority) {
+    public Member(String email, String nickname, String password, Authority authority, boolean emailVerified) {
         this.email = email;
         this.nickname = nickname;
         this.password = password;
         this.authority = authority;
+        this.emailVerified = emailVerified;
     }
 
+    public void updateEmailVerified() {
+        this.emailVerified = true;
+    }
 
     public void passwordEncoding(PasswordEncoder passwordEncoder) {
         password = passwordEncoder.encode(password);
