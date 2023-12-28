@@ -15,8 +15,9 @@ public class CommunityCategory {
     @Column(name = "community_category_id")
     private Long id;
 
-    @Column(nullable = false)
-    private String categoryName;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category_name", nullable = false)
+    private CCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "community_id")
