@@ -2,7 +2,7 @@ package com.getcode.domain.community;
 
 public enum CCategory {
 
-    INTERVIEW("면접준비"), CODINGTEST("코테"), SURTIFICATE("자격증"), CS("cs"), OTHER("기타")
+    QNA("QnA"), FREEBOARD("자유게시판"), COUNSEL("고민상담")
     ;
 
 
