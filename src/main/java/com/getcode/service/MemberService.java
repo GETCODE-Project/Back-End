@@ -20,12 +20,14 @@ import java.util.Random;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +61,15 @@ public class MemberService {
     // 로그인
     @Transactional
     public TokenDto login(MemberLoginRequestDto memberRequestDto) {
+
+        Member member = memberRepository.findByEmail(memberRequestDto.getEmail()).orElseThrow(RuntimeException::new);
+
+        if (!member.isEmailVerified()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"이메일 인증을 먼저 진행주세용");
+        }
+
         UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
+
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
