@@ -1,9 +1,8 @@
-package com.getcode.dto;
+package com.getcode.dto.member;
 
 import com.getcode.domain.member.Member;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

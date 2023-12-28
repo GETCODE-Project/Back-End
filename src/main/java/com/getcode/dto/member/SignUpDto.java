@@ -1,7 +1,7 @@
-package com.getcode.dto;
+package com.getcode.dto.member;
 
+import com.getcode.domain.member.Authority;
 import com.getcode.domain.member.Member;
-import com.getcode.domain.member.Role;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,14 +19,14 @@ public class SignUpDto {
     private String nickname;
     @NotBlank(message = "비밀번호를 입력해주세요.")
     private String password;
-    private Role role;
+    private Authority authority;
 
     public Member toEntity() {
         return Member.builder()
                 .email(email)
                 .nickname(nickname)
                 .password(password)
-                .role(Role.ROLE_USER)
+                .authority(Authority.ROLE_USER)
                 .build();
     }
 

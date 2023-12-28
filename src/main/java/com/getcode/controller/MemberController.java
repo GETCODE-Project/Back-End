@@ -1,11 +1,13 @@
 package com.getcode.controller;
 
+import com.getcode.config.jwt.TokenDto;
 import com.getcode.config.redis.RedisService;
 import com.getcode.domain.member.Member;
-import com.getcode.dto.EmailVerificationResultDto;
-import com.getcode.dto.SignUpDto;
-import com.getcode.dto.SignUpResponseDto;
-import com.getcode.service.MailService;
+import com.getcode.dto.member.EmailVerificationResultDto;
+import com.getcode.dto.member.MemberInfoDto;
+import com.getcode.dto.member.MemberLoginRequestDto;
+import com.getcode.dto.member.SignUpDto;
+import com.getcode.dto.member.SignUpResponseDto;
 import com.getcode.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,16 @@ public class MemberController {
         Member member = memberService.signup(signUpDto);
         SignUpResponseDto res = SignUpResponseDto.toDto(member);
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
+    }
+
+    @PostMapping("/auth/login")
+    public ResponseEntity<TokenDto> login(@RequestBody MemberLoginRequestDto memberRequestDto) {
+        return ResponseEntity.ok(memberService.login(memberRequestDto));
+    }
+
+    @GetMapping("/userInfo")
+    public ResponseEntity<MemberInfoDto> userInfo() {
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.userInfo());
     }
 
     @GetMapping("/redis")

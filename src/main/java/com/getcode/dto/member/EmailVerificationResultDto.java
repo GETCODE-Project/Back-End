@@ -1,4 +1,4 @@
-package com.getcode.dto;
+package com.getcode.dto.member;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,6 +1,6 @@
 package com.getcode.domain.member;
 
-public enum Role {
+public enum Authority {
     ROLE_USER,
     ROLE_ADMIN
 }
