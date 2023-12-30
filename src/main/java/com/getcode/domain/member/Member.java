@@ -32,10 +32,9 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column(unique = true)
     private String nickname;
 
-//    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
