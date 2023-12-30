@@ -12,6 +12,7 @@ import com.getcode.dto.member.EmailVerificationResultDto;
 import com.getcode.dto.member.MemberInfoDto;
 import com.getcode.dto.member.MemberLoginRequestDto;
 import com.getcode.dto.member.SignUpDto;
+import com.getcode.exception.member.DuplicateEmailException;
 import com.getcode.repository.MemberRepository;
 import com.getcode.repository.RefreshTokenRepository;
 import java.time.Duration;
@@ -53,6 +54,12 @@ public class MemberService {
     // 회원가입
     @Transactional
     public Member signup(SignUpDto signUpDto) {
+        Optional<Member> findMember = memberRepository.findByEmail(signUpDto.getEmail());
+
+        if (findMember.isPresent()) {
+            throw new DuplicateEmailException();
+        }
+
         Member member = signUpDto.toEntity();
         member.passwordEncoding(passwordEncoder);
         memberRepository.save(member);
