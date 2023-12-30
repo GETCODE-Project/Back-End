@@ -21,7 +21,7 @@ public class SignUpDto {
     @NotBlank(message = "이메일을 입력해주세요.")
     private String email;
 
-    @Schema(description = "닉네임", defaultValue = "호두")
+    @Schema(title = "닉네임", defaultValue = "호두", description = "최소 2자 이상 입력")
     @NotBlank(message = "닉네임을 입력해주세요.")
     @Size(min = 2, message = "닉네임은 최소 2자 이상입니다.")
     private String nickname;

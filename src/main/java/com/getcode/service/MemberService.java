@@ -13,6 +13,8 @@ import com.getcode.dto.member.MemberInfoDto;
 import com.getcode.dto.member.MemberLoginRequestDto;
 import com.getcode.dto.member.SignUpDto;
 import com.getcode.exception.member.DuplicateEmailException;
+import com.getcode.exception.member.NotFoundMemberException;
+import com.getcode.exception.member.NotVerifiedException;
 import com.getcode.repository.MemberRepository;
 import com.getcode.repository.RefreshTokenRepository;
 import java.time.Duration;
@@ -65,6 +67,7 @@ public class MemberService {
         memberRepository.save(member);
         return member;
     }
+
     // 로그인
     @Transactional
     public TokenDto login(MemberLoginRequestDto memberRequestDto) {
@@ -94,7 +97,12 @@ public class MemberService {
     // 개인정보
     public MemberInfoDto userInfo() {
         Long memberId = getCurrentMemberId();
-        Member member = memberRepository.findById(memberId).orElseThrow(IllegalAccessError::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+
+        if (!member.isEmailVerified()) {
+            throw new NotVerifiedException();
+        }
+
         return MemberInfoDto.toDto(member);
     }
 
