@@ -1,4 +1,4 @@
-package com.getcode.service;
+package com.getcode.config.security;
 
 import com.getcode.domain.member.Member;
 import com.getcode.repository.MemberRepository;

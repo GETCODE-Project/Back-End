@@ -1,4 +1,4 @@
-package com.getcode.config;
+package com.getcode.config.security;
 
 import com.getcode.config.auth2.CustomOAuthService;
 import com.getcode.config.auth2.OAuth2LoginFailureHandler;

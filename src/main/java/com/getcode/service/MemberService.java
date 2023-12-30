@@ -1,10 +1,10 @@
 package com.getcode.service;
 
-import static com.getcode.config.SecurityUtil.*;
+import static com.getcode.config.security.SecurityUtil.*;
 
-import com.getcode.config.SecurityUtil;
 import com.getcode.config.jwt.TokenDto;
 import com.getcode.config.jwt.TokenProvider;
+import com.getcode.config.mail.MailService;
 import com.getcode.config.redis.RedisService;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.member.RefreshToken;
