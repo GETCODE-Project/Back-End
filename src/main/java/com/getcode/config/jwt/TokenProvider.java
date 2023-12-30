@@ -9,6 +9,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.security.Key;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -113,5 +114,26 @@ public class TokenProvider {
         }
     }
 
+    public String createAccessToken(String email) {
+        long now = (new Date()).getTime();
+        Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
+        String accessToken = Jwts.builder()
+                .setSubject(email)
+                .claim(AUTHORITIES_KEY, email)
+                .setExpiration(accessTokenExpiresIn)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+        return accessToken;
+    }
 
+    public void sendAccessToken(HttpServletResponse response, String accessToken) {
+        response.setStatus(HttpServletResponse.SC_OK);
+
+        setAccessTokenHeader(response, accessToken);
+
+        log.info("Access Token, Refresh Token 헤더 설정 완료");
+    }
+    public void setAccessTokenHeader(HttpServletResponse response, String accessToken) {
+        response.setHeader("Authorization", accessToken);
+    }
 }
