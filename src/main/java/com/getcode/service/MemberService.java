@@ -8,10 +8,12 @@ import com.getcode.config.mail.MailService;
 import com.getcode.config.redis.RedisService;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.member.RefreshToken;
+import com.getcode.domain.member.SocialType;
 import com.getcode.dto.member.EmailVerificationResultDto;
 import com.getcode.dto.member.MemberInfoDto;
 import com.getcode.dto.member.MemberLoginRequestDto;
 import com.getcode.dto.member.SignUpDto;
+import com.getcode.dto.member.SocialLoginRequestDto;
 import com.getcode.exception.member.DuplicateEmailException;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.member.NotVerifiedException;
@@ -22,6 +24,7 @@ import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -72,14 +76,9 @@ public class MemberService {
     @Transactional
     public TokenDto login(MemberLoginRequestDto memberRequestDto) {
 
-        Member member = memberRepository.findByEmail(memberRequestDto.getEmail()).orElseThrow(RuntimeException::new);
-
-        if (!member.isEmailVerified()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"이메일 인증을 먼저 진행주세용");
-        }
+        Member member = memberRepository.findByEmail(memberRequestDto.getEmail()).orElseThrow(NotFoundMemberException::new);
 
         UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
-
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
@@ -94,10 +93,32 @@ public class MemberService {
         return tokenDto;
     }
 
+    @Transactional
+    public TokenDto socialLogin(SocialLoginRequestDto socialLoginRequestDto) {
+
+        Member member = memberRepository.findByEmail(socialLoginRequestDto.getEmail()).orElseThrow(RuntimeException::new);
+
+        UsernamePasswordAuthenticationToken authenticationToken = socialLoginRequestDto.toAuthentication();
+
+
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        log.info(authentication.toString());
+        TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
+
+        RefreshToken refreshToken = RefreshToken.builder()
+                .key(authentication.getName())
+                .value(tokenDto.getRefreshToken())
+                .build();
+
+        refreshTokenRepository.save(refreshToken);
+
+        return tokenDto;
+    }
+
     // 개인정보
     public MemberInfoDto userInfo() {
-        Long memberId = getCurrentMemberId();
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+        String memberId = getCurrentMemberId();
+        Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(NotFoundMemberException::new);
 
         if (!member.isEmailVerified()) {
             throw new NotVerifiedException();

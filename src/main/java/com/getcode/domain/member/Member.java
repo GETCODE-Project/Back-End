@@ -48,19 +48,16 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean emailVerified;
 
-    private String imageUrl; // 프로필 이미지
-
-//    @Builder
-//    public Member(String email, String nickname, String password, Authority authority, boolean emailVerified) {
-//        this.email = email;
-//        this.nickname = nickname;
-//        this.password = password;
-//        this.authority = authority;
-//        this.emailVerified = emailVerified;
-//    }
+    private String imageUrl;
 
     public void updateEmailVerified() {
         this.emailVerified = true;
+    }
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+    public void updateAuthority(Authority authority) {
+        this.authority = authority;
     }
 
     public void passwordEncoding(PasswordEncoder passwordEncoder) {

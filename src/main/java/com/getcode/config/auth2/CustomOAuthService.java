@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -64,8 +65,6 @@ public class CustomOAuthService implements OAuth2UserService<OAuth2UserRequest, 
                 createdMember.getEmail(),
                 createdMember.getAuthority()
         );
-
-
     }
 
     private SocialType getSocialType(String registrationId) {
