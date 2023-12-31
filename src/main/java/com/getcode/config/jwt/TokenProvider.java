@@ -165,4 +165,14 @@ public class TokenProvider {
     public void setAccessTokenHeader(HttpServletResponse response, String accessToken) {
         response.setHeader("Authorization", accessToken);
     }
+
+    public void setRefreshTokenHeader(HttpServletResponse response, String accessToken) {
+        response.setHeader("Authorization-refresh", accessToken);
+    }
+
+    public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken) {
+        response.setStatus(HttpServletResponse.SC_OK);
+        setAccessTokenHeader(response, accessToken);
+        setRefreshTokenHeader(response, refreshToken);
+    }
 }

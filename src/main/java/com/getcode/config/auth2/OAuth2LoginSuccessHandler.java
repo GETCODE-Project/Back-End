@@ -4,8 +4,10 @@ import com.getcode.config.jwt.TokenDto;
 import com.getcode.config.jwt.TokenProvider;
 import com.getcode.domain.member.Authority;
 import com.getcode.domain.member.Member;
+import com.getcode.domain.member.RefreshToken;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.repository.MemberRepository;
+import com.getcode.repository.RefreshTokenRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Component;
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -55,7 +58,15 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             } else {
                 // 이미 가입된 회원의 경우 바로 토큰 발급해주면 된다.
                 TokenDto tokenDto = tokenProvider.generateTokenDtoOAuth(id, authorities);
-                log.info(tokenDto.getAccessToken());
+
+                // 리프레시 토큰의 경우 DB에 저장
+                RefreshToken refreshToken = RefreshToken.builder()
+                        .key(authentication.getName())
+                        .value(tokenDto.getRefreshToken())
+                        .build();
+
+                refreshTokenRepository.save(refreshToken);
+                tokenProvider.sendAccessAndRefreshToken(response, tokenDto.getAccessToken(), tokenDto.getRefreshToken());
             }
         } catch (Exception e) {
             throw e;
