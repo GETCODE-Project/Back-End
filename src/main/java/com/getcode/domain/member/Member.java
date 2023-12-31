@@ -1,7 +1,6 @@
 package com.getcode.domain.member;
 
 import com.getcode.domain.common.BaseTimeEntity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
