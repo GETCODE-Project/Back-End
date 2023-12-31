@@ -4,7 +4,6 @@ import com.getcode.domain.member.Authority;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.member.SocialType;
 import java.util.Map;
-import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -65,6 +64,7 @@ public class OAuthAttribute {
                 .email(oauth2UserInfo.getEmail())
                 .imageUrl(oauth2UserInfo.getImageUrl())
                 .authority(Authority.ROLE_GUEST)
+                .emailVerified(true)
                 .build();
     }
 }

@@ -1,18 +1,14 @@
 package com.getcode.controller;
 
-import com.getcode.config.auth2.CustomOAuth2User;
 import com.getcode.config.jwt.TokenDto;
 import com.getcode.config.redis.RedisService;
-import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.member.Member;
 import com.getcode.dto.member.EmailVerificationResultDto;
 import com.getcode.dto.member.MemberInfoDto;
 import com.getcode.dto.member.MemberLoginRequestDto;
 import com.getcode.dto.member.SignUpDto;
 import com.getcode.dto.member.SignUpResponseDto;
-import com.getcode.dto.member.SocialLoginRequestDto;
 import com.getcode.exception.common.BusinessExceptionResponse;
-import com.getcode.exception.member.DuplicateEmailException;
 import com.getcode.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

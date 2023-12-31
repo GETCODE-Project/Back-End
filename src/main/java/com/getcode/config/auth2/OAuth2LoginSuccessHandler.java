@@ -10,19 +10,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -38,7 +30,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                                         Authentication authentication) throws IOException, ServletException {
 
         try {
-            log.info(authentication.toString());
             CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 
             Member member = memberRepository.findBySocialId(
@@ -62,6 +53,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 log.info(accessToken);
                 tokenProvider.sendAccessToken(response, accessToken);
             } else {
+                // 이미 가입된 회원의 경우 바로 토큰 발급해주면 된다.
                 TokenDto tokenDto = tokenProvider.generateTokenDtoOAuth(id, authorities);
                 log.info(tokenDto.getAccessToken());
             }
