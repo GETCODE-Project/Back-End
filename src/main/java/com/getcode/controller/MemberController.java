@@ -2,21 +2,22 @@ package com.getcode.controller;
 
 import com.getcode.config.jwt.TokenDto;
 import com.getcode.config.redis.RedisService;
+import com.getcode.config.s3.S3Service;
 import com.getcode.domain.member.Member;
 import com.getcode.dto.member.EmailVerificationResultDto;
 import com.getcode.dto.member.MemberInfoDto;
 import com.getcode.dto.member.MemberLoginRequestDto;
 import com.getcode.dto.member.SignUpDto;
 import com.getcode.dto.member.SignUpResponseDto;
-import com.getcode.exception.common.BusinessExceptionResponse;
+import com.getcode.dto.s3.S3FileDto;
+import com.getcode.dto.s3.S3FileUpdateDto;
 import com.getcode.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "사용자 관련 API 명세")
 @RestController
@@ -34,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
     private final MemberService memberService;
     private final RedisService redisService;
+    private final S3Service s3Service;
 
     @Operation(summary = "일반 회원가입", description = "이메일: 기존 이메일 형식 / 닉네임: 2자 이상 / 비밀번호: 8자 이상")
     @ApiResponses(value = {
@@ -77,5 +81,14 @@ public class MemberController {
                                             @RequestParam("code") String authCode) {
         EmailVerificationResultDto res = memberService.verifiedCode(email, authCode);
         return ResponseEntity.status(HttpStatus.OK).body(res);
+    }
+
+    @PostMapping("/update-profile")
+    public ResponseEntity<S3FileUpdateDto> updateImageUrl(@RequestPart(name = "fileType") String fileType,
+                                                          @RequestPart(name = "files") List<MultipartFile> multipartFiles) {
+        S3FileDto file = s3Service.uploadFiles(fileType, multipartFiles).get(0);
+        S3FileUpdateDto fileUrl = new S3FileUpdateDto(file.getUploadFileUrl());
+        memberService.addProfile(fileUrl);
+        return ResponseEntity.status(HttpStatus.OK).body(fileUrl);
     }
 }

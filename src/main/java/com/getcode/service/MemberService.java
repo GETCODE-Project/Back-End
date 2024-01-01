@@ -6,12 +6,14 @@ import com.getcode.config.jwt.TokenDto;
 import com.getcode.config.jwt.TokenProvider;
 import com.getcode.config.mail.MailService;
 import com.getcode.config.redis.RedisService;
+import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.member.RefreshToken;
 import com.getcode.dto.member.EmailVerificationResultDto;
 import com.getcode.dto.member.MemberInfoDto;
 import com.getcode.dto.member.MemberLoginRequestDto;
 import com.getcode.dto.member.SignUpDto;
+import com.getcode.dto.s3.S3FileUpdateDto;
 import com.getcode.exception.member.DuplicateEmailException;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.member.NotVerifiedException;
@@ -122,6 +124,14 @@ public class MemberService {
             member.updateEmailVerified();
         }
         return EmailVerificationResultDto.toDto(authResult);
+    }
+
+    // 프로필 추가
+    @Transactional
+    public S3FileUpdateDto addProfile(S3FileUpdateDto request) {
+        Member member = memberRepository.findById(Long.parseLong(getCurrentMemberId())).orElseThrow(NotFoundMemberException::new);
+        member.updateImage(request.getImageUrl());
+        return request;
     }
 
     // 인증번호 생성로직

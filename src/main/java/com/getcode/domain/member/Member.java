@@ -59,6 +59,9 @@ public class Member extends BaseTimeEntity {
     public void updateAuthority(Authority authority) {
         this.authority = authority;
     }
+    public void updateImage(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     public void passwordEncoding(PasswordEncoder passwordEncoder) {
         password = passwordEncoder.encode(password);
