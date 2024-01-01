@@ -64,8 +64,6 @@ public class CustomOAuthService implements OAuth2UserService<OAuth2UserRequest, 
                 createdMember.getEmail(),
                 createdMember.getAuthority()
         );
-
-
     }
 
     private SocialType getSocialType(String registrationId) {

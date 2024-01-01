@@ -1,17 +1,19 @@
 package com.getcode.service;
 
-import static com.getcode.config.SecurityUtil.*;
+import static com.getcode.config.security.SecurityUtil.*;
 
-import com.getcode.config.SecurityUtil;
 import com.getcode.config.jwt.TokenDto;
 import com.getcode.config.jwt.TokenProvider;
+import com.getcode.config.mail.MailService;
 import com.getcode.config.redis.RedisService;
+import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.member.RefreshToken;
 import com.getcode.dto.member.EmailVerificationResultDto;
 import com.getcode.dto.member.MemberInfoDto;
 import com.getcode.dto.member.MemberLoginRequestDto;
 import com.getcode.dto.member.SignUpDto;
+import com.getcode.dto.s3.S3FileUpdateDto;
 import com.getcode.exception.member.DuplicateEmailException;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.member.NotVerifiedException;
@@ -22,16 +24,16 @@ import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -72,14 +74,9 @@ public class MemberService {
     @Transactional
     public TokenDto login(MemberLoginRequestDto memberRequestDto) {
 
-        Member member = memberRepository.findByEmail(memberRequestDto.getEmail()).orElseThrow(RuntimeException::new);
-
-        if (!member.isEmailVerified()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"이메일 인증을 먼저 진행주세용");
-        }
+        Member member = memberRepository.findByEmail(memberRequestDto.getEmail()).orElseThrow(NotFoundMemberException::new);
 
         UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
-
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
@@ -96,8 +93,8 @@ public class MemberService {
 
     // 개인정보
     public MemberInfoDto userInfo() {
-        Long memberId = getCurrentMemberId();
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+        String memberId = getCurrentMemberId();
+        Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(NotFoundMemberException::new);
 
         if (!member.isEmailVerified()) {
             throw new NotVerifiedException();
@@ -127,6 +124,14 @@ public class MemberService {
             member.updateEmailVerified();
         }
         return EmailVerificationResultDto.toDto(authResult);
+    }
+
+    // 프로필 추가
+    @Transactional
+    public S3FileUpdateDto addProfile(S3FileUpdateDto request) {
+        Member member = memberRepository.findById(Long.parseLong(getCurrentMemberId())).orElseThrow(NotFoundMemberException::new);
+        member.updateImage(request.getImageUrl());
+        return request;
     }
 
     // 인증번호 생성로직

@@ -1,4 +1,4 @@
-package com.getcode.config;
+package com.getcode.config.mail;
 
 
 import java.util.Properties;

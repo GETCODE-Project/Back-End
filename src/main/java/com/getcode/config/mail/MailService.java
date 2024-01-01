@@ -1,4 +1,4 @@
-package com.getcode.service;
+package com.getcode.config.mail;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,6 @@ public class MailService {
             log.debug("MailService.sendEmail exception occur toEmail: {}, " +
                     "title: {}, text: {}", toEmail, title, text);
         }
-
 
     }
 

@@ -72,6 +72,35 @@ public class TokenProvider {
                 .build();
     }
 
+    public TokenDto generateTokenDtoOAuth(String Id, String authorities) {
+
+        long now = (new Date()).getTime();
+
+        Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
+        Date refreshTokenExpiresIn = new Date(now + REFRESH_TOKEN_EXPIRE_TIME);
+
+        // Access Token 생성
+        String accessToken = Jwts.builder()
+                .setSubject(Id)
+                .claim(AUTHORITIES_KEY, authorities)
+                .setExpiration(accessTokenExpiresIn)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+
+        // Refresh Token 생성
+        String refreshToken = Jwts.builder()
+                .setExpiration(refreshTokenExpiresIn)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+
+        return TokenDto.builder()
+                .grantType(BEARER_TYPE)
+                .accessToken(accessToken)
+                .accessTokenExpiresIn(accessTokenExpiresIn.getTime())
+                .refreshToken(refreshToken)
+                .build();
+    }
+
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken); // 토큰 복호화
 
@@ -135,5 +164,15 @@ public class TokenProvider {
     }
     public void setAccessTokenHeader(HttpServletResponse response, String accessToken) {
         response.setHeader("Authorization", accessToken);
+    }
+
+    public void setRefreshTokenHeader(HttpServletResponse response, String accessToken) {
+        response.setHeader("Authorization-refresh", accessToken);
+    }
+
+    public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken) {
+        response.setStatus(HttpServletResponse.SC_OK);
+        setAccessTokenHeader(response, accessToken);
+        setRefreshTokenHeader(response, refreshToken);
     }
 }
