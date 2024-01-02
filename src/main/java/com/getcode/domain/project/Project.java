@@ -3,17 +3,16 @@ package com.getcode.domain.project;
 import com.getcode.domain.common.BaseTimeEntity;
 import com.getcode.domain.member.Member;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
 
+@DynamicInsert //insert시 null인 컬럼 제외
+@Builder
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Project extends BaseTimeEntity {
-
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +22,6 @@ public class Project extends BaseTimeEntity {
     @Column(nullable = false)
     private String title;
 
-    @Size(min = 10) //게시물 작성시 최소 글자
     @Lob
     @Column(nullable = false)
     private String content;
@@ -31,13 +29,18 @@ public class Project extends BaseTimeEntity {
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
 
-    @Column(nullable = false)
-        private int views;
+    @Column(name ="github_url", nullable = true)
+    private String githubUrl;
+
+    //조회수 default값 설정
+    @Column(columnDefinition = "integer default 0",nullable = false)
+    private int views;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "member_id")
-
     private Member member;
+
+
 
 
 

@@ -3,14 +3,14 @@ package com.getcode.domain.project;
 
 import com.getcode.domain.common.Subject;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-
+@Builder
 public class ProjectSubject {
 
 

@@ -18,7 +18,6 @@ public enum Subject {
 
     private String subject;
 
-
     Subject(String subject) {
         this.subject = subject;
     }
