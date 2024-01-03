@@ -29,6 +29,18 @@ import org.springframework.stereotype.Component;
 public class TokenProvider {
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "Bearer";
+    public static final String REFRESH_HEADER = "Refresh";
+    public static final String BEARER_PREFIX = "Bearer ";
+    public static final String AUTHORIZATION_HEADER = "Authorization";
+
+    // Token 만료 시간
+    @Value("${jwt.access-token-expiration}")
+    private long accessTokenExpirationMillis;
+
+    @Value("${jwt.refresh-token-expiration}")
+    private long refreshTokenExpirationMillis;
+
+    // 삭제 예정
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30; // 30분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; // 7일
 
@@ -40,15 +52,13 @@ public class TokenProvider {
     }
 
     public TokenDto generateTokenDto(Authentication authentication) {
+        Date accessTokenExpiresIn = getTokenExpiration(accessTokenExpirationMillis);
+        Date refreshTokenExpiresIn = getTokenExpiration(refreshTokenExpirationMillis);
+
         // 권한들
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
-
-        long now = (new Date()).getTime();
-
-        Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
-        Date refreshTokenExpiresIn = new Date(now + REFRESH_TOKEN_EXPIRE_TIME);
 
         // Access Token 생성
         String accessToken = Jwts.builder()
@@ -60,6 +70,7 @@ public class TokenProvider {
 
         // Refresh Token 생성
         String refreshToken = Jwts.builder()
+                .setSubject(authentication.getName())
                 .setExpiration(refreshTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
@@ -68,6 +79,7 @@ public class TokenProvider {
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
                 .accessTokenExpiresIn(accessTokenExpiresIn.getTime())
+                .refreshTokenExpiresIn(refreshTokenExpiresIn.getTime())
                 .refreshToken(refreshToken)
                 .build();
     }
@@ -101,6 +113,12 @@ public class TokenProvider {
                 .build();
     }
 
+    private Date getTokenExpiration(long millisecond) {
+        Date now = new Date();
+        return new Date(now.getTime() + millisecond);
+    }
+
+    // 토큰 복호화해서 JWT 토큰에 들어있는 정보 꺼내는 메소드
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken); // 토큰 복호화
 
@@ -114,11 +132,13 @@ public class TokenProvider {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
+        // UserDetails 객체 생성해서 Authentication 리턴해준다.
         UserDetails principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
 
     }
 
+    // 토큰 유효성 검사
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -135,6 +155,7 @@ public class TokenProvider {
         return false;
     }
 
+    // 토큰 복호화
     private Claims parseClaims(String accessToken) {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
@@ -166,8 +187,8 @@ public class TokenProvider {
         response.setHeader("Authorization", accessToken);
     }
 
-    public void setRefreshTokenHeader(HttpServletResponse response, String accessToken) {
-        response.setHeader("Authorization-refresh", accessToken);
+    public void setRefreshTokenHeader(HttpServletResponse response, String refreshToken) {
+        response.setHeader("Authorization-refresh", refreshToken);
     }
 
     public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken) {

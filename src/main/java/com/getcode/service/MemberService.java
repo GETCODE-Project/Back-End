@@ -20,6 +20,7 @@ import com.getcode.exception.member.NotVerifiedException;
 import com.getcode.repository.MemberRepository;
 import com.getcode.repository.RefreshTokenRepository;
 import java.time.Duration;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
@@ -73,13 +74,16 @@ public class MemberService {
     // 로그인
     @Transactional
     public TokenDto login(MemberLoginRequestDto memberRequestDto) {
+        String email = memberRequestDto.getEmail();
 
-        Member member = memberRepository.findByEmail(memberRequestDto.getEmail()).orElseThrow(NotFoundMemberException::new);
+        Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundMemberException::new);
 
         UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
+        // 토큰 생성 메소드
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
+
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .key(authentication.getName())
@@ -90,6 +94,12 @@ public class MemberService {
 
         return tokenDto;
     }
+
+    // 로그아웃 => Http Request / Response에 대해서는 Service 계층에서 알 필요없다.
+    public void logout(String accessToken) {
+
+    }
+
 
     // 개인정보
     public MemberInfoDto userInfo() {
