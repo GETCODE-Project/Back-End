@@ -5,16 +5,22 @@ import com.getcode.config.auth2.OAuth2LoginFailureHandler;
 import com.getcode.config.auth2.OAuth2LoginSuccessHandler;
 import com.getcode.config.jwt.JwtAccessDeniedHandler;
 import com.getcode.config.jwt.JwtAuthenticationEntryPoint;
+import com.getcode.config.jwt.JwtAuthenticationFilter;
 import com.getcode.config.jwt.JwtFilter;
 import com.getcode.config.jwt.TokenProvider;
-import jakarta.servlet.http.HttpServletRequest;
+import com.getcode.config.redis.RedisService;
+import com.getcode.repository.MemberRepository;
+import com.getcode.service.MemberService;
 import java.util.Arrays;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,21 +29,25 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
+@Slf4j
 @EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-
+    private final RedisService redisService;
     private final TokenProvider tokenProvider;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final CustomOAuthService customOAuth2UserService;
+    private final MemberRepository memberRepository;
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(corsCustomizer -> corsCustomizer.configurationSource(getCorsConfiguration()))
+        http
+                .cors(corsCustomizer -> corsCustomizer.configurationSource(getCorsConfiguration()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((requests) -> requests.anyRequest().permitAll())
@@ -46,9 +56,10 @@ public class SecurityConfig {
                 .exceptionHandling((e) -> e.accessDeniedHandler(jwtAccessDeniedHandler))
                 .formLogin(f -> f.disable())
                 .httpBasic(h -> h.disable())
-                .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
+//                .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(o -> o.userInfoEndpoint(u->u.userService(customOAuth2UserService))
-                .successHandler(oAuth2LoginSuccessHandler).failureHandler(oAuth2LoginFailureHandler));
+                .successHandler(oAuth2LoginSuccessHandler).failureHandler(oAuth2LoginFailureHandler))
+                .apply(new CustomFilterConfigurer());
         return http.build();
     }
 
@@ -70,4 +81,29 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
+    // test
+    public class CustomFilterConfigurer extends AbstractHttpConfigurer<CustomFilterConfigurer, HttpSecurity> {
+        @Override
+        public void configure(HttpSecurity builder) throws Exception {
+            CharacterEncodingFilter filter = new CharacterEncodingFilter();
+            filter.setEncoding("UTF-8");
+            filter.setForceEncoding(true);
+            builder.addFilterBefore(filter, JwtAuthenticationFilter.class);
+            log.info("SecurityConfiguration.CustomFilterConfigurer.configure excute");
+            log.info("---------------------------");
+            AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
+            JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(
+                    authenticationManager,tokenProvider,
+                    memberRepository, redisService);
+            JwtFilter jwtVerificationFilter = new JwtFilter(tokenProvider, redisService);
+
+            jwtAuthenticationFilter.setFilterProcessesUrl("/api/auth/login");
+
+            builder
+                    .addFilter(jwtAuthenticationFilter)
+                    .addFilterAfter(jwtVerificationFilter, JwtAuthenticationFilter.class);
+        }
+    }
+
 }

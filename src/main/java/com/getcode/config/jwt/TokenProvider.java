@@ -14,6 +14,7 @@ import java.security.Key;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,6 +38,7 @@ public class TokenProvider {
     @Value("${jwt.access-token-expiration}")
     private long accessTokenExpirationMillis;
 
+    @Getter
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpirationMillis;
 
@@ -117,6 +119,8 @@ public class TokenProvider {
         Date now = new Date();
         return new Date(now.getTime() + millisecond);
     }
+
+
 
     // 토큰 복호화해서 JWT 토큰에 들어있는 정보 꺼내는 메소드
     public Authentication getAuthentication(String accessToken) {

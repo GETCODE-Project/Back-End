@@ -15,12 +15,14 @@ import java.time.Duration;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -49,12 +51,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         tokenProvider.setAccessTokenHeader(response, accessToken);
         tokenProvider.setRefreshTokenHeader(response, refreshToken);
+        String email = authResult.getName();
 
-        Long memberId = Long.parseLong(authResult.getName());
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundMemberException::new);
+        Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundMemberException::new);
 
-        Long refreshTokenExpiresIn = tokenDto.getRefreshTokenExpiresIn();
-        redisService.setValues(member.getEmail(), refreshToken, Duration.ofMillis(refreshTokenExpiresIn));
+        long refreshTokenExpirationMillis = tokenProvider.getRefreshTokenExpirationMillis();
+        redisService.setValues(member.getEmail(), refreshToken, Duration.ofMillis(refreshTokenExpirationMillis));
 
         this.getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
     }

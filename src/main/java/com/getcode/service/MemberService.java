@@ -19,6 +19,7 @@ import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.member.NotVerifiedException;
 import com.getcode.repository.MemberRepository;
 import com.getcode.repository.RefreshTokenRepository;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
 import java.util.Optional;
@@ -83,7 +84,6 @@ public class MemberService {
 
         // 토큰 생성 메소드
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
-
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .key(authentication.getName())

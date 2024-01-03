@@ -1,11 +1,8 @@
 package com.getcode.config.security;
 
-import com.getcode.config.auth2.CustomOAuth2User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 
 @Slf4j
 public class SecurityUtil {
