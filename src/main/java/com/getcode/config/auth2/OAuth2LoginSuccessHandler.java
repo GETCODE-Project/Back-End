@@ -2,6 +2,7 @@ package com.getcode.config.auth2;
 
 import com.getcode.config.jwt.TokenDto;
 import com.getcode.config.jwt.TokenProvider;
+import com.getcode.config.redis.RedisService;
 import com.getcode.domain.member.Authority;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.member.RefreshToken;
@@ -12,6 +13,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final RedisService redisService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -40,7 +43,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                     .orElseThrow(NotFoundMemberException::new);
 
             // 사용자 아이디
-            String id = String.valueOf(member.getId());
+            String email = String.valueOf(member.getEmail());
 
             // 사용자 권한
             String authorities = oAuth2User.getAuthorities().stream()
@@ -57,16 +60,21 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 tokenProvider.sendAccessToken(response, accessToken);
             } else {
                 // 이미 가입된 회원의 경우 바로 토큰 발급해주면 된다.
-                TokenDto tokenDto = tokenProvider.generateTokenDtoOAuth(id, authorities);
+                TokenDto tokenDto = tokenProvider.generateTokenDtoOAuth(email, authorities);
+                tokenProvider.setAccessTokenHeader(response, tokenDto.getAccessToken());
+                tokenProvider.setRefreshTokenHeader(response, tokenDto.getRefreshToken());
 
+
+                long refreshTokenExpirationMillis = tokenProvider.getRefreshTokenExpirationMillis();
+                redisService.setValues(member.getEmail(), tokenDto.getRefreshToken(), Duration.ofMillis(refreshTokenExpirationMillis));
                 // 리프레시 토큰의 경우 DB에 저장
-                RefreshToken refreshToken = RefreshToken.builder()
-                        .key(authentication.getName())
-                        .value(tokenDto.getRefreshToken())
-                        .build();
-
-                refreshTokenRepository.save(refreshToken);
-                tokenProvider.sendAccessAndRefreshToken(response, tokenDto.getAccessToken(), tokenDto.getRefreshToken());
+//                RefreshToken refreshToken = RefreshToken.builder()
+//                        .key(authentication.getName())
+//                        .value(tokenDto.getRefreshToken())
+//                        .build();
+//
+//                refreshTokenRepository.save(refreshToken);
+//                tokenProvider.sendAccessAndRefreshToken(response, tokenDto.getAccessToken(), tokenDto.getRefreshToken());
             }
         } catch (Exception e) {
             throw e;

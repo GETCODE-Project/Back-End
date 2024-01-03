@@ -1,5 +1,6 @@
 package com.getcode.config.jwt;
 
+import com.getcode.config.redis.RedisService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,16 +19,17 @@ public class JwtFilter extends OncePerRequestFilter {
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String BEARER_PREFIX = "Bearer ";
     private final TokenProvider tokenProvider;
+    private final RedisService redisService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // 토큰 꺼내기
+        // Request Header에서 JWT 토큰 꺼내기
         String jwt = resolveToken(request);
 
-        // 토큰 유효성 검사
-        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+        // JWT 토큰 유효성 검사
+        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt) && doNotLogout(jwt)) {
             Authentication authentication = tokenProvider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
@@ -43,5 +45,10 @@ public class JwtFilter extends OncePerRequestFilter {
             return bearerToken.substring(7);
         }
         return null;
+    }
+    // 로그아웃 상태 확인
+    private boolean doNotLogout(String accessToken) {
+        String isLogout = redisService.getValues(accessToken);
+        return isLogout.equals("false");
     }
 }

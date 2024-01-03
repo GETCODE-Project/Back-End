@@ -9,11 +9,13 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.security.Key;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,12 +25,27 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Component
 public class TokenProvider {
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "Bearer";
+    public static final String REFRESH_HEADER = "Refresh";
+    public static final String BEARER_PREFIX = "Bearer ";
+    public static final String AUTHORIZATION_HEADER = "Authorization";
+
+    // Token 만료 시간
+    @Getter
+    @Value("${jwt.access-token-expiration}")
+    private long accessTokenExpirationMillis;
+
+    @Getter
+    @Value("${jwt.refresh-token-expiration}")
+    private long refreshTokenExpirationMillis;
+
+    // 삭제 예정
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30; // 30분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; // 7일
 
@@ -40,15 +57,13 @@ public class TokenProvider {
     }
 
     public TokenDto generateTokenDto(Authentication authentication) {
+        Date accessTokenExpiresIn = getTokenExpiration(accessTokenExpirationMillis);
+        Date refreshTokenExpiresIn = getTokenExpiration(refreshTokenExpirationMillis);
+
         // 권한들
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
-
-        long now = (new Date()).getTime();
-
-        Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
-        Date refreshTokenExpiresIn = new Date(now + REFRESH_TOKEN_EXPIRE_TIME);
 
         // Access Token 생성
         String accessToken = Jwts.builder()
@@ -60,6 +75,7 @@ public class TokenProvider {
 
         // Refresh Token 생성
         String refreshToken = Jwts.builder()
+                .setSubject(authentication.getName())
                 .setExpiration(refreshTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
@@ -72,7 +88,7 @@ public class TokenProvider {
                 .build();
     }
 
-    public TokenDto generateTokenDtoOAuth(String Id, String authorities) {
+    public TokenDto generateTokenDtoOAuth(String email, String authorities) {
 
         long now = (new Date()).getTime();
 
@@ -81,7 +97,7 @@ public class TokenProvider {
 
         // Access Token 생성
         String accessToken = Jwts.builder()
-                .setSubject(Id)
+                .setSubject(email)
                 .claim(AUTHORITIES_KEY, authorities)
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -89,6 +105,7 @@ public class TokenProvider {
 
         // Refresh Token 생성
         String refreshToken = Jwts.builder()
+                .setSubject(email)
                 .setExpiration(refreshTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
@@ -101,6 +118,14 @@ public class TokenProvider {
                 .build();
     }
 
+    private Date getTokenExpiration(long millisecond) {
+        Date now = new Date();
+        return new Date(now.getTime() + millisecond);
+    }
+
+
+
+    // 토큰 복호화해서 JWT 토큰에 들어있는 정보 꺼내는 메소드
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken); // 토큰 복호화
 
@@ -114,11 +139,13 @@ public class TokenProvider {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
+        // UserDetails 객체 생성해서 Authentication 리턴해준다.
         UserDetails principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
 
     }
 
+    // 토큰 유효성 검사
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -135,7 +162,8 @@ public class TokenProvider {
         return false;
     }
 
-    private Claims parseClaims(String accessToken) {
+    // 토큰 복호화
+    public Claims parseClaims(String accessToken) {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
         } catch (ExpiredJwtException e) {
@@ -166,13 +194,33 @@ public class TokenProvider {
         response.setHeader("Authorization", accessToken);
     }
 
-    public void setRefreshTokenHeader(HttpServletResponse response, String accessToken) {
-        response.setHeader("Authorization-refresh", accessToken);
+    public void setRefreshTokenHeader(HttpServletResponse response, String refreshToken) {
+        response.setHeader("Authorization-refresh", refreshToken);
     }
 
     public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken) {
         response.setStatus(HttpServletResponse.SC_OK);
         setAccessTokenHeader(response, accessToken);
         setRefreshTokenHeader(response, refreshToken);
+    }
+
+    // Request Header에 Access Token 정보를 추출하는 메서드
+    public String resolveAccessToken(HttpServletRequest request) {
+        log.info("JwtTokenProvider.resolveAccessToken excute, request = {}", request.toString());
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
+    // Request Header에 Refresh Token 정보를 추출하는 메서드
+    public String resolveRefreshToken(HttpServletRequest request) {
+        log.info("JwtTokenProvider.resolveRefreshToken excute, request = {}", request.toString());
+        String bearerToken = request.getHeader("Authorization-refresh");
+        if (StringUtils.hasText(bearerToken)) {
+            return bearerToken;
+        }
+        return null;
     }
 }

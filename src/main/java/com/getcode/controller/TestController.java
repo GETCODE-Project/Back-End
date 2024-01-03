@@ -22,7 +22,7 @@ public class TestController {
     @Transactional
     @PostMapping("/login/oauth2/code/api/oauth2/sign-up")
     public String aa(@RequestBody SocialSignUpDto req) {
-        String currentMemberId = SecurityUtil.getCurrentMemberId();
+        String currentMemberId = SecurityUtil.getCurrentMemberEmail();
         log.info(currentMemberId);
         Member member = memberRepository.findByEmail(currentMemberId).orElseThrow(
                 NotFoundMemberException::new);
