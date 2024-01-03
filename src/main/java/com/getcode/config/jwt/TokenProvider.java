@@ -9,6 +9,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.security.Key;
 import java.util.*;
@@ -24,6 +25,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Component
@@ -35,6 +37,7 @@ public class TokenProvider {
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
     // Token 만료 시간
+    @Getter
     @Value("${jwt.access-token-expiration}")
     private long accessTokenExpirationMillis;
 
@@ -81,12 +84,11 @@ public class TokenProvider {
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
                 .accessTokenExpiresIn(accessTokenExpiresIn.getTime())
-                .refreshTokenExpiresIn(refreshTokenExpiresIn.getTime())
                 .refreshToken(refreshToken)
                 .build();
     }
 
-    public TokenDto generateTokenDtoOAuth(String Id, String authorities) {
+    public TokenDto generateTokenDtoOAuth(String email, String authorities) {
 
         long now = (new Date()).getTime();
 
@@ -95,7 +97,7 @@ public class TokenProvider {
 
         // Access Token 생성
         String accessToken = Jwts.builder()
-                .setSubject(Id)
+                .setSubject(email)
                 .claim(AUTHORITIES_KEY, authorities)
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -103,6 +105,7 @@ public class TokenProvider {
 
         // Refresh Token 생성
         String refreshToken = Jwts.builder()
+                .setSubject(email)
                 .setExpiration(refreshTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
@@ -160,7 +163,7 @@ public class TokenProvider {
     }
 
     // 토큰 복호화
-    private Claims parseClaims(String accessToken) {
+    public Claims parseClaims(String accessToken) {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
         } catch (ExpiredJwtException e) {
@@ -199,5 +202,25 @@ public class TokenProvider {
         response.setStatus(HttpServletResponse.SC_OK);
         setAccessTokenHeader(response, accessToken);
         setRefreshTokenHeader(response, refreshToken);
+    }
+
+    // Request Header에 Access Token 정보를 추출하는 메서드
+    public String resolveAccessToken(HttpServletRequest request) {
+        log.info("JwtTokenProvider.resolveAccessToken excute, request = {}", request.toString());
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
+    // Request Header에 Refresh Token 정보를 추출하는 메서드
+    public String resolveRefreshToken(HttpServletRequest request) {
+        log.info("JwtTokenProvider.resolveRefreshToken excute, request = {}", request.toString());
+        String bearerToken = request.getHeader("Authorization-refresh");
+        if (StringUtils.hasText(bearerToken)) {
+            return bearerToken;
+        }
+        return null;
     }
 }

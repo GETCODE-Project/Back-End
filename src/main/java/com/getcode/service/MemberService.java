@@ -19,6 +19,7 @@ import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.member.NotVerifiedException;
 import com.getcode.repository.MemberRepository;
 import com.getcode.repository.RefreshTokenRepository;
+import io.jsonwebtoken.Claims;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Date;
@@ -96,8 +97,16 @@ public class MemberService {
     }
 
     // 로그아웃 => Http Request / Response에 대해서는 Service 계층에서 알 필요없다.
-    public void logout(String accessToken) {
+    public void logout(String refreshToken, String accessToken) {
+        Claims claims = tokenProvider.parseClaims(refreshToken);
+        String email = claims.getSubject();
+        String redisRefreshToken = redisService.getValue(email);
 
+        if (redisService.checkExistsValue(redisRefreshToken)) {
+            redisService.deleteValues(email);
+            long accessTokenExpirationMillis = tokenProvider.getAccessTokenExpirationMillis();
+            redisService.setValues(accessToken, "logout", Duration.ofMillis(accessTokenExpirationMillis));
+        }
     }
 
 

@@ -34,6 +34,15 @@ public class RedisService {
         return (String) values.get(key);
     }
 
+    @Transactional(readOnly = true)
+    public String getValues(String key) {
+        ValueOperations<String, Object> values = redisTemplate.opsForValue();
+        if (values.get(key) == null) {
+            return "false";
+        }
+        return (String) values.get(key);
+    }
+
     public void deleteValues(String key) {
         redisTemplate.delete(key);
     }

@@ -48,7 +48,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
     // 로그아웃 상태 확인
     private boolean doNotLogout(String accessToken) {
-        String isLogout = redisService.getValue(accessToken);
+        String isLogout = redisService.getValues(accessToken);
         return isLogout.equals("false");
     }
 }

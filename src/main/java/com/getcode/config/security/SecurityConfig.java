@@ -74,6 +74,7 @@ public class SecurityConfig {
         config.setAllowedOriginPatterns(Arrays.asList("*"));
         config.setAllowedMethods(Collections.singletonList("*"));
         config.setAllowCredentials(true);
+        config.addExposedHeader("Authorization");
         config.setAllowedHeaders(Collections.singletonList("*"));
         config.setMaxAge(3600L);
 
@@ -90,8 +91,6 @@ public class SecurityConfig {
             filter.setEncoding("UTF-8");
             filter.setForceEncoding(true);
             builder.addFilterBefore(filter, JwtAuthenticationFilter.class);
-            log.info("SecurityConfiguration.CustomFilterConfigurer.configure excute");
-            log.info("---------------------------");
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
             JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(
                     authenticationManager,tokenProvider,

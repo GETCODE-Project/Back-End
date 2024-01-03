@@ -40,7 +40,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                     .orElseThrow(NotFoundMemberException::new);
 
             // 사용자 아이디
-            String id = String.valueOf(member.getId());
+            String email = String.valueOf(member.getEmail());
 
             // 사용자 권한
             String authorities = oAuth2User.getAuthorities().stream()
@@ -57,7 +57,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 tokenProvider.sendAccessToken(response, accessToken);
             } else {
                 // 이미 가입된 회원의 경우 바로 토큰 발급해주면 된다.
-                TokenDto tokenDto = tokenProvider.generateTokenDtoOAuth(id, authorities);
+                TokenDto tokenDto = tokenProvider.generateTokenDtoOAuth(email, authorities);
 
                 // 리프레시 토큰의 경우 DB에 저장
                 RefreshToken refreshToken = RefreshToken.builder()

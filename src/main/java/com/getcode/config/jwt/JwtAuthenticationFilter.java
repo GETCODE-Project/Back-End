@@ -6,16 +6,17 @@ import com.getcode.domain.member.Member;
 import com.getcode.dto.member.MemberLoginRequestDto;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.repository.MemberRepository;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -52,12 +53,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         tokenProvider.setAccessTokenHeader(response, accessToken);
         tokenProvider.setRefreshTokenHeader(response, refreshToken);
         String email = authResult.getName();
-
+        log.info(accessToken);
         Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundMemberException::new);
 
         long refreshTokenExpirationMillis = tokenProvider.getRefreshTokenExpirationMillis();
         redisService.setValues(member.getEmail(), refreshToken, Duration.ofMillis(refreshTokenExpirationMillis));
-
         this.getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
     }
 }
