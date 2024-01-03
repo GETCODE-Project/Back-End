@@ -15,6 +15,7 @@ import com.getcode.dto.member.MemberLoginRequestDto;
 import com.getcode.dto.member.SignUpDto;
 import com.getcode.dto.s3.S3FileUpdateDto;
 import com.getcode.exception.member.DuplicateEmailException;
+import com.getcode.exception.member.DuplicateNicknameException;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.member.NotVerifiedException;
 import com.getcode.repository.MemberRepository;
@@ -61,10 +62,15 @@ public class MemberService {
     // 회원가입
     @Transactional
     public Member signup(SignUpDto signUpDto) {
-        Optional<Member> findMember = memberRepository.findByEmail(signUpDto.getEmail());
+        Optional<Member> memberEmail = memberRepository.findByEmail(signUpDto.getEmail());
+        Optional<Member> memberNickname = memberRepository.findByNickname(signUpDto.getNickname());
 
-        if (findMember.isPresent()) {
+        if (memberEmail.isPresent()) {
             throw new DuplicateEmailException();
+        }
+
+        if (memberNickname.isPresent()) {
+            throw new DuplicateNicknameException();
         }
 
         Member member = signUpDto.toEntity();
