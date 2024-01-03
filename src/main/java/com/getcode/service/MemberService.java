@@ -103,8 +103,8 @@ public class MemberService {
 
     // 개인정보
     public MemberInfoDto userInfo() {
-        String memberId = getCurrentMemberId();
-        Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(NotFoundMemberException::new);
+        String email = getCurrentMemberEmail();
+        Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundMemberException::new);
 
         if (!member.isEmailVerified()) {
             throw new NotVerifiedException();
@@ -139,7 +139,7 @@ public class MemberService {
     // 프로필 추가
     @Transactional
     public S3FileUpdateDto addProfile(S3FileUpdateDto request) {
-        Member member = memberRepository.findById(Long.parseLong(getCurrentMemberId())).orElseThrow(NotFoundMemberException::new);
+        Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
         member.updateImage(request.getImageUrl());
         return request;
     }
