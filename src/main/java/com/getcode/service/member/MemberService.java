@@ -1,4 +1,4 @@
-package com.getcode.service;
+package com.getcode.service.member;
 
 import static com.getcode.config.security.SecurityUtil.*;
 
