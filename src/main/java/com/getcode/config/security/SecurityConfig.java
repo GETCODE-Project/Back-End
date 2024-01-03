@@ -56,8 +56,8 @@ public class SecurityConfig {
                 .httpBasic(h -> h.disable())
 //                .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(o -> o.userInfoEndpoint(u->u.userService(customOAuth2UserService))
-                .successHandler(oAuth2LoginSuccessHandler).failureHandler(oAuth2LoginFailureHandler))
-                .apply(new CustomFilterConfigurer());
+                .successHandler(oAuth2LoginSuccessHandler).failureHandler(oAuth2LoginFailureHandler));
+//                .apply(new CustomFilterConfigurer());
         return http.build();
     }
 

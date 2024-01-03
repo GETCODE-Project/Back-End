@@ -1,9 +1,7 @@
 package com.getcode.controller.study;
 
 
-import com.getcode.domain.member.Member;
-import com.getcode.dto.member.SignUpDto;
-import com.getcode.dto.member.SignUpResponseDto;
+import com.getcode.dto.study.StudyInfoResponseDto;
 import com.getcode.dto.study.StudyRequestDto;
 import com.getcode.dto.study.StudyResponseDto;
 import com.getcode.service.study.StudyService;
@@ -15,6 +13,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,5 +36,14 @@ public class StudyController {
     public ResponseEntity<StudyResponseDto> signup(@Valid @RequestBody StudyRequestDto req) {
         StudyResponseDto study = studyService.createStudy(req);
         return ResponseEntity.status(HttpStatus.CREATED).body(study);
+    }
+
+    @Operation(summary = "스터디 모집글 조회", description = "PathVariable을 입력받아 게시글 조회" )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @GetMapping("/study/{id}")
+    public ResponseEntity<StudyInfoResponseDto> findStudy(@PathVariable(name = "id") Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(studyService.findStudy(id));
     }
 }
