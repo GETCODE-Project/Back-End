@@ -30,6 +30,7 @@ public class StudyService {
 
     public StudyInfoResponseDto findStudy(Long id) {
         Study study = studyRepository.findById(id).orElseThrow(NotFoundStudyException::new);
-        return StudyInfoResponseDto.toDto(study);
+        study.increaseViews();
+        return StudyInfoResponseDto.toDto(studyRepository.save(study));
     }
 }

@@ -38,7 +38,7 @@ public class StudyController {
         return ResponseEntity.status(HttpStatus.CREATED).body(study);
     }
 
-    @Operation(summary = "스터디 모집글 조회", description = "PathVariable을 입력받아 게시글 조회" )
+    @Operation(summary = "스터디 모집글 조회", description = "PathVariable을 입력받아 게시글 조회후 조회수 1 증가")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK")
     })
