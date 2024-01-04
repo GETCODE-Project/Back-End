@@ -1,11 +1,12 @@
 package com.getcode.domain.project;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
+@Builder
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class ProjectImage {
 
@@ -14,12 +15,20 @@ public class ProjectImage {
     @Column(name = "project_image_id")
     private Long id;
 
-    @Column(name = "project_image_url")
+    @Column(name = "project_image_url", nullable = true)
     private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
+
+    public ProjectImage getImage(String imageUrl, Project project){
+        return ProjectImage.builder()
+                .imageUrl(imageUrl)
+                .project(project)
+                .build();
+    }
+
 
 
 }

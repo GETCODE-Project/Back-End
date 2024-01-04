@@ -6,6 +6,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @DynamicInsert //insert시 null인 컬럼 제외
 @Builder
 @Getter
@@ -26,9 +29,6 @@ public class Project extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
-    @Column(name = "image_url", nullable = false)
-    private String imageUrl;
-
     @Column(name ="github_url", nullable = true)
     private String githubUrl;
 
@@ -40,9 +40,28 @@ public class Project extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Builder.Default
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProjectTech> techStacks = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProjectImage> projectImages = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProjectSubject> projectSubjects = new ArrayList<>();
 
 
-
+    public void stackAdd(ProjectTech projectTech){
+        this.techStacks.add(projectTech);
+    }
+    public void projectSubjectAdd(ProjectSubject projectSubject){
+        this.projectSubjects.add(projectSubject);
+    }
+    public void projectImageAdd (ProjectImage projectImage){
+        this.projectImages.add(projectImage);
+    }
 
 
 

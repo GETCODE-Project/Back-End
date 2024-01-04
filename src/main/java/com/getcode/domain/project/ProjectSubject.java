@@ -5,6 +5,8 @@ import com.getcode.domain.common.Subject;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 
 @Getter
 @AllArgsConstructor
@@ -26,5 +28,17 @@ public class ProjectSubject {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
+
+
+    public ProjectSubject(String subject){
+        this.subject = Subject.fromString(subject);
+    }
+
+    public ProjectSubject getSubject(Subject subject, Project project){
+        return ProjectSubject.builder()
+                .subject(subject)
+                .project(project)
+                .build();
+    }
 
 }

@@ -26,4 +26,15 @@ public enum Subject {
         return subject;
     }
 
+    public static Subject fromString(String reqValue) {
+        for (Subject subject : Subject.values()) {
+            if (subject.subject.equalsIgnoreCase(reqValue)) {
+                return subject;
+            }
+        }
+        throw new IllegalArgumentException();
+    }
+
+
+
 }

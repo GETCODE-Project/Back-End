@@ -5,6 +5,7 @@ import com.getcode.domain.common.Subject;
 import com.getcode.domain.common.TechStack;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.project.Project;
+import com.getcode.domain.project.ProjectImage;
 import com.getcode.domain.project.ProjectSubject;
 import com.getcode.domain.project.ProjectTech;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,6 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -44,47 +46,29 @@ public class ProjectRequestDto {
     private int views;
 
     @Schema(description = "이미지 url")
-    private String imageUrl;
+    private List<ProjectImage> imageUrls;
 
     @Schema(description = "기술스택")
-    private List<TechStack> techStackList;
+    private List<ProjectTech> techStackList;
 
     @Schema(description = "프로젝트 주제")
-    private Subject subject;
+    private List<ProjectSubject> projectSubjects;
 
 
-    public Project toEntity(Member member){
+    public Project toProjectEntity(Member member){
+
+
         return Project.builder()
                 .member(member)
                 .title(title)
                 .content(content)
                 .githubUrl(githubUrl)
                 .views(views)
-                .imageUrl(imageUrl)
+                .projectImages(new ArrayList<>(imageUrls))
+                .projectSubjects(new ArrayList<>(projectSubjects))
+                .techStacks(new ArrayList<>(techStackList))
                 .build();
     }
-
-    public ProjectTech toEntity(Project project){
-        return ProjectTech.builder()
-                .project(project)
-                .techStackList(techStackList)
-                .build();
-    }
-    
-
-    public ProjectSubject Entity(Project project){
-        return ProjectSubject.builder()
-                .project(project)
-                .subject(subject)
-                .build();
-    }
-    
-    
-    
-
-
-
-
 
 
 
