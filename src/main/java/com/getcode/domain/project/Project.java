@@ -36,7 +36,7 @@ public class Project extends BaseTimeEntity {
     @Column(columnDefinition = "integer default 0",nullable = false)
     private int views;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 

@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import static com.getcode.config.security.SecurityUtil.getCurrentMemberId;
 
@@ -40,11 +41,16 @@ public class ProjectService {
     @Transactional
     public int deleteProject(Long id, long memberId) {
 
-        projectSubjectRepository.deleteById(id);
-        projectStackRepository.deleteById(id);
-        projectRepository.deleteById(id);
+        Optional<Project> existedProject = projectRepository.findById(id);
 
-        return 1;
+        return existedProject
+                .filter(project -> project.getMember() != null && project.getMember().getId().equals(memberId))
+                .map(project -> {
+                    projectRepository.deleteById(id);
+                    return 1; // 삭제 성공
+                })
+                .orElseGet(() -> -1); // 해당 id에 해당하는 프로젝트가 없음
+
     }
 
 
