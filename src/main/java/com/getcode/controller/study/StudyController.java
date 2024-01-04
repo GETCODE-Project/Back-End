@@ -14,12 +14,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "스터디 관련 API 명세")
@@ -58,4 +60,15 @@ public class StudyController {
                                                       @RequestBody StudyEditDto req) {
         return ResponseEntity.status(HttpStatus.OK).body(studyService.editStudy(id, req));
     }
+
+    @Operation(summary = "스터디 모집글 삭제", description = "PathVariable 입력 후, 작성한 스터디 모집글 삭제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @ResponseStatus(value = HttpStatus.OK)
+    @DeleteMapping("/study/{id}")
+    public void deleteStudy(@PathVariable(name = "id") Long id) {
+        studyService.deleteStudy(id);
+    }
+
 }

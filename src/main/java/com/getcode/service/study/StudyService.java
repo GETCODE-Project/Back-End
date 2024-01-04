@@ -51,4 +51,18 @@ public class StudyService {
 
         return StudyResponseDto.toDto(studyRepository.save(study));
     }
+
+    @Transactional
+    public void deleteStudy(Long id) {
+        Study study = studyRepository.findById(id).orElseThrow(NotFoundStudyException::new);
+
+        Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
+        Member findMember = study.getMember();
+
+        if (member.getId() != findMember.getId()) {
+            throw new MatchMemberException();
+        }
+
+        studyRepository.delete(study);
+    }
 }
