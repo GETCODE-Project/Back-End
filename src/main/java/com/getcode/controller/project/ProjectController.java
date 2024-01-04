@@ -65,6 +65,12 @@ public class ProjectController {
     }
 
 
+    @Operation(summary = "github url 중복확인 api")
+    @GetMapping("/add/checkUrl")
+    public ResponseEntity<Boolean> checkUrl(@Parameter(description = "github Url") @RequestBody String githubUrl){
+       Boolean result = projectService.checkGithubUrlDuplication(githubUrl);
+        return ResponseEntity.ok(result);
+    }
 
 
     @Operation(summary = "프로젝트 삭제 api")
@@ -83,6 +89,7 @@ public class ProjectController {
 
             return ResponseEntity.ok().body("삭제가 완료되었습니다.");
     }
+
 
 
 

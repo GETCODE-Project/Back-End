@@ -93,4 +93,9 @@ public class ProjectService {
 
     }
 
+    @Transactional(readOnly = true)
+    public Boolean checkGithubUrlDuplication(String githubUrl) {
+        Boolean urlDuplicate = projectRepository.existsByGithubUrl(githubUrl);
+        return urlDuplicate;
+    }
 }
