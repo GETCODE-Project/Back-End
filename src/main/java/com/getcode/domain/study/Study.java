@@ -1,6 +1,7 @@
 package com.getcode.domain.study;
 
 import com.getcode.domain.member.Member;
+import com.getcode.dto.study.StudyEditDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,5 +55,13 @@ public class Study {
 
     public void increaseViews() {
         this.views +=1;
+    }
+
+    public void editStudy(StudyEditDto req) {
+        this.title = req.getTitle();
+        this.content = req.getContent();
+        this.region = req.getRegion();
+        this.online = req.isOnline();
+        this.recruitment = req.isRecruitment();
     }
 }

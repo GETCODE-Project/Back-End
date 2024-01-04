@@ -1,6 +1,7 @@
 package com.getcode.controller.study;
 
 
+import com.getcode.dto.study.StudyEditDto;
 import com.getcode.dto.study.StudyInfoResponseDto;
 import com.getcode.dto.study.StudyRequestDto;
 import com.getcode.dto.study.StudyResponseDto;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,5 +47,15 @@ public class StudyController {
     @GetMapping("/study/{id}")
     public ResponseEntity<StudyInfoResponseDto> findStudy(@PathVariable(name = "id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(studyService.findStudy(id));
+    }
+
+    @Operation(summary = "스터디 모집글 수정", description = "PathVariable, 스터디 변경내용을 입력받아 스터디 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @PutMapping("/study/{id}")
+    public ResponseEntity<StudyResponseDto> editStudy(@PathVariable(name = "id") Long id,
+                                                      @RequestBody StudyEditDto req) {
+        return ResponseEntity.status(HttpStatus.OK).body(studyService.editStudy(id, req));
     }
 }
