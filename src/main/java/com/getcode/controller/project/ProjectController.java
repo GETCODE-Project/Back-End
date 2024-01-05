@@ -2,11 +2,9 @@ package com.getcode.controller.project;
 
 import com.getcode.config.s3.S3Service;
 import com.getcode.config.security.SecurityUtil;
-import com.getcode.domain.common.Subject;
 import com.getcode.domain.project.ProjectImage;
 import com.getcode.dto.project.req.ProjectRequestDto;
 import com.getcode.dto.s3.S3FileDto;
-import com.getcode.dto.s3.S3FileUpdateDto;
 import com.getcode.service.project.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
