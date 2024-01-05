@@ -1,7 +1,8 @@
 package com.getcode.domain.study;
 
 import com.getcode.domain.member.Member;
-import jakarta.persistence.CascadeType;
+import com.getcode.dto.study.StudyEditDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -47,7 +49,19 @@ public class Study {
     @Column(nullable = false)
     private int views;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public void increaseViews() {
+        this.views +=1;
+    }
+
+    public void editStudy(StudyEditDto req) {
+        this.title = req.getTitle();
+        this.content = req.getContent();
+        this.region = req.getRegion();
+        this.online = req.isOnline();
+        this.recruitment = req.isRecruitment();
+    }
 }
