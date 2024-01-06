@@ -2,6 +2,7 @@ package com.getcode.domain.project;
 
 import com.getcode.domain.common.BaseTimeEntity;
 import com.getcode.domain.member.Member;
+import com.getcode.dto.project.req.ProjectUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -36,9 +37,25 @@ public class Project extends BaseTimeEntity {
     @Column(columnDefinition = "integer default 0",nullable = false)
     private int views;
 
+    //좋아요수 default값 설정
+    @Column(columnDefinition = "integer default 0",nullable = false)
+    private int likeCnt;
+
+    //조회수 default값 설정
+    @Column(columnDefinition = "integer default 0",nullable = false)
+    private int wishCnt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProjectLike> projectLikes = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WishProject> wishProjects = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -62,6 +79,16 @@ public class Project extends BaseTimeEntity {
     public void projectImageAdd (ProjectImage projectImage){
         this.projectImages.add(projectImage);
     }
+
+    public void updateProject(ProjectUpdateRequestDto requestDto){
+        this.title = requestDto.getTitle();
+        this.content = requestDto.getContent();
+        this.githubUrl = requestDto.getGithubUrl();
+        this.techStacks = requestDto.getTechStackList();
+        this.projectImages = requestDto.getImageUrls();
+        this.projectSubjects = requestDto.getProjectSubjects();
+    }
+
 
 
 
