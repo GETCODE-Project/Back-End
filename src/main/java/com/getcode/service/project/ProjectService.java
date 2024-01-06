@@ -32,6 +32,7 @@ public class ProjectService {
     private final ProjectImageRepository projectImageRepository;
     private final MemberRepository memberRepository;
     private final ProjectLikeRepository projectLikeRepository;
+    private final ProjectWishRepository projectWishRepository;
     private final S3Service s3Service;
 
     @Transactional
@@ -173,5 +174,32 @@ public class ProjectService {
 
             return 1;
         }
+    }
+
+    public int wishProject(Long id, String memberId) {
+
+        Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(NotFoundMemberException::new);
+        Project project = projectRepository.findById(id).orElseThrow(NotFoundProjectException::new);
+
+        WishProject wishProject = projectWishRepository.findByProjectAndMember(project, member);
+
+        if(wishProject != null){
+            projectWishRepository.delete(wishProject);
+            project.wishCntDown();
+            projectRepository.save(project);
+            return 0;
+        } else {
+            projectWishRepository.save(
+                    WishProject.builder()
+                            .project(project)
+                            .member(member)
+                            .build());
+            project.wishCntUp();
+            projectRepository.save(project);
+            return 1;
+        }
+
+
+
     }
 }

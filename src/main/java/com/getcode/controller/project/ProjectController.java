@@ -118,6 +118,22 @@ public class ProjectController {
         return ResponseEntity.ok().body("프로젝트 좋아요 등록 또는 취소 실패");
     }
 
+    @PostMapping("/wish/{id}")
+    ResponseEntity<?> wishProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id){
+        String memberId = SecurityUtil.getCurrentMemberId();
+
+        int result = projectService.wishProject(id, memberId);
+
+        if(result == 1){
+            return ResponseEntity.ok().body("프로젝트 즐겨찾기 성공");
+        } else if (result == 0){
+            return ResponseEntity.ok().body("프로젝트 즐겨찾기 삭제 성공");
+        }
+
+        return ResponseEntity.ok().body("프로젝트 즐겨찾기 등록 또는 취소 실패");
+
+    }
+
 
 
 
