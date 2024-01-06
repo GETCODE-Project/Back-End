@@ -4,6 +4,7 @@ import com.getcode.config.s3.S3Service;
 import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.project.ProjectImage;
 import com.getcode.dto.project.req.CommentRequestDto;
+import com.getcode.dto.project.req.CommentUpdateRequestDto;
 import com.getcode.dto.project.req.ProjectRequestDto;
 import com.getcode.dto.project.req.ProjectUpdateRequestDto;
 import com.getcode.dto.project.res.ProjectDetailResponseDto;
@@ -171,7 +172,7 @@ public class ProjectController {
     @Operation(summary = "프로젝트 댓글 삭제 api")
     @DeleteMapping("/detail/{projectId}/comment/delete/{id}")
     ResponseEntity<?> deleteComment(@Parameter(description = "프로젝트 아이디") @PathVariable Long projectId,
-                                    @PathVariable Long id)
+                                    @Parameter(description = "댓글 아이디") @PathVariable Long id)
     {
 
         String memberId = SecurityUtil.getCurrentMemberId();
@@ -183,7 +184,27 @@ public class ProjectController {
         } else {
             return ResponseEntity.ok().body("댓글 삭제 실패");
         }
+
     }
+
+
+    @Operation(summary = "프로젝트 댓글 수정 api")
+    @PutMapping("/detail/{projectId}/comment/update/{id}")
+    ResponseEntity<?> updateComment(@Parameter(description = "프로젝트 아이디") @PathVariable Long projectId,
+                                    @Parameter(description = "프로젝트 아이디") @PathVariable Long id,
+                                    @Parameter(description = "수정 내용") @RequestBody CommentUpdateRequestDto requestDto)
+    {
+        String memberId = SecurityUtil.getCurrentMemberId();
+
+        int result = projectService.updateComment(id, projectId, memberId, requestDto);
+
+        if (result == 1){
+            return ResponseEntity.ok().body("댓글 수정 완료");
+        } else return ResponseEntity.ok().body("댓글 수정 실패");
+
+
+    }
+
 
 
 

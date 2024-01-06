@@ -4,6 +4,7 @@ import com.getcode.config.s3.S3Service;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.project.*;
 import com.getcode.dto.project.req.CommentRequestDto;
+import com.getcode.dto.project.req.CommentUpdateRequestDto;
 import com.getcode.dto.project.req.ProjectRequestDto;
 import com.getcode.dto.project.req.ProjectUpdateRequestDto;
 import com.getcode.dto.project.res.ProjectDetailResponseDto;
@@ -229,6 +230,7 @@ public class ProjectService {
 
     }
 
+    //프로젝트 댓글 삭제
     public int deleteComment(Long id, Long projectId, String memberId) {
 
         Optional<ProjectComment> projectComment = projectCommentRepository.findById(id);
@@ -242,7 +244,22 @@ public class ProjectService {
                 .orElseGet(() -> -1);
     }
 
-    //프로젝트 댓글 삭제
+    //프로젝트 댓글 수정
+    public int updateComment(Long id, Long projectId, String memberId, CommentUpdateRequestDto requestDto) {
+
+        ProjectComment projectComment = projectCommentRepository.findById(id).orElseThrow();
+
+
+        if(projectComment.getProject().getId().equals(projectId) && projectComment.getMember().getId().equals(Long.parseLong(memberId))){
+
+                   projectComment.updateComment(requestDto);
+                   projectCommentRepository.save(projectComment);
+                   return 1;
+        } else return -1;
+
+
+    }
+
 
 
 

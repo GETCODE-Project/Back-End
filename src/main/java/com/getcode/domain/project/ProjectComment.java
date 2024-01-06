@@ -1,6 +1,7 @@
 package com.getcode.domain.project;
 
 import com.getcode.domain.member.Member;
+import com.getcode.dto.project.req.CommentUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,6 +28,9 @@ public class ProjectComment {
     @JoinColumn(name = "project_id")
     private Project project;
 
+    public void updateComment(CommentUpdateRequestDto requestDto){
+        this.content = requestDto.getContent();
+    }
 
 
 
