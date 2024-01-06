@@ -89,7 +89,7 @@ public class ProjectController {
             return ResponseEntity.ok().body("삭제가 완료되었습니다.");
     }
 
-
+/*
     @Operation(summary = "프로젝트 수정 api")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id,
@@ -101,7 +101,7 @@ public class ProjectController {
         projectService.updateProject(id, requestDto,memberId);
         return ResponseEntity.ok().body("수정완료");
     }
-
+*/
 
     @PostMapping("/like/{id}")
     ResponseEntity<?> likeProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id){

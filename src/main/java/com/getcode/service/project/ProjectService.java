@@ -133,6 +133,7 @@ public class ProjectService {
     }
 
 
+/*
     public void updateProject(Long id, ProjectUpdateRequestDto requestDto, String memberId) {
 
         Project project = projectRepository.findById(id).orElseThrow();
@@ -144,6 +145,7 @@ public class ProjectService {
         projectRepository.save(project);
 
     }
+*/
 
     public int likeProject(Long id, String memberId) {
 
