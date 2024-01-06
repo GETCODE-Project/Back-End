@@ -147,6 +147,7 @@ public class ProjectService {
     }
 */
 
+    @Transactional
     public int likeProject(Long id, String memberId) {
 
         Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(NotFoundMemberException::new);
@@ -175,6 +176,7 @@ public class ProjectService {
         }
     }
 
+    @Transactional
     public int wishProject(Long id, String memberId) {
 
         Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(NotFoundMemberException::new);
@@ -215,6 +217,9 @@ public class ProjectService {
     }
 
     */
+
+    //프로젝트 댓글 등록
+    @Transactional
     public void addComment(Long id, String memberId, CommentRequestDto requestDto) {
 
         Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(NotFoundMemberException::new);
@@ -223,4 +228,25 @@ public class ProjectService {
         projectCommentRepository.save(requestDto.toEntity(project, member));
 
     }
+
+    public int deleteComment(Long id, Long projectId, String memberId) {
+
+        Optional<ProjectComment> projectComment = projectCommentRepository.findById(id);
+
+        return projectComment
+                .filter(comment -> comment.getProject().getId().equals(projectId) && comment.getMember().getId().equals(Long.parseLong(memberId)))
+                .map(comment -> {
+                    projectCommentRepository.deleteById(id);
+                    return 1;
+                })
+                .orElseGet(() -> -1);
+    }
+
+    //프로젝트 댓글 삭제
+
+
+
+
+
+
 }

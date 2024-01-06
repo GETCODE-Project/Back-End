@@ -168,6 +168,24 @@ public class ProjectController {
     }
 
 
+    @Operation(summary = "프로젝트 댓글 삭제 api")
+    @DeleteMapping("/detail/{projectId}/comment/delete/{id}")
+    ResponseEntity<?> deleteComment(@Parameter(description = "프로젝트 아이디") @PathVariable Long projectId,
+                                    @PathVariable Long id)
+    {
+
+        String memberId = SecurityUtil.getCurrentMemberId();
+
+        int result = projectService.deleteComment(id, projectId, memberId);
+
+        if(result == 1){
+            return ResponseEntity.ok().body("댓글 삭제 완료");
+        } else {
+            return ResponseEntity.ok().body("댓글 삭제 실패");
+        }
+    }
+
+
 
 
 
