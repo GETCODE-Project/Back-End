@@ -1,14 +1,12 @@
 package com.getcode.service.project;
 
 import com.getcode.config.s3.S3Service;
-import com.getcode.domain.common.Subject;
-import com.getcode.domain.common.TechStack;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.project.*;
+import com.getcode.dto.project.req.CommentRequestDto;
 import com.getcode.dto.project.req.ProjectRequestDto;
 import com.getcode.dto.project.req.ProjectUpdateRequestDto;
-import com.getcode.dto.project.res.ProjectInfoResponseDto;
-import com.getcode.dto.s3.S3FileUpdateDto;
+import com.getcode.dto.project.res.ProjectDetailResponseDto;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.project.NotFoundProjectException;
 import com.getcode.repository.MemberRepository;
@@ -30,6 +28,7 @@ public class ProjectService {
     private final ProjectStackRepository projectStackRepository;
     private final ProjectSubjectRepository projectSubjectRepository;
     private final ProjectImageRepository projectImageRepository;
+    private final ProjectCommentRepository projectCommentRepository;
     private final MemberRepository memberRepository;
     private final ProjectLikeRepository projectLikeRepository;
     private final ProjectWishRepository projectWishRepository;
@@ -200,6 +199,28 @@ public class ProjectService {
         }
 
 
+
+    }
+
+    /*
+    public ProjectDetailResponseDto getProject(Long id) {
+
+        Project project = projectRepository.findById(id).orElseThrow(NotFoundProjectException::new);
+        project.viewCntUp();
+        projectRepository.save(project);
+
+        ProjectDetailResponseDto responseDto = new ProjectDetailResponseDto();
+        return responseDto.toDto(project);
+
+    }
+
+    */
+    public void addComment(Long id, String memberId, CommentRequestDto requestDto) {
+
+        Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(NotFoundMemberException::new);
+        Project project = projectRepository.findById(id).orElseThrow(NotFoundProjectException::new);
+
+        projectCommentRepository.save(requestDto.toEntity(project, member));
 
     }
 }

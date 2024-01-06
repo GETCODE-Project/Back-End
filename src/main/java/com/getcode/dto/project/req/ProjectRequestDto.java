@@ -45,6 +45,12 @@ public class ProjectRequestDto {
     @Schema(description = "조회수")
     private int views;
 
+    @Schema(description = "좋아요 수")
+    private int likeCnt;
+
+    @Schema(description = "즐겨찾기 수")
+    private int wishCnt;
+
     @Schema(description = "이미지 url")
     private List<ProjectImage> imageUrls;
 
@@ -63,6 +69,8 @@ public class ProjectRequestDto {
                 .title(title)
                 .content(content)
                 .githubUrl(githubUrl)
+                .likeCnt(likeCnt)
+                .wishCnt(wishCnt)
                 .views(views)
                 .projectImages(new ArrayList<>(imageUrls))
                 .projectSubjects(new ArrayList<>(projectSubjects))

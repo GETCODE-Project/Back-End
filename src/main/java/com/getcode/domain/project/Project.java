@@ -69,6 +69,12 @@ public class Project extends BaseTimeEntity {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectSubject> projectSubjects = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProjectComment> projectComments = new ArrayList<>();
+
+
+
 
     public void stackAdd(ProjectTech projectTech){
         this.techStacks.add(projectTech);
@@ -101,6 +107,10 @@ public class Project extends BaseTimeEntity {
     }
     public void wishCntDown(){
         this.wishCnt -= 1;
+    }
+
+    public void viewCntUp(){
+        this.views += 1;
     }
 
 

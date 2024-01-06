@@ -3,8 +3,10 @@ package com.getcode.controller.project;
 import com.getcode.config.s3.S3Service;
 import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.project.ProjectImage;
+import com.getcode.dto.project.req.CommentRequestDto;
 import com.getcode.dto.project.req.ProjectRequestDto;
 import com.getcode.dto.project.req.ProjectUpdateRequestDto;
+import com.getcode.dto.project.res.ProjectDetailResponseDto;
 import com.getcode.dto.s3.S3FileDto;
 import com.getcode.service.project.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -103,6 +105,7 @@ public class ProjectController {
     }
 */
 
+    @Operation(summary = "프로젝트 좋아요 api")
     @PostMapping("/like/{id}")
     ResponseEntity<?> likeProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id){
 
@@ -118,6 +121,8 @@ public class ProjectController {
         return ResponseEntity.ok().body("프로젝트 좋아요 등록 또는 취소 실패");
     }
 
+
+    @Operation(summary = "프로젝트 즐겨찾기 api")
     @PostMapping("/wish/{id}")
     ResponseEntity<?> wishProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id){
         String memberId = SecurityUtil.getCurrentMemberId();
@@ -133,6 +138,39 @@ public class ProjectController {
         return ResponseEntity.ok().body("프로젝트 즐겨찾기 등록 또는 취소 실패");
 
     }
+
+
+/*
+    @Operation(summary = "특정 프로젝트 상세정보 조회 api")
+    @GetMapping("/detail/{id}")
+    ResponseEntity<?> getProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id){
+
+        ProjectDetailResponseDto responseDto = projectService.getProject(id);
+
+        return ResponseEntity.ok().body(responseDto);
+
+    }
+*/
+
+    @Operation(summary = "프로젝트 댓글 등록 api")
+    @PostMapping("/detail/{id}/comment/add")
+    ResponseEntity<?> addComment(@Parameter(description = "프로젝트 아이디") @PathVariable Long id,
+                                 @RequestBody CommentRequestDto requestDto)
+    {
+
+
+        String memberId = SecurityUtil.getCurrentMemberId();
+
+        projectService.addComment(id, memberId, requestDto);
+
+        return ResponseEntity.ok().body("댓글 등록이 완료되었습니다.");
+
+    }
+
+
+
+
+
 
 
 
