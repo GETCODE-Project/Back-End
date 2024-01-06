@@ -4,6 +4,7 @@ import com.getcode.config.s3.S3Service;
 import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.project.ProjectImage;
 import com.getcode.dto.project.req.ProjectRequestDto;
+import com.getcode.dto.project.req.ProjectUpdateRequestDto;
 import com.getcode.dto.s3.S3FileDto;
 import com.getcode.service.project.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -87,6 +88,36 @@ public class ProjectController {
 
             return ResponseEntity.ok().body("삭제가 완료되었습니다.");
     }
+
+
+    @Operation(summary = "프로젝트 수정 api")
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id,
+                                           @RequestBody ProjectUpdateRequestDto requestDto
+    ){
+
+        String memberId = SecurityUtil.getCurrentMemberId();
+
+        projectService.updateProject(id, requestDto,memberId);
+        return ResponseEntity.ok().body("수정완료");
+    }
+
+
+    @PostMapping("/like/{id}")
+    ResponseEntity<?> likeProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id){
+
+        String memberId = SecurityUtil.getCurrentMemberId();
+
+        int result = projectService.likeProject(id, memberId);
+
+        if(result == 1) {
+            return ResponseEntity.ok().body("프로젝트 좋아요 성공");
+        } else if (result == 0) {
+            return ResponseEntity.ok().body("프로젝트 좋아요 삭제 성공");
+        }
+        return ResponseEntity.ok().body("프로젝트 좋아요 등록 또는 취소 실패");
+    }
+
 
 
 

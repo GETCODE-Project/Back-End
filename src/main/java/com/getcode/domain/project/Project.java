@@ -90,6 +90,19 @@ public class Project extends BaseTimeEntity {
     }
 
 
+    public void likeCntUp(){
+        this.likeCnt += 1;
+    }
+    public void likeCntDown(){
+        this.likeCnt -= 1;
+    }
+    public void wishCntUp(){
+        this.wishCnt += 1;
+    }
+    public void wishCntDown(){
+        this.wishCnt -= 1;
+    }
+
 
 
 }

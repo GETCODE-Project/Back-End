@@ -4,19 +4,15 @@ import com.getcode.config.s3.S3Service;
 import com.getcode.domain.common.Subject;
 import com.getcode.domain.common.TechStack;
 import com.getcode.domain.member.Member;
-import com.getcode.domain.project.Project;
-import com.getcode.domain.project.ProjectImage;
-import com.getcode.domain.project.ProjectSubject;
-import com.getcode.domain.project.ProjectTech;
+import com.getcode.domain.project.*;
 import com.getcode.dto.project.req.ProjectRequestDto;
+import com.getcode.dto.project.req.ProjectUpdateRequestDto;
 import com.getcode.dto.project.res.ProjectInfoResponseDto;
 import com.getcode.dto.s3.S3FileUpdateDto;
 import com.getcode.exception.member.NotFoundMemberException;
+import com.getcode.exception.project.NotFoundProjectException;
 import com.getcode.repository.MemberRepository;
-import com.getcode.repository.project.ProjectImageRepository;
-import com.getcode.repository.project.ProjectRepository;
-import com.getcode.repository.project.ProjectStackRepository;
-import com.getcode.repository.project.ProjectSubjectRepository;
+import com.getcode.repository.project.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +31,7 @@ public class ProjectService {
     private final ProjectSubjectRepository projectSubjectRepository;
     private final ProjectImageRepository projectImageRepository;
     private final MemberRepository memberRepository;
+    private final ProjectLikeRepository projectLikeRepository;
     private final S3Service s3Service;
 
     @Transactional
@@ -136,6 +133,43 @@ public class ProjectService {
     }
 
 
+    public void updateProject(Long id, ProjectUpdateRequestDto requestDto, String memberId) {
 
+        Project project = projectRepository.findById(id).orElseThrow();
 
+        if(project.getMember() != null && project.getMember().getId().equals(Long.parseLong(memberId))){
+
+            project.updateProject(requestDto);
+        }
+        projectRepository.save(project);
+
+    }
+
+    public int likeProject(Long id, String memberId) {
+
+        Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(NotFoundMemberException::new);
+        Project project = projectRepository.findById(id).orElseThrow(NotFoundProjectException::new);
+
+        ProjectLike projectLike = projectLikeRepository.findByProjectAndMember(project, member);
+
+        if(projectLike != null){
+            projectLikeRepository.delete(projectLike);
+            project.likeCntDown();
+
+            projectRepository.save(project);
+            return 0;
+        } else {
+
+            projectLikeRepository.save(
+                    ProjectLike.builder()
+                            .project(project)
+                            .member(member)
+                            .build());
+
+            project.likeCntUp();
+            projectRepository.save(project);
+
+            return 1;
+        }
+    }
 }
