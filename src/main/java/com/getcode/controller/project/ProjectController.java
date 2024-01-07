@@ -141,7 +141,7 @@ public class ProjectController {
     }
 
 
-/*
+
     @Operation(summary = "특정 프로젝트 상세정보 조회 api")
     @GetMapping("/detail/{id}")
     ResponseEntity<?> getProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id){
@@ -151,7 +151,7 @@ public class ProjectController {
         return ResponseEntity.ok().body(responseDto);
 
     }
-*/
+
 
     @Operation(summary = "프로젝트 댓글 등록 api")
     @PostMapping("/detail/{id}/comment/add")

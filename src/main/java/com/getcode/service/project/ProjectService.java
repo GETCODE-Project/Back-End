@@ -35,6 +35,7 @@ public class ProjectService {
     private final ProjectWishRepository projectWishRepository;
     private final S3Service s3Service;
 
+    //프로젝트 삭제
     @Transactional
     public int deleteProject(Long id, long memberId) {
 
@@ -86,6 +87,7 @@ public class ProjectService {
     }
 
 
+    //프로젝트 등록
     @Transactional
     public void insertProject(ProjectRequestDto projectRequestDto) {
 
@@ -127,6 +129,7 @@ public class ProjectService {
 
     }
 
+    //깃헙 url 중복체크
     @Transactional(readOnly = true)
     public Boolean checkGithubUrlDuplication(String githubUrl) {
         Boolean urlDuplicate = projectRepository.existsByGithubUrl(githubUrl);
@@ -148,6 +151,7 @@ public class ProjectService {
     }
 */
 
+    //프로젝트 좋아요
     @Transactional
     public int likeProject(Long id, String memberId) {
 
@@ -177,6 +181,7 @@ public class ProjectService {
         }
     }
 
+    //프로젝트 즐겨찾기
     @Transactional
     public int wishProject(Long id, String memberId) {
 
@@ -205,19 +210,19 @@ public class ProjectService {
 
     }
 
-    /*
+
+    //프로젝트 상세조회
     public ProjectDetailResponseDto getProject(Long id) {
 
         Project project = projectRepository.findById(id).orElseThrow(NotFoundProjectException::new);
         project.viewCntUp();
-        projectRepository.save(project);
+        ProjectDetailResponseDto responseDto = new ProjectDetailResponseDto(projectRepository.save(project));
 
-        ProjectDetailResponseDto responseDto = new ProjectDetailResponseDto();
-        return responseDto.toDto(project);
+        return responseDto;
 
     }
 
-    */
+
 
     //프로젝트 댓글 등록
     @Transactional
@@ -259,6 +264,11 @@ public class ProjectService {
 
 
     }
+
+
+
+
+
 
 
 
