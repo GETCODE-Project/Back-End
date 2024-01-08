@@ -4,6 +4,9 @@ import static com.getcode.config.security.SecurityUtil.*;
 
 import com.getcode.domain.member.Member;
 import com.getcode.domain.study.Study;
+import com.getcode.domain.study.StudyComment;
+import com.getcode.dto.study.StudyCommentRequestDto;
+import com.getcode.dto.study.StudyCommentResponseDto;
 import com.getcode.dto.study.StudyEditDto;
 import com.getcode.dto.study.StudyInfoResponseDto;
 import com.getcode.dto.study.StudyRequestDto;
@@ -12,6 +15,7 @@ import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.study.MatchMemberException;
 import com.getcode.exception.study.NotFoundStudyException;
 import com.getcode.repository.MemberRepository;
+import com.getcode.repository.study.StudyCommentRepository;
 import com.getcode.repository.study.StudyRepository;
 
 import java.util.ArrayList;
@@ -25,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class StudyService {
     private final StudyRepository studyRepository;
     private final MemberRepository memberRepository;
+    private final StudyCommentRepository studyCommentRepository;
 
     @Transactional
     public StudyResponseDto createStudy(StudyRequestDto req) {
@@ -33,6 +38,8 @@ public class StudyService {
         return StudyResponseDto.toDto(study);
     }
 
+    // 특정 게시글 조회
+    @Transactional(readOnly = true)
     public StudyInfoResponseDto findStudy(Long id) {
         Study study = studyRepository.findById(id).orElseThrow(NotFoundStudyException::new);
         study.increaseViews();
@@ -83,5 +90,14 @@ public class StudyService {
         }
 
         studyRepository.delete(study);
+    }
+
+    // 스터디 댓글
+    @Transactional
+    public StudyCommentResponseDto addComment(StudyCommentRequestDto studyCommentRequestDto, Long id) {
+        Study study = studyRepository.findById(id).orElseThrow(NotFoundStudyException::new);
+        Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
+        StudyComment res = studyCommentRepository.save(studyCommentRequestDto.toEntity(study, member));
+        return StudyCommentResponseDto.toDto(res);
     }
 }
