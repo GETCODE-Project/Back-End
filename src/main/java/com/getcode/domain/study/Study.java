@@ -1,5 +1,6 @@
 package com.getcode.domain.study;
 
+import com.getcode.domain.common.BaseTimeEntity;
 import com.getcode.domain.member.Member;
 import com.getcode.dto.study.StudyEditDto;
 
@@ -12,6 +13,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Builder
 @AllArgsConstructor
-public class Study {
+public class Study extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "study_id")
@@ -52,6 +56,9 @@ public class Study {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @OneToMany(mappedBy = "study")
+    private List<StudyComment> comments = new ArrayList<>();
 
     public void increaseViews() {
         this.views +=1;
