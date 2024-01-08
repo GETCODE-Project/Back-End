@@ -8,12 +8,15 @@ import com.getcode.dto.study.StudyEditDto;
 import com.getcode.dto.study.StudyInfoResponseDto;
 import com.getcode.dto.study.StudyRequestDto;
 import com.getcode.dto.study.StudyResponseDto;
+import com.getcode.dto.study.StudyTitleDto;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.study.MatchMemberException;
 import com.getcode.exception.study.NotFoundStudyException;
 import com.getcode.repository.MemberRepository;
 import com.getcode.repository.study.StudyRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +38,15 @@ public class StudyService {
         Study study = studyRepository.findById(id).orElseThrow(NotFoundStudyException::new);
         study.increaseViews();
         return StudyInfoResponseDto.toDto(studyRepository.save(study));
+    }
+
+    @Transactional(readOnly = true)
+    public List<StudyResponseDto> findAllStudyByMember() {
+        Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
+        List<Study> studies = member.getStudy();
+        List<StudyResponseDto> res = new ArrayList<>();
+        studies.forEach(study -> res.add(StudyResponseDto.toDto(study)));
+        return res;
     }
 
     @Transactional

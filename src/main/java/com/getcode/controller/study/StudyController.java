@@ -1,16 +1,19 @@
 package com.getcode.controller.study;
 
 
+import com.getcode.domain.study.Study;
 import com.getcode.dto.study.StudyEditDto;
 import com.getcode.dto.study.StudyInfoResponseDto;
 import com.getcode.dto.study.StudyRequestDto;
 import com.getcode.dto.study.StudyResponseDto;
+import com.getcode.dto.study.StudyTitleDto;
 import com.getcode.service.study.StudyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +52,15 @@ public class StudyController {
     @GetMapping("/study/{id}")
     public ResponseEntity<StudyInfoResponseDto> findStudy(@PathVariable(name = "id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(studyService.findStudy(id));
+    }
+
+    @Operation(summary = "특정 사용자가 작성한 스터디 모집글 전체 조회", description = "스터디 목록 제목만 반환")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @GetMapping("/studies")
+    public ResponseEntity<List<StudyResponseDto>> findAllStudyByMember() {
+        return ResponseEntity.status(HttpStatus.OK).body(studyService.findAllStudyByMember());
     }
 
     @Operation(summary = "스터디 모집글 수정", description = "PathVariable, 스터디 변경내용을 입력받아 스터디 수정")
