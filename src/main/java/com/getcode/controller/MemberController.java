@@ -1,6 +1,7 @@
 package com.getcode.controller;
 
 import com.getcode.config.jwt.TokenDto;
+import com.getcode.config.jwt.TokenProvider;
 import com.getcode.config.redis.RedisService;
 import com.getcode.config.s3.S3Service;
 import com.getcode.domain.member.Member;
@@ -16,12 +17,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,6 +41,7 @@ public class MemberController {
     private final MemberService memberService;
     private final RedisService redisService;
     private final S3Service s3Service;
+    private final TokenProvider tokenProvider;
 
     @Operation(summary = "일반 회원가입", description = "이메일: 기존 이메일 형식 / 닉네임: 2자 이상 / 비밀번호: 8자 이상")
     @ApiResponses(value = {
@@ -90,5 +94,13 @@ public class MemberController {
         S3FileUpdateDto fileUrl = new S3FileUpdateDto(file.getUploadFileUrl());
         memberService.addProfile(fileUrl);
         return ResponseEntity.status(HttpStatus.OK).body(fileUrl);
+    }
+
+    @PatchMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        String accessToken = tokenProvider.resolveAccessToken(request);
+        String ref = tokenProvider.resolveRefreshToken(request);
+        memberService.logout(ref, accessToken);
+        return accessToken;
     }
 }

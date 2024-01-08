@@ -15,11 +15,15 @@ import com.getcode.dto.member.MemberLoginRequestDto;
 import com.getcode.dto.member.SignUpDto;
 import com.getcode.dto.s3.S3FileUpdateDto;
 import com.getcode.exception.member.DuplicateEmailException;
+import com.getcode.exception.member.DuplicateNicknameException;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.member.NotVerifiedException;
 import com.getcode.repository.MemberRepository;
 import com.getcode.repository.RefreshTokenRepository;
+import io.jsonwebtoken.Claims;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
@@ -58,10 +62,15 @@ public class MemberService {
     // 회원가입
     @Transactional
     public Member signup(SignUpDto signUpDto) {
-        Optional<Member> findMember = memberRepository.findByEmail(signUpDto.getEmail());
+        Optional<Member> memberEmail = memberRepository.findByEmail(signUpDto.getEmail());
+        Optional<Member> memberNickname = memberRepository.findByNickname(signUpDto.getNickname());
 
-        if (findMember.isPresent()) {
+        if (memberEmail.isPresent()) {
             throw new DuplicateEmailException();
+        }
+
+        if (memberNickname.isPresent()) {
+            throw new DuplicateNicknameException();
         }
 
         Member member = signUpDto.toEntity();
@@ -73,12 +82,14 @@ public class MemberService {
     // 로그인
     @Transactional
     public TokenDto login(MemberLoginRequestDto memberRequestDto) {
+        String email = memberRequestDto.getEmail();
 
-        Member member = memberRepository.findByEmail(memberRequestDto.getEmail()).orElseThrow(NotFoundMemberException::new);
+        Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundMemberException::new);
 
         UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
+        // 토큰 생성 메소드
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
 
         RefreshToken refreshToken = RefreshToken.builder()
@@ -91,10 +102,24 @@ public class MemberService {
         return tokenDto;
     }
 
+    // 로그아웃 => Http Request / Response에 대해서는 Service 계층에서 알 필요없다.
+    public void logout(String refreshToken, String accessToken) {
+        Claims claims = tokenProvider.parseClaims(refreshToken);
+        String email = claims.getSubject();
+        String redisRefreshToken = redisService.getValue(email);
+
+        if (redisService.checkExistsValue(redisRefreshToken)) {
+            redisService.deleteValues(email);
+            long accessTokenExpirationMillis = tokenProvider.getAccessTokenExpirationMillis();
+            redisService.setValues(accessToken, "logout", Duration.ofMillis(accessTokenExpirationMillis));
+        }
+    }
+
+
     // 개인정보
     public MemberInfoDto userInfo() {
-        String memberId = getCurrentMemberId();
-        Member member = memberRepository.findById(Long.parseLong(memberId)).orElseThrow(NotFoundMemberException::new);
+        String email = getCurrentMemberEmail();
+        Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundMemberException::new);
 
         if (!member.isEmailVerified()) {
             throw new NotVerifiedException();
@@ -129,7 +154,7 @@ public class MemberService {
     // 프로필 추가
     @Transactional
     public S3FileUpdateDto addProfile(S3FileUpdateDto request) {
-        Member member = memberRepository.findById(Long.parseLong(getCurrentMemberId())).orElseThrow(NotFoundMemberException::new);
+        Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
         member.updateImage(request.getImageUrl());
         return request;
     }
