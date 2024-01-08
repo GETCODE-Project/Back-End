@@ -1,5 +1,6 @@
 package com.getcode.domain.study;
 
+import com.getcode.domain.common.BaseTimeEntity;
 import com.getcode.domain.member.Member;
 import com.getcode.dto.study.StudyEditDto;
 
@@ -24,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Builder
 @AllArgsConstructor
-public class Study {
+public class Study extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "study_id")

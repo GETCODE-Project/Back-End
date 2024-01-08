@@ -6,7 +6,6 @@ import com.getcode.dto.study.StudyEditDto;
 import com.getcode.dto.study.StudyInfoResponseDto;
 import com.getcode.dto.study.StudyRequestDto;
 import com.getcode.dto.study.StudyResponseDto;
-import com.getcode.dto.study.StudyTitleDto;
 import com.getcode.service.study.StudyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,6 +16,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,6 +53,17 @@ public class StudyController {
     public ResponseEntity<StudyInfoResponseDto> findStudy(@PathVariable(name = "id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(studyService.findStudy(id));
     }
+
+    @Operation(summary = "모든 스터디 모집글 전체 조회", description = "최신순으로 모든 스터디 모집글 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+
+    @GetMapping("/all-studies")
+    public ResponseEntity<List<StudyResponseDto>> findAllStudy() {
+        return ResponseEntity.status(HttpStatus.OK).body(studyService.findAllStudy());
+    }
+
 
     @Operation(summary = "특정 사용자가 작성한 스터디 모집글 전체 조회", description = "스터디 목록 제목만 반환")
     @ApiResponses(value = {
