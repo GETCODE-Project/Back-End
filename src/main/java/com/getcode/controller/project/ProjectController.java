@@ -14,6 +14,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,8 +38,6 @@ public class ProjectController {
     private final ProjectService projectService;
     private final S3Service s3Service;
 
-
-
     @Operation(summary = "프로젝트 정보 등록 api")
     @PostMapping("/add")
     public ResponseEntity<?> addProject(@Parameter(description = "프로젝트 등록 값", required = true)
@@ -46,26 +48,37 @@ public class ProjectController {
     ){
 
 
+        //확장성을 고려하여 List형태로 파일 저장
         List<S3FileDto> files = s3Service.uploadFiles(fileType, multipartFiles);
         //파일 url리스트로 변환
-        List<String> fileUrls = files.stream()
-                                        .map(S3FileDto::getUploadFileUrl)
-                                        .collect(Collectors.toList());
+        List<ProjectImage> fileUrls = files.stream()
+                .map(S3FileDto::getUploadFileUrl)
+                .map(url -> ProjectImage.builder().imageUrl(url).build())
+                .collect(Collectors.toList());
 
-        //ProjectImage 타입의 url로 변환
-        List<ProjectImage> imageUrls = fileUrls.stream()
-                        .map(url -> ProjectImage.builder().imageUrl(url).build())
-                                .collect(Collectors.toList());
+        projectRequestDto.setImageUrls(fileUrls);
 
-        projectRequestDto.setImageUrls(imageUrls);
+        String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
-        projectService.insertProject(projectRequestDto);
+        projectService.insertProject(projectRequestDto, memberEmail);
 
-
-        return ResponseEntity.ok().body(HttpStatus.OK);
+        return ResponseEntity.ok().body("등록이 완료되었습니다.");
 
     }
 
+/*
+    @Operation(summary = "프로젝트 이미지 업로드 api")
+    @PostMapping("/add/image")
+    public ResponseEntity<?> insertImage(@Parameter(description = "프로젝트 이미지")
+                                             @RequestPart(name = "fileType") String fileType,
+                                         @RequestPart(name = "files") List<MultipartFile> multipartFiles)
+    {
+
+        List<String> imageUrl = projectService.insertImageInS3(fileType, multipartFiles);
+
+        return ResponseEntity.ok().body(imageUrl);
+    }
+*/
 
     @Operation(summary = "github url 중복확인 api")
     @GetMapping("/add/checkUrl")
@@ -79,11 +92,11 @@ public class ProjectController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id){
 
-        String memberId = SecurityUtil.getCurrentMemberId();
+        String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
         int res = 0;
 
-        res = projectService.deleteProject(id, Long.parseLong(memberId));
+        res = projectService.deleteProject(id, memberEmail);
 
         if(res <= 0 ){
             throw new RuntimeException();
@@ -110,9 +123,9 @@ public class ProjectController {
     @PostMapping("/like/{id}")
     ResponseEntity<?> likeProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id){
 
-        String memberId = SecurityUtil.getCurrentMemberId();
+        String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
-        int result = projectService.likeProject(id, memberId);
+        int result = projectService.likeProject(id, memberEmail);
 
         if(result == 1) {
             return ResponseEntity.ok().body("프로젝트 좋아요 성공");
@@ -126,9 +139,9 @@ public class ProjectController {
     @Operation(summary = "프로젝트 즐겨찾기 api")
     @PostMapping("/wish/{id}")
     ResponseEntity<?> wishProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id){
-        String memberId = SecurityUtil.getCurrentMemberId();
+        String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
-        int result = projectService.wishProject(id, memberId);
+        int result = projectService.wishProject(id, memberEmail);
 
         if(result == 1){
             return ResponseEntity.ok().body("프로젝트 즐겨찾기 성공");
@@ -152,6 +165,33 @@ public class ProjectController {
 
     }
 
+/*
+    @Operation(summary = "전체 프로젝트 조회 api")
+    @GetMapping("/all")
+    ResponseEntity<?> getProjectList(@Parameter(description = "정렬 기준")
+                                     @Pattern(regexp = "latestOrder|pastOrder|likeCnt|", message = "sort 값은 latestOrder, pastOrder, likeCnt,  중 하나여야 합니다")
+                                     @RequestParam(defaultValue = "latestOrder") String sort,
+                                        @Parameter(description = "페이지 수")
+                                        @Min(value = 0, message = "page값은 0이상이어야 합니다")
+                                        @RequestParam(defaultValue = "0") int page,
+                                        @Parameter(description = "한 페이지에 담기는 개수")
+                                        @Positive(message = "size값은 1이상이어야 합니다")
+                                        @RequestParam(defaultValue = "10") int size,
+                                        @Parameter(description = "검색어") @RequestParam(defaultValue = "") String keyword,
+                                        @Parameter(description = "주제") @RequestParam(defaultValue = "") String subject,
+                                        @Parameter(description = "기술스택") @RequestParam(defaultValue = "") String techStack
+                                    )
+    {
+
+
+
+
+
+    }
+
+*/
+
+
 
     @Operation(summary = "프로젝트 댓글 등록 api")
     @PostMapping("/detail/{id}/comment/add")
@@ -160,9 +200,9 @@ public class ProjectController {
     {
 
 
-        String memberId = SecurityUtil.getCurrentMemberId();
+        String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
-        projectService.addComment(id, memberId, requestDto);
+        projectService.addComment(id, memberEmail, requestDto);
 
         return ResponseEntity.ok().body("댓글 등록이 완료되었습니다.");
 
@@ -175,9 +215,9 @@ public class ProjectController {
                                     @Parameter(description = "댓글 아이디") @PathVariable Long id)
     {
 
-        String memberId = SecurityUtil.getCurrentMemberId();
+        String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
-        int result = projectService.deleteComment(id, projectId, memberId);
+        int result = projectService.deleteComment(id, projectId, memberEmail);
 
         if(result == 1){
             return ResponseEntity.ok().body("댓글 삭제 완료");
@@ -194,9 +234,9 @@ public class ProjectController {
                                     @Parameter(description = "프로젝트 아이디") @PathVariable Long id,
                                     @Parameter(description = "수정 내용") @RequestBody CommentUpdateRequestDto requestDto)
     {
-        String memberId = SecurityUtil.getCurrentMemberId();
+        String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
-        int result = projectService.updateComment(id, projectId, memberId, requestDto);
+        int result = projectService.updateComment(id, projectId, memberEmail, requestDto);
 
         if (result == 1){
             return ResponseEntity.ok().body("댓글 수정 완료");

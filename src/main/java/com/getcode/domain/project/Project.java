@@ -6,7 +6,6 @@ import com.getcode.dto.project.req.ProjectUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +28,9 @@ public class Project extends BaseTimeEntity {
     @Lob
     @Column(nullable = false)
     private String content;
+
+    @Column(nullable = false)
+    private String introduction;
 
     @Column(name ="github_url", nullable = true)
     private String githubUrl;
@@ -87,8 +89,10 @@ public class Project extends BaseTimeEntity {
     }
 
     public void updateProject(ProjectUpdateRequestDto requestDto){
+
         this.title = requestDto.getTitle();
         this.content = requestDto.getContent();
+        this.introduction = requestDto.getIntroduction();
         this.githubUrl = requestDto.getGithubUrl();
         this.techStacks = requestDto.getTechStackList();
         this.projectImages = requestDto.getImageUrls();

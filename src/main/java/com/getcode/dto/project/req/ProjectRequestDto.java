@@ -37,6 +37,11 @@ public class ProjectRequestDto {
     @Size(min = 10, message = "내용은 최소 10글자 이상이어야 합니다.")
     private String content;
 
+    @Schema(description = "한 줄 소개")
+    @NotBlank(message = "내용을 입력해주세요")
+    @Size(min = 10, message = "내용은 최소 10글자 이상이어야 합니다.")
+    private String introduction;
+
     @Schema(description = "깃헙주소", defaultValue = "https://github.com/GETCODE-Project")
     @Pattern(regexp = "^https:\\/\\/github\\.com\\/+[A-Za-z0-9-]+$", message = "GitHub URL 형식에 맞지 않습니다.")
     @NotBlank(message = "깃허브 주소를 입력해주세요")
@@ -68,6 +73,7 @@ public class ProjectRequestDto {
                 .member(member)
                 .title(title)
                 .content(content)
+                .introduction(introduction)
                 .githubUrl(githubUrl)
                 .likeCnt(likeCnt)
                 .wishCnt(wishCnt)

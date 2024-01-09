@@ -23,6 +23,8 @@ public class ProjectUpdateRequestDto {
 
     private String content;
 
+    private String introduction;
+
     private String githubUrl;
 
     private List<ProjectImage> imageUrls;
@@ -35,6 +37,7 @@ public class ProjectUpdateRequestDto {
         return new ProjectUpdateRequestDto(
                 project.getTitle(),
                 project.getContent(),
+                project.getIntroduction(),
                 project.getGithubUrl(),
                 project.getProjectImages(),
                 project.getTechStacks(),
