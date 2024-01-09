@@ -39,6 +39,7 @@ public class StudyRequestDto {
                 .recruitment(true)
                 .online(online)
                 .views(0)
+                .count(0)
                 .member(member)
                 .build();
     }

@@ -19,6 +19,7 @@ public class StudyInfoResponseDto {
     private boolean recruitment;
     private boolean online;
     private int views;
+    private int count;
     private MemberNicknameDto member;
     private List<StudyCommentResponseDto> comments;
 
@@ -30,6 +31,7 @@ public class StudyInfoResponseDto {
                 study.isRecruitment(),
                 study.isOnline(),
                 study.getViews(),
+                study.getCount(),
                 MemberNicknameDto.toDto(study.getMember()),
                 study.getComments().stream().map(StudyCommentResponseDto::toDto).collect(Collectors.toList())
         );

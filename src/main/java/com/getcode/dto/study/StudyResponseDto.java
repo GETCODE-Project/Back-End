@@ -16,6 +16,7 @@ public class StudyResponseDto {
     private boolean recruitment;
     private boolean online;
     private int views;
+    private int count;
 
     public static StudyResponseDto toDto(Study study) {
         return new StudyResponseDto(
@@ -24,7 +25,8 @@ public class StudyResponseDto {
                 study.getRegion(),
                 study.isRecruitment(),
                 study.isOnline(),
-                study.getViews()
+                study.getViews(),
+                study.getCount()
         );
     }
 
