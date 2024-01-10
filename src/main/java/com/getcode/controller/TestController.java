@@ -3,7 +3,6 @@ package com.getcode.controller;
 import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.member.Authority;
 import com.getcode.domain.member.Member;
-import com.getcode.domain.member.SocialType;
 import com.getcode.dto.member.SocialSignUpDto;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.repository.MemberRepository;

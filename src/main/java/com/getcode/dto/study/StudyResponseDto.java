@@ -1,6 +1,7 @@
 package com.getcode.dto.study;
 
 import com.getcode.domain.study.Study;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +18,8 @@ public class StudyResponseDto {
     private boolean online;
     private int views;
     private int count;
+    private String contact;
+    private String subject;
 
     public static StudyResponseDto toDto(Study study) {
         return new StudyResponseDto(
@@ -26,7 +29,9 @@ public class StudyResponseDto {
                 study.isRecruitment(),
                 study.isOnline(),
                 study.getViews(),
-                study.getCount()
+                study.getCount(),
+                study.getContact(),
+                study.getSubject()
         );
     }
 

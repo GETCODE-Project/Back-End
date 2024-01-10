@@ -7,6 +7,8 @@ import com.getcode.dto.study.StudyEditDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -53,6 +55,10 @@ public class Study extends BaseTimeEntity {
 
     @Column(nullable = false)
     private int views;
+
+    private String contact;
+
+    private String subject;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

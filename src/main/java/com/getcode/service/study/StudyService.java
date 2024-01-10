@@ -5,7 +5,6 @@ import static com.getcode.config.security.SecurityUtil.*;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.study.Study;
 import com.getcode.domain.study.StudyComment;
-import com.getcode.domain.study.StudyLike;
 import com.getcode.dto.study.StudyCommentRequestDto;
 import com.getcode.dto.study.StudyCommentResponseDto;
 import com.getcode.dto.study.StudyEditDto;
@@ -26,9 +25,11 @@ import com.getcode.repository.study.StudyRepository;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StudyService {
