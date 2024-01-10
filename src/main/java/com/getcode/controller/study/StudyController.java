@@ -116,4 +116,14 @@ public class StudyController {
         studyService.deleteStudy(id);
     }
 
+    @Operation(summary = "스터디 찜", description = "PathVariable 입력 후, 스터디 찜하기")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @ResponseStatus(value = HttpStatus.OK)
+    @PostMapping("/study-wish/{id}")
+    public void wishStudy(@PathVariable(name = "id") Long id) {
+        studyService.wishStudy(id);
+    }
+
 }

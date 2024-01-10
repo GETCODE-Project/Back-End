@@ -5,6 +5,8 @@ import static com.getcode.config.security.SecurityUtil.*;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.study.Study;
 import com.getcode.domain.study.StudyComment;
+import com.getcode.domain.study.StudyLike;
+import com.getcode.domain.study.WishStudy;
 import com.getcode.dto.study.StudyCommentRequestDto;
 import com.getcode.dto.study.StudyCommentResponseDto;
 import com.getcode.dto.study.StudyEditDto;
@@ -12,18 +14,22 @@ import com.getcode.dto.study.StudyInfoResponseDto;
 import com.getcode.dto.study.StudyLikeDto;
 import com.getcode.dto.study.StudyRequestDto;
 import com.getcode.dto.study.StudyResponseDto;
+import com.getcode.dto.study.StudyWishDto;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.study.DuplicateLikeException;
 import com.getcode.exception.study.MatchMemberException;
 import com.getcode.exception.study.NotFoundStudyException;
 import com.getcode.exception.study.NotLikeException;
+import com.getcode.exception.study.NotWishException;
 import com.getcode.repository.member.MemberRepository;
 import com.getcode.repository.study.StudyCommentRepository;
 import com.getcode.repository.study.StudyLikeRepository;
 import com.getcode.repository.study.StudyRepository;
 
+import com.getcode.repository.study.WishStudyRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,6 +43,7 @@ public class StudyService {
     private final MemberRepository memberRepository;
     private final StudyCommentRepository studyCommentRepository;
     private final StudyLikeRepository studyLikeRepository;
+    private final WishStudyRepository wishStudyRepository;
 
     @Transactional
     public StudyResponseDto createStudy(StudyRequestDto req) {
@@ -124,13 +131,42 @@ public class StudyService {
         }
 
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
-        if (studyLikeRepository.findByMemberIdAndStudyId(member.getId(), id) != null) {
-            study.decreaseCount();
-        } else {
-            study.increaseCount();
-            studyLikeRepository.save(StudyLikeDto.toEntity(member, study));
-        }
+
+        Optional<StudyLike> like = studyLikeRepository.findByMemberIdAndStudyId(member.getId(), id);
+
+        like.ifPresentOrElse(
+                liked -> {
+                    studyLikeRepository.delete(liked);
+                    study.decreaseCount();
+                },
+                () -> {
+                    study.increaseCount();
+                    studyLikeRepository.save(StudyLikeDto.toEntity(member, study));
+                }
+        );
+
 
         return StudyInfoResponseDto.toDto(studyRepository.save(study));
+    }
+
+    // 스터디 찜하기
+    @Transactional
+    public void wishStudy(Long id) {
+
+        Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
+        Study study = studyRepository.findById(id).orElseThrow(NotFoundStudyException::new);
+
+        if (study.getMember().getId() == member.getId()) {
+            throw new NotWishException();
+        }
+
+        Optional<WishStudy> wish = wishStudyRepository.findByMemberIdAndStudyId(member.getId(), id);
+
+        wish.ifPresentOrElse(
+                wishStudyRepository::delete,
+                () -> wishStudyRepository.save(StudyWishDto.toEntity(member, study))
+        );
+
+        System.out.println(member.getWishStudy().toString());
     }
 }

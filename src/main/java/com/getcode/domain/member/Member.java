@@ -2,6 +2,7 @@ package com.getcode.domain.member;
 
 import com.getcode.domain.common.BaseTimeEntity;
 import com.getcode.domain.study.Study;
+import com.getcode.domain.study.WishStudy;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -56,6 +57,11 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Study> study = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<WishStudy> wishStudy = new ArrayList<>();
+
+
 
     public void updateEmailVerified() {
         this.emailVerified = true;
