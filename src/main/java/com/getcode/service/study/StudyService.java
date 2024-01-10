@@ -17,7 +17,7 @@ import com.getcode.exception.study.DuplicateLikeException;
 import com.getcode.exception.study.MatchMemberException;
 import com.getcode.exception.study.NotFoundStudyException;
 import com.getcode.exception.study.NotLikeException;
-import com.getcode.repository.MemberRepository;
+import com.getcode.repository.member.MemberRepository;
 import com.getcode.repository.study.StudyCommentRepository;
 import com.getcode.repository.study.StudyLikeRepository;
 import com.getcode.repository.study.StudyRepository;
@@ -124,13 +124,13 @@ public class StudyService {
         }
 
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
-
         if (studyLikeRepository.findByMemberIdAndStudyId(member.getId(), id) != null) {
-            throw new DuplicateLikeException();
+            study.decreaseCount();
+        } else {
+            study.increaseCount();
+            studyLikeRepository.save(StudyLikeDto.toEntity(member, study));
         }
 
-        study.increaseCount();
-        studyLikeRepository.save(StudyLikeDto.toEntity(member, study));
         return StudyInfoResponseDto.toDto(studyRepository.save(study));
     }
 }

@@ -81,6 +81,10 @@ public class Study extends BaseTimeEntity {
         this.count +=1;
     }
 
+    public void decreaseCount() {
+        this.count -=1;
+    }
+
     public void editStudy(StudyEditDto req) {
         this.title = req.getTitle();
         this.content = req.getContent();

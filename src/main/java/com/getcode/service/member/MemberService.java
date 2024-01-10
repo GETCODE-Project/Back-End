@@ -17,7 +17,7 @@ import com.getcode.exception.member.DuplicateEmailException;
 import com.getcode.exception.member.DuplicateNicknameException;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.member.NotVerifiedException;
-import com.getcode.repository.MemberRepository;
+import com.getcode.repository.member.MemberRepository;
 import com.getcode.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
 import java.time.Duration;

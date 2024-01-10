@@ -5,7 +5,7 @@ import com.getcode.domain.member.Authority;
 import com.getcode.domain.member.Member;
 import com.getcode.dto.member.SocialSignUpDto;
 import com.getcode.exception.member.NotFoundMemberException;
-import com.getcode.repository.MemberRepository;
+import com.getcode.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;

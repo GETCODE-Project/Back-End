@@ -6,7 +6,7 @@ import com.getcode.config.redis.RedisService;
 import com.getcode.domain.member.Authority;
 import com.getcode.domain.member.Member;
 import com.getcode.exception.member.NotFoundMemberException;
-import com.getcode.repository.MemberRepository;
+import com.getcode.repository.member.MemberRepository;
 import com.getcode.repository.RefreshTokenRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -9,7 +9,7 @@ import com.getcode.config.jwt.JwtAuthenticationFilter;
 import com.getcode.config.jwt.JwtFilter;
 import com.getcode.config.jwt.TokenProvider;
 import com.getcode.config.redis.RedisService;
-import com.getcode.repository.MemberRepository;
+import com.getcode.repository.member.MemberRepository;
 import java.util.Arrays;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
