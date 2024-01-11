@@ -53,11 +53,11 @@ public class StudyService {
     }
 
     // 특정 게시글 조회
-    @Transactional(readOnly = true)
+    @Transactional
     public StudyInfoResponseDto findStudy(Long id) {
         Study study = studyRepository.findById(id).orElseThrow(NotFoundStudyException::new);
         study.increaseViews();
-        return StudyInfoResponseDto.toDto(studyRepository.save(study));
+        return StudyInfoResponseDto.toDto(study);
     }
 
     // 모든 게시물 조회
@@ -146,7 +146,7 @@ public class StudyService {
         );
 
 
-        return StudyInfoResponseDto.toDto(studyRepository.save(study));
+        return StudyInfoResponseDto.toDto(study);
     }
 
     // 스터디 찜하기
@@ -167,6 +167,5 @@ public class StudyService {
                 () -> wishStudyRepository.save(StudyWishDto.toEntity(member, study))
         );
 
-        System.out.println(member.getWishStudy().toString());
     }
 }
