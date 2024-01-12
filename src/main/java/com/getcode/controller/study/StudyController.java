@@ -85,6 +85,15 @@ public class StudyController {
         return ResponseEntity.status(HttpStatus.OK).body(studyService.addComment(req, id));
     }
 
+    @Operation(summary = "스터디 좋아요", description = "좋아요를 하면 전체 스터디 정보 리턴")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @PostMapping("/study-like/{id}")
+    public ResponseEntity<StudyInfoResponseDto> addComment(@PathVariable(name = "id") Long id){
+        return ResponseEntity.status(HttpStatus.OK).body(studyService.likeStudy(id));
+    }
+
 
 
     @Operation(summary = "스터디 모집글 수정", description = "PathVariable, 스터디 변경내용을 입력받아 스터디 수정")
@@ -105,6 +114,16 @@ public class StudyController {
     @DeleteMapping("/study/{id}")
     public void deleteStudy(@PathVariable(name = "id") Long id) {
         studyService.deleteStudy(id);
+    }
+
+    @Operation(summary = "스터디 찜", description = "PathVariable 입력 후, 스터디 찜하기")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @ResponseStatus(value = HttpStatus.OK)
+    @PostMapping("/study-wish/{id}")
+    public void wishStudy(@PathVariable(name = "id") Long id) {
+        studyService.wishStudy(id);
     }
 
 }

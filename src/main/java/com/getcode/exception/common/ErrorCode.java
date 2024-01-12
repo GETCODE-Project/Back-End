@@ -20,6 +20,7 @@ public enum ErrorCode {
     NOT_WISH_EXCEPTION(409, "자신이 작성한 게시물에 찜 불가", BAD_REQUEST),
     NOT_FOUND_PROJECT_EXCEPTION(404, "프로젝트가 존재하지 않습니다", NOT_FOUND);
 
+
     private final int status;
     private final String message;
     private final HttpStatus  httpStatus;

@@ -4,8 +4,11 @@ import com.getcode.domain.common.BaseTimeEntity;
 import com.getcode.domain.member.Member;
 import com.getcode.dto.study.StudyEditDto;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -53,15 +56,33 @@ public class Study extends BaseTimeEntity {
     @Column(nullable = false)
     private int views;
 
+    private String contact;
+
+    private String subject;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "study")
+    @OneToMany(mappedBy = "study", cascade = CascadeType.ALL)
     private List<StudyComment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "study", cascade = CascadeType.ALL)
+    private List<StudyLike> likes = new ArrayList<>();
+
+    @Column(nullable = false)
+    private int count;
 
     public void increaseViews() {
         this.views +=1;
+    }
+
+    public void increaseCount() {
+        this.count +=1;
+    }
+
+    public void decreaseCount() {
+        this.count -=1;
     }
 
     public void editStudy(StudyEditDto req) {

@@ -2,6 +2,7 @@ package com.getcode.dto.study;
 
 import com.getcode.domain.member.Member;
 import com.getcode.domain.study.Study;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
@@ -31,6 +32,12 @@ public class StudyRequestDto {
     @Schema(description = "온라인/오프라인", defaultValue = "true")
     private boolean online;
 
+    @Schema(description = "연락방법", defaultValue = "kyun9151@naver.com")
+    private String contact;
+
+    @Schema(description = "스터디 주제", defaultValue = "코딩 테스트")
+    private String subject;
+
     public Study toEntity(Member member) {
         return Study.builder()
                 .title(title)
@@ -39,6 +46,9 @@ public class StudyRequestDto {
                 .recruitment(true)
                 .online(online)
                 .views(0)
+                .count(0)
+                .contact(contact)
+                .subject(subject)
                 .member(member)
                 .build();
     }

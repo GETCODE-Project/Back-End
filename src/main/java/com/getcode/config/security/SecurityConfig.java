@@ -9,7 +9,7 @@ import com.getcode.config.jwt.JwtAuthenticationFilter;
 import com.getcode.config.jwt.JwtFilter;
 import com.getcode.config.jwt.TokenProvider;
 import com.getcode.config.redis.RedisService;
-import com.getcode.repository.MemberRepository;
+import com.getcode.repository.member.MemberRepository;
 import java.util.Arrays;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -56,8 +57,8 @@ public class SecurityConfig {
                 .httpBasic(h -> h.disable())
 //                .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(o -> o.userInfoEndpoint(u->u.userService(customOAuth2UserService))
-                .successHandler(oAuth2LoginSuccessHandler).failureHandler(oAuth2LoginFailureHandler));
-//                .apply(new CustomFilterConfigurer());
+                .successHandler(oAuth2LoginSuccessHandler).failureHandler(oAuth2LoginFailureHandler))
+                .with(new CustomFilterConfigurer(), Customizer.withDefaults());
         return http.build();
     }
 
