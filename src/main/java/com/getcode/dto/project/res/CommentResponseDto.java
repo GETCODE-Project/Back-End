@@ -1,7 +1,6 @@
 package com.getcode.dto.project.res;
 
 import com.getcode.domain.project.ProjectComment;
-import com.getcode.dto.member.MemberNicknameDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
