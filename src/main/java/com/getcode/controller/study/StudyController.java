@@ -37,7 +37,8 @@ public class StudyController {
     private final StudyService studyService;
 
     @Operation(summary = "스터디 모집글 작성",
-            description = "제목: 2자 이상 / 내용: 2자 이상 / 지역: 필수 / 온라인 여부: 필수" )
+            description = "제목: 2자 이상 / 내용: 2자 이상 / 지역: 필수 / 온라인 여부: 필수 / 주제: 리스트 형식"
+                    + "연락 방법: 작성, ")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "CREATED")
     })
@@ -66,7 +67,7 @@ public class StudyController {
     }
 
 
-    @Operation(summary = "로그인한 사용자가 작성한 스터디 모집글 전체 조회", description = "스터디 목록 제목만 반환")
+    @Operation(summary = "로그인한 사용자가 작성한 스터디 모집글 전체 조회", description = "특정 사용자가 작성한 게시물 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK")
     })
