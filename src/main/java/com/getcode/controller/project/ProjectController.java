@@ -107,6 +107,7 @@ public class ProjectController {
 
 
 
+    @Operation(summary = "프로젝트 수정 api")
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id,
                                            @RequestPart ProjectUpdateRequestDto requestDto,

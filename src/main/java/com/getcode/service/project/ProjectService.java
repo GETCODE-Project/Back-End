@@ -171,9 +171,6 @@ public class ProjectService {
 
                 }
 
-
-
-
                 //확장성을 고려하여 List형태로 파일 저장
                 List<S3FileDto> files = s3Service.uploadFiles(fileType, multipartFiles);
                 //파일 url리스트로 변환
@@ -181,12 +178,21 @@ public class ProjectService {
                         .map(S3FileDto::getUploadFileUrl)
                         .map(url -> ProjectImage.builder().imageUrl(url).build())
                         .collect(Collectors.toList());
-
                 requestDto.setImageUrls(fileUrls);
+
+/*
+
 
                 List<ProjectImage> projectImageUrls = requestDto.getImageUrls();
                 List<ProjectTech> techStacks = requestDto.getTechStackList();
                 List<ProjectSubject> projectSubjects = requestDto.getProjectSubjects();
+
+
+
+                project.getProjectImages().clear();
+                project.getProjectSubjects().clear();
+                project.getTechStacks().clear();
+
 
                 for(ProjectImage projectImage : projectImageUrls){
                     project.projectImageAdd(projectImage.getImage(projectImage.getImageUrl(), project));
@@ -197,14 +203,9 @@ public class ProjectService {
                 for(ProjectTech projectTech : techStacks){
                     project.stackAdd(projectTech.getTechStack(projectTech.getTechStack(), project));
                 }
-/*
-                    Iterator<ProjectImage> imageIterator = projectImageUrls.iterator();
-                    while (imageIterator.hasNext()) {
-                        ProjectImage projectImage = imageIterator.next();
-                        project.projectImageAdd(projectImage.getImage(projectImage.getImageUrl(), project));
-                    }
 */
             }
+
             project.updateProject(requestDto);
 
             projectRepository.save(project);

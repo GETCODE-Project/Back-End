@@ -34,6 +34,12 @@ public class ProjectSubject {
         this.subject = Subject.fromString(subject);
     }
 
+    public ProjectSubject(String subject, Project project){
+        this.subject = Subject.fromString(subject);
+        this.project = project;
+    }
+
+
     public ProjectSubject getSubject(Subject subject, Project project){
         return ProjectSubject.builder()
                 .subject(subject)

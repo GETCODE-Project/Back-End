@@ -29,6 +29,10 @@ public class ProjectImage {
                 .build();
     }
 
+    public ProjectImage(String imageUrl, Project project) {
+        this.imageUrl = imageUrl;
+        this.project = project;
+    }
 
 
 }

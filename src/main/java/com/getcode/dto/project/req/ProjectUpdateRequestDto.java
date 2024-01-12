@@ -31,10 +31,11 @@ public class ProjectUpdateRequestDto {
 
     private List<ProjectImage> imageUrls;
 
-    private List<ProjectTech> techStackList;
+    private List<String> techStackList;
 
-    private List<ProjectSubject> projectSubjects;
+    private List<String> projectSubjects;
 
+    /*
     public static ProjectUpdateRequestDto toDto(Project project){
         return new ProjectUpdateRequestDto(
                 project.getTitle(),
@@ -46,7 +47,7 @@ public class ProjectUpdateRequestDto {
                 project.getProjectSubjects()
         );
     }
-
+*/
 
 
 }
