@@ -2,6 +2,7 @@ package com.getcode.controller.project;
 
 import com.getcode.config.s3.S3Service;
 import com.getcode.config.security.SecurityUtil;
+import com.getcode.domain.project.Project;
 import com.getcode.domain.project.ProjectImage;
 import com.getcode.dto.project.req.CommentRequestDto;
 import com.getcode.dto.project.req.CommentUpdateRequestDto;
@@ -19,12 +20,11 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -105,19 +105,21 @@ public class ProjectController {
             return ResponseEntity.ok().body("삭제가 완료되었습니다.");
     }
 
-/*
-    @Operation(summary = "프로젝트 수정 api")
+
+
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id,
-                                           @RequestBody ProjectUpdateRequestDto requestDto
+                                           @RequestPart ProjectUpdateRequestDto requestDto,
+                                           @RequestPart(name = "fileType", required = false) String fileType,
+                                           @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles
     ){
 
-        String memberId = SecurityUtil.getCurrentMemberId();
+        String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
-        projectService.updateProject(id, requestDto,memberId);
+        projectService.updateProject(id, requestDto,memberEmail, fileType, multipartFiles);
         return ResponseEntity.ok().body("수정완료");
     }
-*/
+
 
     @Operation(summary = "프로젝트 좋아요 api")
     @PostMapping("/like/{id}")
@@ -165,11 +167,11 @@ public class ProjectController {
 
     }
 
-/*
+
     @Operation(summary = "전체 프로젝트 조회 api")
     @GetMapping("/all")
     ResponseEntity<?> getProjectList(@Parameter(description = "정렬 기준")
-                                     @Pattern(regexp = "latestOrder|pastOrder|likeCnt|", message = "sort 값은 latestOrder, pastOrder, likeCnt,  중 하나여야 합니다")
+                                     @Pattern(regexp = "createDate|pastOrder|likeCnt|", message = "sort 값은 latestOrder, pastOrder, likeCnt,  중 하나여야 합니다")
                                      @RequestParam(defaultValue = "latestOrder") String sort,
                                         @Parameter(description = "페이지 수")
                                         @Min(value = 0, message = "page값은 0이상이어야 합니다")
@@ -178,18 +180,20 @@ public class ProjectController {
                                         @Positive(message = "size값은 1이상이어야 합니다")
                                         @RequestParam(defaultValue = "10") int size,
                                         @Parameter(description = "검색어") @RequestParam(defaultValue = "") String keyword,
-                                        @Parameter(description = "주제") @RequestParam(defaultValue = "") String subject,
-                                        @Parameter(description = "기술스택") @RequestParam(defaultValue = "") String techStack
+                                        @Parameter(description = "검색 조건") @RequestParam(defaultValue = "") List<String> subject,
+                                        @Parameter(description = "기술스택") @RequestParam(defaultValue = "") List<String> techStack,
+                                        @Parameter(description = "년도") @RequestParam(defaultValue = "") String year
                                     )
     {
 
 
 
+        Slice<Project> projectPage = projectService.getProjectList(size, page, sort, keyword, subject, techStack, year);
+
+        return ResponseEntity.ok().body(projectPage);
+  }
 
 
-    }
-
-*/
 
 
 

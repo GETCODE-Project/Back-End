@@ -94,9 +94,9 @@ public class Project extends BaseTimeEntity {
         this.content = requestDto.getContent();
         this.introduction = requestDto.getIntroduction();
         this.githubUrl = requestDto.getGithubUrl();
-        this.techStacks = requestDto.getTechStackList();
-        this.projectImages = requestDto.getImageUrls();
-        this.projectSubjects = requestDto.getProjectSubjects();
+
+
+
     }
 
 

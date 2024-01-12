@@ -3,6 +3,7 @@ package com.getcode.service.project;
 import com.getcode.config.s3.S3Service;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.project.*;
+import com.getcode.dto.project.ProjectSpecification;
 import com.getcode.dto.project.req.CommentRequestDto;
 import com.getcode.dto.project.req.CommentUpdateRequestDto;
 import com.getcode.dto.project.req.ProjectRequestDto;
@@ -14,6 +15,11 @@ import com.getcode.exception.project.NotFoundProjectException;
 import com.getcode.repository.MemberRepository;
 import com.getcode.repository.project.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -139,19 +145,77 @@ public class ProjectService {
     }
 
 
-/*
-    public void updateProject(Long id, ProjectUpdateRequestDto requestDto, String memberId) {
+    //프로젝트 수정 진행중ing
+    @Transactional
+    public void updateProject(Long id, ProjectUpdateRequestDto requestDto, String memberEmail, String fileType, List<MultipartFile> multipartFiles) {
 
         Project project = projectRepository.findById(id).orElseThrow();
 
-        if(project.getMember() != null && project.getMember().getId().equals(Long.parseLong(memberId))){
+        if(project.getMember() != null && project.getMember().getEmail().equals(memberEmail)){
 
+            if(fileType != null && !multipartFiles.isEmpty()) {
+                List<ProjectImage> projectImages = projectImageRepository.findAllByProjectId(id);
+                List<String> imageUrls = new ArrayList<>();
+
+                for (ProjectImage projectImage : projectImages) {
+                    String url = projectImage.getImageUrl();
+                    imageUrls.add(url);
+                }
+
+                //변환한 url S3에서 삭제
+                for (String imageUrl : imageUrls) {
+
+                    String[] files = extractPathFromImageUrl(imageUrl);
+
+                    String result = s3Service.deleteFile(files[0], files[1]);
+
+                }
+
+
+
+
+                //확장성을 고려하여 List형태로 파일 저장
+                List<S3FileDto> files = s3Service.uploadFiles(fileType, multipartFiles);
+                //파일 url리스트로 변환
+                List<ProjectImage> fileUrls = files.stream()
+                        .map(S3FileDto::getUploadFileUrl)
+                        .map(url -> ProjectImage.builder().imageUrl(url).build())
+                        .collect(Collectors.toList());
+
+                requestDto.setImageUrls(fileUrls);
+
+                List<ProjectImage> projectImageUrls = requestDto.getImageUrls();
+                List<ProjectTech> techStacks = requestDto.getTechStackList();
+                List<ProjectSubject> projectSubjects = requestDto.getProjectSubjects();
+
+                for(ProjectImage projectImage : projectImageUrls){
+                    project.projectImageAdd(projectImage.getImage(projectImage.getImageUrl(), project));
+                }
+                for(ProjectSubject projectSubject : projectSubjects){
+                    project.projectSubjectAdd(projectSubject.getSubject(projectSubject.getSubject(), project));
+                }
+                for(ProjectTech projectTech : techStacks){
+                    project.stackAdd(projectTech.getTechStack(projectTech.getTechStack(), project));
+                }
+/*
+                    Iterator<ProjectImage> imageIterator = projectImageUrls.iterator();
+                    while (imageIterator.hasNext()) {
+                        ProjectImage projectImage = imageIterator.next();
+                        project.projectImageAdd(projectImage.getImage(projectImage.getImageUrl(), project));
+                    }
+*/
+            }
             project.updateProject(requestDto);
+
+            projectRepository.save(project);
+
+        } else {
+            throw new NotFoundMemberException();
         }
-        projectRepository.save(project);
 
     }
-*/
+
+
 
     //프로젝트 좋아요
     @Transactional
@@ -267,14 +331,64 @@ public class ProjectService {
 
     }
 
+    //전체 프로젝트 조회(조건 검색) 조건: 주제, 기술스택, 년도 | 정렬 조건: 최신순, 과거순, 좋아요순
+    public Slice<Project> getProjectList(int size, int page, String sort, String keyword, List<String> subject, List<String> techStack, String year) {
 
-    /*
-    //파일 이미지 업로드
-    public List<String> insertImageInS3(String fileType, List<MultipartFile> multipartFiles) {
+        Sort sortCriteria;
+
+        if(sort.equals("pastOrder")){
+            sortCriteria = Sort.by(Sort.Direction.ASC, "createDate");
+        } else if (sort.equals("likeCnt")) {
+            sortCriteria = Sort.by(Sort.Direction.DESC, "likeCnt");
+        } else {
+            sortCriteria = Sort.by(Sort.Direction.DESC, "createDate");
+        }
+
+        Pageable pageable = PageRequest.of(page, size, sortCriteria);
+
+        Slice<Project> projectPage = null;
+
+        List<ProjectTech> projectTeches = null;
+        if(techStack != null && !techStack.isEmpty()){
+            projectTeches = techStack.stream()
+                                    .map(ProjectTech::new)
+                                    .collect(Collectors.toList());
+        }
+
+        List<ProjectSubject> projectSubject = null;
+        if(subject != null && !subject.isEmpty()){
+            projectSubject = subject.stream()
+                                    .map(ProjectSubject::new)
+                                    .collect(Collectors.toList());
+        }
+
+
+        List<Specification<Project>> specifications = new ArrayList<>();
+
+        if (!techStack.isEmpty() && techStack != null) {
+            specifications.add(ProjectSpecification.techStackLike(projectTeches));
+        }
+
+        if (!subject.isEmpty() && subject != null) {
+            specifications.add(ProjectSpecification.subjectLike(projectSubject));
+        }
+
+        if (year != null) {
+            specifications.add(ProjectSpecification.yearBetween(year));
+        }
+
+        if (keyword != null && !keyword.equals(" ")) {
+            specifications.add(ProjectSpecification.keywordLikeTitle(keyword));
+            specifications.add(ProjectSpecification.keywordLikeContent(keyword));
+        }
+
+        Specification<Project> combinedSpec = ProjectSpecification.combineSpecifications(specifications);
+
+        return projectPage = projectRepository.findAll(combinedSpec, pageable);
 
 
     }
 
-    */
+
 
 }
