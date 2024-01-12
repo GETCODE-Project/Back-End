@@ -59,7 +59,6 @@ public class SecurityConfig {
                 .oauth2Login(o -> o.userInfoEndpoint(u->u.userService(customOAuth2UserService))
                 .successHandler(oAuth2LoginSuccessHandler).failureHandler(oAuth2LoginFailureHandler))
                 .with(new CustomFilterConfigurer(), Customizer.withDefaults());
-//                .apply(new CustomFilterConfigurer());
         return http.build();
     }
 
