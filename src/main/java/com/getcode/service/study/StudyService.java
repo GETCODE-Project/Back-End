@@ -91,7 +91,7 @@ public class StudyService {
         }
 
         study.editStudy(req);
-
+        // 수정 요망
         return StudyResponseDto.toDto(studyRepository.save(study));
     }
 
@@ -168,4 +168,14 @@ public class StudyService {
         );
 
     }
+
+    // 스터디 검색
+    @Transactional(readOnly = true)
+    public List<StudyResponseDto> searchStudy(String keyword) {
+        List<Study> studies = studyRepository.findByTitleOrContentContaining(keyword);
+        List<StudyResponseDto> res = new ArrayList<>();
+        studies.forEach(study -> res.add(StudyResponseDto.toDto(study)));
+        return res;
+    }
+
 }

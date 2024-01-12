@@ -39,14 +39,12 @@ class StudyLikeRepositoryTest {
     public void findByMemberIdAndStudyId() {
         //given
         Member member = Member.builder()
-                .id(1000L)
                 .email("kyun11@naver.com")
                 .nickname("김명균")
                 .emailVerified(true)
                 .build();
 
         Study study = Study.builder()
-                .id(3000L)
                 .title("Java")
                 .content("Spring")
                 .region("New York")
@@ -57,7 +55,6 @@ class StudyLikeRepositoryTest {
                 .build();
 
         StudyLike studyLike = StudyLike.builder()
-                .id(300L)
                 .member(member)
                 .study(study)
                 .build();
