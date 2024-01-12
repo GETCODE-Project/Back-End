@@ -17,7 +17,9 @@ public enum ErrorCode {
     MATCH_MEMBER_EXCEPTION(401, "해당 접근권한이 없습니다", UNAUTHORIZED),
     DUPLICATE_LIKE_EXCEPTION(409, "좋아요는 1번만 가능합니다.", BAD_REQUEST),
     NOT_LIKE_EXCEPTION(409, "자신이 작성한 게시물에 좋아요 불가", BAD_REQUEST),
-    NOT_WISH_EXCEPTION(409, "자신이 작성한 게시물에 찜 불가", BAD_REQUEST);
+    NOT_WISH_EXCEPTION(409, "자신이 작성한 게시물에 찜 불가", BAD_REQUEST),
+    NOT_FOUND_PROJECT_EXCEPTION(404, "프로젝트가 존재하지 않습니다", NOT_FOUND);
+
 
     private final int status;
     private final String message;
