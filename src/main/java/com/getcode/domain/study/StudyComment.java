@@ -1,5 +1,6 @@
 package com.getcode.domain.study;
 
+import com.getcode.domain.common.BaseTimeEntity;
 import com.getcode.domain.member.Member;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -11,13 +12,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class StudyComment {
+@Builder
+@AllArgsConstructor
+public class StudyComment extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

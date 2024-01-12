@@ -1,7 +1,9 @@
 package com.getcode.domain.study;
 
+import com.getcode.domain.common.BaseTimeEntity;
 import com.getcode.domain.member.Member;
-import jakarta.persistence.CascadeType;
+import com.getcode.dto.study.StudyEditDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,14 +13,22 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Study {
+@Builder
+@AllArgsConstructor
+public class Study extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "study_id")
@@ -43,7 +53,22 @@ public class Study {
     @Column(nullable = false)
     private int views;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @OneToMany(mappedBy = "study")
+    private List<StudyComment> comments = new ArrayList<>();
+
+    public void increaseViews() {
+        this.views +=1;
+    }
+
+    public void editStudy(StudyEditDto req) {
+        this.title = req.getTitle();
+        this.content = req.getContent();
+        this.region = req.getRegion();
+        this.online = req.isOnline();
+        this.recruitment = req.isRecruitment();
+    }
 }
