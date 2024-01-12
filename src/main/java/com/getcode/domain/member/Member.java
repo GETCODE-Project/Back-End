@@ -1,7 +1,9 @@
 package com.getcode.domain.member;
 
 import com.getcode.domain.common.BaseTimeEntity;
-
+import com.getcode.domain.study.Study;
+import com.getcode.domain.study.WishStudy;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,6 +12,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,6 +54,14 @@ public class Member extends BaseTimeEntity {
     private boolean emailVerified;
 
     private String imageUrl;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Study> study = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<WishStudy> wishStudy = new ArrayList<>();
+
+
 
     public void updateEmailVerified() {
         this.emailVerified = true;
