@@ -58,8 +58,6 @@ public class Study extends BaseTimeEntity {
 
     private String contact;
 
-    private String subject;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -69,6 +67,9 @@ public class Study extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "study", cascade = CascadeType.ALL)
     private List<StudyLike> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "study", cascade = CascadeType.ALL)
+    private List<StudySubject> subjects = new ArrayList<>();
 
     @Column(nullable = false)
     private int count;

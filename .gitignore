@@ -21,6 +21,7 @@ bin/
 application.properties
 http
 .idea
+http
 *.iws
 *.iml
 *.ipr
