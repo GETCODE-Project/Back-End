@@ -20,6 +20,7 @@ bin/
 ### IntelliJ IDEA ###
 application.properties
 .idea
+http
 *.iws
 *.iml
 *.ipr

@@ -1,13 +1,13 @@
 package com.getcode.controller.study;
 
 
-import com.getcode.domain.study.Study;
+
+import com.getcode.dto.study.CreatedStudyResponseDto;
 import com.getcode.dto.study.StudyCommentRequestDto;
 import com.getcode.dto.study.StudyCommentResponseDto;
 import com.getcode.dto.study.StudyEditDto;
 import com.getcode.dto.study.StudyInfoResponseDto;
 import com.getcode.dto.study.StudyRequestDto;
-import com.getcode.dto.study.StudyResponseDto;
 import com.getcode.service.study.StudyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,8 +42,8 @@ public class StudyController {
             @ApiResponse(responseCode = "201", description = "CREATED")
     })
     @PostMapping("/study")
-    public ResponseEntity<StudyResponseDto> signup(@Valid @RequestBody StudyRequestDto req) {
-        StudyResponseDto study = studyService.createStudy(req);
+    public ResponseEntity<CreatedStudyResponseDto> createStudy(@Valid @RequestBody StudyRequestDto req) {
+        CreatedStudyResponseDto study = studyService.createStudy(req);
         return ResponseEntity.status(HttpStatus.CREATED).body(study);
     }
 
@@ -61,7 +61,7 @@ public class StudyController {
             @ApiResponse(responseCode = "200", description = "OK")
     })
     @GetMapping("/all-studies")
-    public ResponseEntity<List<StudyResponseDto>> findAllStudy() {
+    public ResponseEntity<List<StudyInfoResponseDto>> findAllStudy() {
         return ResponseEntity.status(HttpStatus.OK).body(studyService.findAllStudy());
     }
 
@@ -71,7 +71,7 @@ public class StudyController {
             @ApiResponse(responseCode = "200", description = "OK")
     })
     @GetMapping("/studies")
-    public ResponseEntity<List<StudyResponseDto>> findAllStudyByMember() {
+    public ResponseEntity<List<StudyInfoResponseDto>> findAllStudyByMember() {
         return ResponseEntity.status(HttpStatus.OK).body(studyService.findAllStudyByMember());
     }
 
@@ -101,7 +101,7 @@ public class StudyController {
             @ApiResponse(responseCode = "200", description = "OK")
     })
     @PutMapping("/study/{id}")
-    public ResponseEntity<StudyResponseDto> editStudy(@PathVariable(name = "id") Long id,
+    public ResponseEntity<StudyInfoResponseDto> editStudy(@PathVariable(name = "id") Long id,
                                                       @RequestBody StudyEditDto req) {
         return ResponseEntity.status(HttpStatus.OK).body(studyService.editStudy(id, req));
     }

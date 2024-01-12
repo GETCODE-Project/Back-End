@@ -6,17 +6,18 @@ import com.getcode.domain.member.Member;
 import com.getcode.domain.study.Study;
 import com.getcode.domain.study.StudyComment;
 import com.getcode.domain.study.StudyLike;
+import com.getcode.domain.study.StudySubject;
 import com.getcode.domain.study.WishStudy;
+import com.getcode.dto.study.CreatedStudyResponseDto;
 import com.getcode.dto.study.StudyCommentRequestDto;
 import com.getcode.dto.study.StudyCommentResponseDto;
 import com.getcode.dto.study.StudyEditDto;
 import com.getcode.dto.study.StudyInfoResponseDto;
 import com.getcode.dto.study.StudyLikeDto;
 import com.getcode.dto.study.StudyRequestDto;
-import com.getcode.dto.study.StudyResponseDto;
+import com.getcode.dto.study.StudySubjectDto;
 import com.getcode.dto.study.StudyWishDto;
 import com.getcode.exception.member.NotFoundMemberException;
-import com.getcode.exception.study.DuplicateLikeException;
 import com.getcode.exception.study.MatchMemberException;
 import com.getcode.exception.study.NotFoundStudyException;
 import com.getcode.exception.study.NotLikeException;
@@ -26,10 +27,12 @@ import com.getcode.repository.study.StudyCommentRepository;
 import com.getcode.repository.study.StudyLikeRepository;
 import com.getcode.repository.study.StudyRepository;
 
+import com.getcode.repository.study.StudySubjectRepository;
 import com.getcode.repository.study.WishStudyRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -47,12 +50,21 @@ public class StudyService {
     private final StudyCommentRepository studyCommentRepository;
     private final StudyLikeRepository studyLikeRepository;
     private final WishStudyRepository wishStudyRepository;
+    private final StudySubjectRepository studySubjectRepository;
 
     @Transactional
-    public StudyResponseDto createStudy(StudyRequestDto req) {
+    public CreatedStudyResponseDto createStudy(StudyRequestDto req) {
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
+
+        List<String> subjects = req.getSubjects();
+
         Study study = studyRepository.save(req.toEntity(member));
-        return StudyResponseDto.toDto(study);
+
+        for (String subject : subjects) {
+            studySubjectRepository.save(StudySubjectDto.toEntity(study, subject));
+        }
+
+        return CreatedStudyResponseDto.toDto(study, member, subjects);
     }
 
     // 특정 게시글 조회
@@ -65,26 +77,33 @@ public class StudyService {
 
     // 모든 게시물 조회
     @Transactional(readOnly = true)
-    public List<StudyResponseDto> findAllStudy() {
+    public List<StudyInfoResponseDto> findAllStudy() {
+
         List<Study> studies = studyRepository.findAllByOrderByModifiedDateDesc().orElseThrow(NotFoundStudyException::new);
-        List<StudyResponseDto> res = new ArrayList<>();
-        studies.forEach(study -> res.add(StudyResponseDto.toDto(study)));
+
+        List<StudyInfoResponseDto> res = new ArrayList<>();
+
+        for (Study study : studies) {
+            Member member = memberRepository.findById(study.getMember().getId()).orElseThrow(NotFoundMemberException::new);
+            res.add(StudyInfoResponseDto.toDto(study));
+        }
+
         return res;
     }
 
     // 특정 사용자가 작성한 게시물 조회
     @Transactional(readOnly = true)
-    public List<StudyResponseDto> findAllStudyByMember() {
+    public List<StudyInfoResponseDto> findAllStudyByMember() {
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
         List<Study> studies = member.getStudy();
-        List<StudyResponseDto> res = new ArrayList<>();
-        studies.forEach(study -> res.add(StudyResponseDto.toDto(study)));
+        List<StudyInfoResponseDto> res = new ArrayList<>();
+        studies.forEach(study -> res.add(StudyInfoResponseDto.toDto(study)));
         return res;
     }
 
     // 스터디 수정
     @Transactional
-    public StudyResponseDto editStudy(Long id, StudyEditDto req) {
+    public StudyInfoResponseDto editStudy(Long id, StudyEditDto req) {
         Study study = studyRepository.findById(id).orElseThrow(NotFoundStudyException::new);
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
         Member findMember = study.getMember();
@@ -95,7 +114,7 @@ public class StudyService {
 
         study.editStudy(req);
         // 수정 요망
-        return StudyResponseDto.toDto(studyRepository.save(study));
+        return StudyInfoResponseDto.toDto(studyRepository.save(study));
     }
 
     // 스터디 삭제
@@ -178,14 +197,14 @@ public class StudyService {
      * 인기순: count
      * */
     // 스터디 검색
-    @Transactional(readOnly = true)
-    public List<StudyResponseDto> searchStudy(String keyword, int pageNumber, String criteria) {
-        Pageable pageable = PageRequest.of(pageNumber-1, 10,
-                Sort.by(Sort.Direction.DESC, criteria));
-        List<Study> studies = studyRepository.findByTitleOrContentContaining(keyword, pageable);
-        List<StudyResponseDto> res = new ArrayList<>();
-        studies.forEach(study -> res.add(StudyResponseDto.toDto(study)));
-        return res;
-    }
+//    @Transactional(readOnly = true)
+//    public List<StudyResponseDto> searchStudy(String keyword, int pageNumber, String criteria) {
+//        Pageable pageable = PageRequest.of(pageNumber-1, 10,
+//                Sort.by(Sort.Direction.DESC, criteria));
+//        List<Study> studies = studyRepository.findByTitleOrContentContaining(keyword, pageable);
+//        List<StudyResponseDto> res = new ArrayList<>();
+//        studies.forEach(study -> res.add(StudyResponseDto.toDto(study)));
+//        return res;
+//    }
 
 }

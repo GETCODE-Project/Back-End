@@ -3,8 +3,10 @@ package com.getcode.dto.study;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.study.Study;
 
+import com.getcode.domain.study.StudySubject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,8 +37,8 @@ public class StudyRequestDto {
     @Schema(description = "연락방법", defaultValue = "kyun9151@naver.com")
     private String contact;
 
-    @Schema(description = "스터디 주제", defaultValue = "코딩 테스트")
-    private String subject;
+    @Schema(description = "스터디 주제", defaultValue = "코딩 테스트, 자격증")
+    private List<String> subjects;
 
     public Study toEntity(Member member) {
         return Study.builder()
@@ -48,9 +50,9 @@ public class StudyRequestDto {
                 .views(0)
                 .count(0)
                 .contact(contact)
-                .subject(subject)
                 .member(member)
                 .build();
     }
+
 
 }
