@@ -32,6 +32,9 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -169,10 +172,17 @@ public class StudyService {
 
     }
 
+
+    /**
+     * 최신순: modifiedDate
+     * 인기순: count
+     * */
     // 스터디 검색
     @Transactional(readOnly = true)
-    public List<StudyResponseDto> searchStudy(String keyword) {
-        List<Study> studies = studyRepository.findByTitleOrContentContaining(keyword);
+    public List<StudyResponseDto> searchStudy(String keyword, int pageNumber, String criteria) {
+        Pageable pageable = PageRequest.of(pageNumber-1, 10,
+                Sort.by(Sort.Direction.DESC, criteria));
+        List<Study> studies = studyRepository.findByTitleOrContentContaining(keyword, pageable);
         List<StudyResponseDto> res = new ArrayList<>();
         studies.forEach(study -> res.add(StudyResponseDto.toDto(study)));
         return res;
