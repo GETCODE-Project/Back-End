@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberNicknameDto {
+public class MemberNickNameDto {
     private String nickname;
-    public static MemberNicknameDto toDto(Member member) {
-        return new MemberNicknameDto(member.getNickname());
+    public static MemberNickNameDto toDto(Member member) {
+        return new MemberNickNameDto(member.getNickname());
     }
 }
