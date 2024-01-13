@@ -9,6 +9,7 @@ import com.getcode.dto.project.req.CommentUpdateRequestDto;
 import com.getcode.dto.project.req.ProjectRequestDto;
 import com.getcode.dto.project.req.ProjectUpdateRequestDto;
 import com.getcode.dto.project.res.ProjectDetailResponseDto;
+import com.getcode.dto.project.res.ProjectInfoResponseDto;
 import com.getcode.dto.s3.S3FileDto;
 import com.getcode.service.project.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,7 +42,7 @@ public class ProjectController {
     @Operation(summary = "프로젝트 정보 등록 api")
     @PostMapping("/add")
     public ResponseEntity<?> addProject(@Parameter(description = "프로젝트 등록 값", required = true)
-                                            @Valid @RequestPart ProjectRequestDto projectRequestDto,
+                                        @Valid @RequestPart ProjectRequestDto projectRequestDto,
                                         @Parameter(description = "프로젝트 이미지")
                                         @RequestPart(name = "fileType") String fileType,
                                         @RequestPart(name = "files") List<MultipartFile> multipartFiles
@@ -51,9 +52,8 @@ public class ProjectController {
         //확장성을 고려하여 List형태로 파일 저장
         List<S3FileDto> files = s3Service.uploadFiles(fileType, multipartFiles);
         //파일 url리스트로 변환
-        List<ProjectImage> fileUrls = files.stream()
+        List<String> fileUrls = files.stream()
                 .map(S3FileDto::getUploadFileUrl)
-                .map(url -> ProjectImage.builder().imageUrl(url).build())
                 .collect(Collectors.toList());
 
         projectRequestDto.setImageUrls(fileUrls);
@@ -83,7 +83,7 @@ public class ProjectController {
     @Operation(summary = "github url 중복확인 api")
     @GetMapping("/add/checkUrl")
     public ResponseEntity<Boolean> checkUrl(@Parameter(description = "github Url") @RequestBody String githubUrl){
-       Boolean result = projectService.checkGithubUrlDuplication(githubUrl);
+        Boolean result = projectService.checkGithubUrlDuplication(githubUrl);
         return ResponseEntity.ok(result);
     }
 
@@ -99,10 +99,10 @@ public class ProjectController {
         res = projectService.deleteProject(id, memberEmail);
 
         if(res <= 0 ){
-            throw new RuntimeException();
+            ResponseEntity.ok().body("삭제실패.");
         }
 
-            return ResponseEntity.ok().body("삭제가 완료되었습니다.");
+        return ResponseEntity.ok().body("삭제가 완료되었습니다.");
     }
 
 
@@ -171,28 +171,28 @@ public class ProjectController {
 
     @Operation(summary = "전체 프로젝트 조회 api")
     @GetMapping("/all")
-    ResponseEntity<?> getProjectList(@Parameter(description = "정렬 기준")
+    ResponseEntity<List<ProjectInfoResponseDto>> getProjectList(@Parameter(description = "정렬 기준")
                                      @Pattern(regexp = "createDate|pastOrder|likeCnt|", message = "sort 값은 latestOrder, pastOrder, likeCnt,  중 하나여야 합니다")
                                      @RequestParam(defaultValue = "latestOrder") String sort,
-                                        @Parameter(description = "페이지 수")
-                                        @Min(value = 0, message = "page값은 0이상이어야 합니다")
-                                        @RequestParam(defaultValue = "0") int page,
-                                        @Parameter(description = "한 페이지에 담기는 개수")
-                                        @Positive(message = "size값은 1이상이어야 합니다")
-                                        @RequestParam(defaultValue = "10") int size,
-                                        @Parameter(description = "검색어") @RequestParam(defaultValue = "") String keyword,
-                                        @Parameter(description = "검색 조건") @RequestParam(defaultValue = "") List<String> subject,
-                                        @Parameter(description = "기술스택") @RequestParam(defaultValue = "") List<String> techStack,
-                                        @Parameter(description = "년도") @RequestParam(defaultValue = "") String year
-                                    )
+                                                                @Parameter(description = "페이지 수")
+                                     @Min(value = 0, message = "page값은 0이상이어야 합니다")
+                                     @RequestParam(defaultValue = "0") int page,
+                                                                @Parameter(description = "한 페이지에 담기는 개수")
+                                     @Positive(message = "size값은 1이상이어야 합니다")
+                                     @RequestParam(defaultValue = "10") int size,
+                                                                @Parameter(description = "검색어") @RequestParam(defaultValue = "") String keyword,
+                                                                @Parameter(description = "검색 조건") @RequestParam(defaultValue = "") List<String> subject,
+                                                                @Parameter(description = "기술스택") @RequestParam(defaultValue = "") List<String> techStack,
+                                                                @Parameter(description = "년도") @RequestParam(defaultValue = "") String year
+    )
     {
 
 
 
-        Slice<Project> projectPage = projectService.getProjectList(size, page, sort, keyword, subject, techStack, year);
+      List<ProjectInfoResponseDto> projectLists = projectService.getProjectList(size, page, sort, keyword, subject, techStack, year);
 
-        return ResponseEntity.ok().body(projectPage);
-  }
+        return ResponseEntity.ok().body(projectLists);
+    }
 
 
 

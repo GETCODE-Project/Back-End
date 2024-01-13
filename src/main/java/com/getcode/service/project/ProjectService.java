@@ -4,21 +4,18 @@ import com.getcode.config.s3.S3Service;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.project.*;
 import com.getcode.dto.project.ProjectSpecification;
-import com.getcode.dto.project.req.CommentRequestDto;
-import com.getcode.dto.project.req.CommentUpdateRequestDto;
-import com.getcode.dto.project.req.ProjectRequestDto;
-import com.getcode.dto.project.req.ProjectUpdateRequestDto;
+import com.getcode.dto.project.req.*;
 import com.getcode.dto.project.res.ProjectDetailResponseDto;
+import com.getcode.dto.project.res.ProjectInfoResponseDto;
 import com.getcode.dto.s3.S3FileDto;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.project.NotFoundProjectException;
+import com.getcode.exception.project.NotOwnLikeException;
+import com.getcode.exception.project.NotOwnWishException;
 import com.getcode.repository.MemberRepository;
 import com.getcode.repository.project.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 
@@ -66,14 +64,14 @@ public class ProjectService {
 
                         String[] files = extractPathFromImageUrl(imageUrl);
 
-                       String result = s3Service.deleteFile(files[0], files[1]);
+                        String result = s3Service.deleteFile(files[0], files[1]);
 
                     }
 
                     projectRepository.deleteById(id);
                     return 1; // 삭제 성공
                 })
-                .orElseGet(() -> -1); // 해당 id에 해당하는 프로젝트가 없음
+                .orElseThrow(() -> new NotFoundProjectException()); // 해당 id에 해당하는 프로젝트가 없음
 
     }
 
@@ -84,7 +82,7 @@ public class ProjectService {
         String[] parts = imageUrl.split("/");
 
         if(parts.length >= 8){
-                                // "/" 기준으로 배열생성 후에 공통적으로 붙는 buketName 다음부터 다시 합치기
+            // "/" 기준으로 배열생성 후에 공통적으로 붙는 buketName 다음부터 다시 합치기
             String folderPath = String.join("/", Arrays.copyOfRange(parts,4, parts.length -1));
             String fileName = parts[parts.length-1];
 
@@ -103,37 +101,22 @@ public class ProjectService {
 
         Project project = projectRequestDto.toProjectEntity(member);
 
-        //해당 엔티티들에 project_id가 안들어가서 만들어 놓은 임시방편 리팩토링 필요
-        List<ProjectTech> techStacks = projectRequestDto.getTechStackList();
-        List<ProjectImage> projectImageUrls = projectRequestDto.getImageUrls();
-        List<ProjectSubject> projectSubjects = projectRequestDto.getProjectSubjects();
-
-        synchronized (techStacks) {
-            Iterator<ProjectTech> techIterator = techStacks.iterator();
-            while (techIterator.hasNext()) {
-                ProjectTech projectTech = techIterator.next();
-                project.stackAdd(projectTech.getTechStack(projectTech.getTechStack(), project));
-            }
-        }
-
-        //ProjectImageUrls 처리
-        synchronized (projectImageUrls) {
-            Iterator<ProjectImage> imageIterator = projectImageUrls.iterator();
-            while (imageIterator.hasNext()) {
-                ProjectImage projectImage = imageIterator.next();
-                project.projectImageAdd(projectImage.getImage(projectImage.getImageUrl(), project));
-            }
-        }
-
-        //ProjectSubjects 처리
-        synchronized (projectSubjects) {
-            Iterator<ProjectSubject> subjectIterator = projectSubjects.iterator();
-            while (subjectIterator.hasNext()) {
-                ProjectSubject projectSubject = subjectIterator.next();
-                project.projectSubjectAdd(projectSubject.getSubject(projectSubject.getSubject(), project));
-            }
-        }
         projectRepository.save(project);
+
+        List<String> techList = projectRequestDto.getTechStackList();
+        List<String> imageList = projectRequestDto.getImageUrls();
+        List<String> subjectList = projectRequestDto.getProjectSubjects();
+
+        for(String techStack : techList){
+            projectStackRepository.save(ProjectTechDto.toEntity(project, techStack));
+        }
+        for(String subject : subjectList){
+            projectSubjectRepository.save(ProjectSubjectDto.toEntity(project, subject));
+        }
+        for(String imageUrl : imageList){
+            projectImageRepository.save(ProjectImageDto.toEntity(project, imageUrl));
+        }
+
 
     }
 
@@ -174,41 +157,16 @@ public class ProjectService {
                 //확장성을 고려하여 List형태로 파일 저장
                 List<S3FileDto> files = s3Service.uploadFiles(fileType, multipartFiles);
                 //파일 url리스트로 변환
-                List<ProjectImage> fileUrls = files.stream()
+                List<String> fileUrls = files.stream()
                         .map(S3FileDto::getUploadFileUrl)
-                        .map(url -> ProjectImage.builder().imageUrl(url).build())
                         .collect(Collectors.toList());
                 requestDto.setImageUrls(fileUrls);
 
-/*
 
-
-                List<ProjectImage> projectImageUrls = requestDto.getImageUrls();
-                List<ProjectTech> techStacks = requestDto.getTechStackList();
-                List<ProjectSubject> projectSubjects = requestDto.getProjectSubjects();
-
-
-
-                project.getProjectImages().clear();
-                project.getProjectSubjects().clear();
-                project.getTechStacks().clear();
-
-
-                for(ProjectImage projectImage : projectImageUrls){
-                    project.projectImageAdd(projectImage.getImage(projectImage.getImageUrl(), project));
-                }
-                for(ProjectSubject projectSubject : projectSubjects){
-                    project.projectSubjectAdd(projectSubject.getSubject(projectSubject.getSubject(), project));
-                }
-                for(ProjectTech projectTech : techStacks){
-                    project.stackAdd(projectTech.getTechStack(projectTech.getTechStack(), project));
-                }
-*/
             }
 
             project.updateProject(requestDto);
 
-            projectRepository.save(project);
 
         } else {
             throw new NotFoundMemberException();
@@ -226,6 +184,12 @@ public class ProjectService {
         Project project = projectRepository.findById(id).orElseThrow(NotFoundProjectException::new);
 
         ProjectLike projectLike = projectLikeRepository.findByProjectAndMember(project, member);
+
+        String owner = project.getMember().getEmail();
+
+        if(owner == memberEmail){
+            throw new NotOwnLikeException();
+        }
 
         if(projectLike != null){
             projectLikeRepository.delete(projectLike);
@@ -257,9 +221,16 @@ public class ProjectService {
 
         WishProject wishProject = projectWishRepository.findByProjectAndMember(project, member);
 
+
+        String owner = project.getMember().getEmail();
+
+        if(owner == memberEmail){
+            throw new NotOwnWishException();
+        }
+
+
         if(wishProject != null){
             projectWishRepository.delete(wishProject);
-            project.wishCntDown();
             projectRepository.save(project);
             return 0;
         } else {
@@ -268,7 +239,6 @@ public class ProjectService {
                             .project(project)
                             .member(member)
                             .build());
-            project.wishCntUp();
             projectRepository.save(project);
             return 1;
         }
@@ -277,8 +247,8 @@ public class ProjectService {
 
     }
 
-
     //프로젝트 상세조회
+    @Transactional
     public ProjectDetailResponseDto getProject(Long id) {
 
         Project project = projectRepository.findById(id).orElseThrow(NotFoundProjectException::new);
@@ -301,8 +271,8 @@ public class ProjectService {
         projectCommentRepository.save(requestDto.toEntity(project, member));
 
     }
-
     //프로젝트 댓글 삭제
+    @Transactional
     public int deleteComment(Long id, Long projectId, String memberEmail) {
 
         Optional<ProjectComment> projectComment = projectCommentRepository.findById(id);
@@ -315,8 +285,8 @@ public class ProjectService {
                 })
                 .orElseGet(() -> -1);
     }
-
     //프로젝트 댓글 수정
+    @Transactional
     public int updateComment(Long id, Long projectId, String memberEmail, CommentUpdateRequestDto requestDto) {
 
         ProjectComment projectComment = projectCommentRepository.findById(id).orElseThrow();
@@ -324,43 +294,42 @@ public class ProjectService {
 
         if(projectComment.getProject().getId().equals(projectId) && projectComment.getMember().getEmail().equals(memberEmail)){
 
-                   projectComment.updateComment(requestDto);
-                   projectCommentRepository.save(projectComment);
-                   return 1;
+            projectComment.updateComment(requestDto);
+            projectCommentRepository.save(projectComment);
+            return 1;
         } else return -1;
 
 
     }
 
     //전체 프로젝트 조회(조건 검색) 조건: 주제, 기술스택, 년도 | 정렬 조건: 최신순, 과거순, 좋아요순
-    public Slice<Project> getProjectList(int size, int page, String sort, String keyword, List<String> subject, List<String> techStack, String year) {
+    @Transactional
+    public List<ProjectInfoResponseDto> getProjectList(int size, int page, String sort, String keyword, List<String> subject, List<String> techStack, String year) {
 
         Sort sortCriteria;
 
         if(sort.equals("pastOrder")){
-            sortCriteria = Sort.by(Sort.Direction.ASC, "createDate");
+            sortCriteria = Sort.by(Sort.Direction.ASC, "modifiedDate");
         } else if (sort.equals("likeCnt")) {
             sortCriteria = Sort.by(Sort.Direction.DESC, "likeCnt");
         } else {
-            sortCriteria = Sort.by(Sort.Direction.DESC, "createDate");
+            sortCriteria = Sort.by(Sort.Direction.DESC, "modifiedDate");
         }
 
-        Pageable pageable = PageRequest.of(page, size, sortCriteria);
-
-        Slice<Project> projectPage = null;
+        Pageable pageable = PageRequest.of(page -1, size, sortCriteria);
 
         List<ProjectTech> projectTeches = null;
         if(techStack != null && !techStack.isEmpty()){
             projectTeches = techStack.stream()
-                                    .map(ProjectTech::new)
-                                    .collect(Collectors.toList());
+                    .map(ProjectTech::new)
+                    .collect(Collectors.toList());
         }
 
         List<ProjectSubject> projectSubject = null;
         if(subject != null && !subject.isEmpty()){
             projectSubject = subject.stream()
-                                    .map(ProjectSubject::new)
-                                    .collect(Collectors.toList());
+                    .map(ProjectSubject::new)
+                    .collect(Collectors.toList());
         }
 
 
@@ -385,9 +354,11 @@ public class ProjectService {
 
         Specification<Project> combinedSpec = ProjectSpecification.combineSpecifications(specifications);
 
-        return projectPage = projectRepository.findAll(combinedSpec, pageable);
+        Page<Project> projectPage = projectRepository.findAll(combinedSpec, pageable);
+        List<ProjectInfoResponseDto> responseDto = new ArrayList<>();
 
-
+        projectPage.forEach(project -> responseDto.add(new ProjectInfoResponseDto(project)));
+        return responseDto;
     }
 
 

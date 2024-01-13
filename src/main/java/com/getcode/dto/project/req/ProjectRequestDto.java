@@ -28,42 +28,17 @@ import java.util.List;
 public class ProjectRequestDto {
 
 
-    @Schema(description = "제목", defaultValue = "GETCODE")
-    @NotBlank(message = "제목을 입력해주세요")
+
     private String title;
-
-    @Schema(description = "내용", defaultValue = "프로젝트를 공유하고 팀원 모집과 스터디 모집을 할 수 있는 사이트입니다.")
-    @NotBlank(message = "내용을 입력해주세요")
-    @Size(min = 10, message = "내용은 최소 10글자 이상이어야 합니다.")
     private String content;
-
-    @Schema(description = "한 줄 소개")
-    @NotBlank(message = "내용을 입력해주세요")
-    @Size(min = 10, message = "내용은 최소 10글자 이상이어야 합니다.")
     private String introduction;
-
-    @Schema(description = "깃헙주소", defaultValue = "https://github.com/GETCODE-Project")
-    @Pattern(regexp = "^https:\\/\\/github\\.com\\/+[A-Za-z0-9-]+$", message = "GitHub URL 형식에 맞지 않습니다.")
-    @NotBlank(message = "깃허브 주소를 입력해주세요")
     private String githubUrl;
-
-    @Schema(description = "조회수")
     private int views;
-
-    @Schema(description = "좋아요 수")
     private int likeCnt;
-
-    @Schema(description = "즐겨찾기 수")
     private int wishCnt;
-
-    @Schema(description = "이미지 url")
-    private List<ProjectImage> imageUrls;
-
-    @Schema(description = "기술스택")
-    private List<ProjectTech> techStackList;
-
-    @Schema(description = "프로젝트 주제")
-    private List<ProjectSubject> projectSubjects;
+    private List<String> imageUrls;
+    private List<String> techStackList;
+    private List<String> projectSubjects;
 
 
     public Project toProjectEntity(Member member){
@@ -76,11 +51,7 @@ public class ProjectRequestDto {
                 .introduction(introduction)
                 .githubUrl(githubUrl)
                 .likeCnt(likeCnt)
-                .wishCnt(wishCnt)
                 .views(views)
-                .projectImages(new ArrayList<>(imageUrls))
-                .projectSubjects(new ArrayList<>(projectSubjects))
-                .techStacks(new ArrayList<>(techStackList))
                 .build();
     }
 

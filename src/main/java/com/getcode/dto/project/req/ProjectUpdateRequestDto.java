@@ -29,25 +29,13 @@ public class ProjectUpdateRequestDto {
 
     private String githubUrl;
 
-    private List<ProjectImage> imageUrls;
+    private List<String> imageUrls;
 
     private List<String> techStackList;
 
     private List<String> projectSubjects;
 
-    /*
-    public static ProjectUpdateRequestDto toDto(Project project){
-        return new ProjectUpdateRequestDto(
-                project.getTitle(),
-                project.getContent(),
-                project.getIntroduction(),
-                project.getGithubUrl(),
-                project.getProjectImages(),
-                project.getTechStacks(),
-                project.getProjectSubjects()
-        );
-    }
-*/
+
 
 
 }

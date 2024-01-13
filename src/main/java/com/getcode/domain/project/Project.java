@@ -45,9 +45,6 @@ public class Project extends BaseTimeEntity {
     @Column(columnDefinition = "integer default 0",nullable = false)
     private int likeCnt;
 
-    //조회수 default값 설정
-    @Column(columnDefinition = "integer default 0",nullable = false)
-    private int wishCnt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -100,7 +97,7 @@ public class Project extends BaseTimeEntity {
             this.content = requestDto.getContent();
         }
         if(requestDto.getIntroduction() != null) {
-           this.introduction = requestDto.getIntroduction();
+            this.introduction = requestDto.getIntroduction();
         }
         if(requestDto.getGithubUrl() != null){
             this.githubUrl = requestDto.getGithubUrl();
@@ -139,12 +136,7 @@ public class Project extends BaseTimeEntity {
     public void likeCntDown(){
         this.likeCnt -= 1;
     }
-    public void wishCntUp(){
-        this.wishCnt += 1;
-    }
-    public void wishCntDown(){
-        this.wishCnt -= 1;
-    }
+
 
     public void viewCntUp(){
         this.views += 1;

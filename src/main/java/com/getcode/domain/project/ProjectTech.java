@@ -28,6 +28,7 @@ public class ProjectTech {
     @JoinColumn(name = "project_id")
     private Project project;
 
+
     public ProjectTech(String techStack, Project project){
         this.techStack = TechStack.fromString(techStack);
         this.project = project;
@@ -43,5 +44,7 @@ public class ProjectTech {
                 .project(project)
                 .build();
     }
+
+
 
 }

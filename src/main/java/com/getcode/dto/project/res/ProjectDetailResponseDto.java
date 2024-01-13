@@ -2,6 +2,7 @@ package com.getcode.dto.project.res;
 
 
 import com.getcode.domain.project.*;
+import com.getcode.dto.member.MemberInfoDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,12 +21,11 @@ public class ProjectDetailResponseDto {
     private String githubUrl;
     private int views;
     private int likeCnt;
-    private int wishCnt;
     private List<ProjectStackResponseDto> techStackList;
     private List<ProjectSubjectResponseDto> projectSubjects;
     private List<ProjectImageUrlResponseDto> imageUrls;
     private List<CommentResponseDto> comments;
-    private String memberNickName;
+    private MemberInfoDto memberInfo;
 
     public ProjectDetailResponseDto(Project project){
 
@@ -35,12 +35,11 @@ public class ProjectDetailResponseDto {
         this.githubUrl  = project.getGithubUrl();
         this.views  = project.getViews();
         this.likeCnt  = project.getLikeCnt();
-        this.wishCnt  = project.getWishCnt();
         this.techStackList  = project.getTechStacks().stream().map(ProjectStackResponseDto::new).collect(Collectors.toList());
         this.projectSubjects  = project.getProjectSubjects().stream().map(ProjectSubjectResponseDto::new).collect(Collectors.toList());
         this.imageUrls  = project.getProjectImages().stream().map(ProjectImageUrlResponseDto::new).collect(Collectors.toList());
         this.comments = project.getProjectComments().stream().map(CommentResponseDto::new).collect(Collectors.toList());
-        this.memberNickName = project.getMember().getNickname();
+        MemberInfoDto.toDto(project.getMember());
 
     }
 
