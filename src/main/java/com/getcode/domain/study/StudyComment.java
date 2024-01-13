@@ -2,7 +2,6 @@ package com.getcode.domain.study;
 
 import com.getcode.domain.common.BaseTimeEntity;
 import com.getcode.domain.member.Member;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -39,4 +38,8 @@ public class StudyComment extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_id")
     private Study study;
+
+    public void editComment(String content) {
+        this.content = content;
+    }
 }

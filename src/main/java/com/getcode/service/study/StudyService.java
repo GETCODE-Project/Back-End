@@ -19,6 +19,7 @@ import com.getcode.dto.study.StudySubjectDto;
 import com.getcode.dto.study.StudyWishDto;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.study.MatchMemberException;
+import com.getcode.exception.study.NotFoundCommentException;
 import com.getcode.exception.study.NotFoundStudyException;
 import com.getcode.exception.study.NotLikeException;
 import com.getcode.exception.study.NotWishException;
@@ -139,6 +140,21 @@ public class StudyService {
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
         StudyComment res = studyCommentRepository.save(studyCommentRequestDto.toEntity(study, member));
         return StudyCommentResponseDto.toDto(res);
+    }
+
+    // 댓글 수정
+    @Transactional
+    public StudyCommentResponseDto editComment(StudyCommentRequestDto studyCommentRequestDto, Long id) {
+        StudyComment studyComment = studyCommentRepository.findById(id).orElseThrow(NotFoundCommentException::new);
+        studyComment.editComment(studyCommentRequestDto.getContent());
+        return StudyCommentResponseDto.toDto(studyComment);
+    }
+
+    // 댓글 삭제
+    @Transactional
+    public void deleteComment(Long id) {
+        StudyComment studyComment = studyCommentRepository.findById(id).orElseThrow(NotFoundCommentException::new);
+        studyCommentRepository.delete(studyComment);
     }
 
     // 스터디 좋아요

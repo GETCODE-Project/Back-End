@@ -86,6 +86,27 @@ public class StudyController {
         return ResponseEntity.status(HttpStatus.OK).body(studyService.addComment(req, id));
     }
 
+    @Operation(summary = "스터디 게시글 댓글 수정", description = "댓긋 Id를 입력받아 댓글 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @PutMapping("/study/comment/{id}")
+    public ResponseEntity<StudyCommentResponseDto> editComment(@PathVariable(name = "id") Long id,
+                                                              @RequestBody StudyCommentRequestDto req) {
+        return ResponseEntity.status(HttpStatus.OK).body(studyService.editComment(req, id));
+    }
+
+    @Operation(summary = "스터디 게시글 댓글 삭제", description = "댓긋 Id를 입력받아 댓글 삭제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @DeleteMapping("/study/comment/{id}")
+    public void deleteComment(@PathVariable(name = "id") Long id) {
+        studyService.deleteComment(id);
+    }
+
+
+
     @Operation(summary = "스터디 좋아요", description = "좋아요를 하면 전체 스터디 정보 리턴")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK")
