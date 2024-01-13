@@ -10,9 +10,11 @@ import com.getcode.dto.study.StudyInfoResponseDto;
 import com.getcode.dto.study.StudyRequestDto;
 import com.getcode.service.study.StudyService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -57,13 +60,26 @@ public class StudyController {
         return ResponseEntity.status(HttpStatus.OK).body(studyService.findStudy(id));
     }
 
-    @Operation(summary = "모든 스터디 모집글 전체 조회", description = "최신순으로 모든 스터디 모집글 조회")
+    @Operation(summary = "모든 스터디 모집글 전체 조회", description = "pageNumber 필수 => 10개씩 반환"
+            + "criteria => default: modifiedDate(최신순) / views(조회수), count(좋아요))"
+            + "나머지는 필수는 아니고 있으면 필터링해서 찾는다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK")
     })
-    @GetMapping("/all-studies")
-    public ResponseEntity<List<StudyInfoResponseDto>> findAllStudy() {
-        return ResponseEntity.status(HttpStatus.OK).body(studyService.findAllStudy());
+    @GetMapping("/search/studies")
+    public ResponseEntity<List<StudyInfoResponseDto>> findAllStudy(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "region", required = false) String region,
+            @RequestParam(value = "recruitment", required = false) Boolean recruitment,
+            @RequestParam(value = "online", required = false) Boolean online,
+            @RequestParam(value = "year", required = false) Integer year,
+            @RequestParam(value = "subjects", required = false) List<String> subjects,
+            @RequestParam(value = "criteria", required = false) String criteria,
+            @RequestParam(value = "pageNumber") Integer pageNumber
+
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(studyService.searchStudy(
+                keyword, region, recruitment, online, year, subjects, pageNumber, criteria));
     }
 
 
@@ -85,6 +101,27 @@ public class StudyController {
                                                               @RequestBody StudyCommentRequestDto req) {
         return ResponseEntity.status(HttpStatus.OK).body(studyService.addComment(req, id));
     }
+
+    @Operation(summary = "스터디 게시글 댓글 수정", description = "댓긋 Id를 입력받아 댓글 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @PutMapping("/study/comment/{id}")
+    public ResponseEntity<StudyCommentResponseDto> editComment(@PathVariable(name = "id") Long id,
+                                                              @RequestBody StudyCommentRequestDto req) {
+        return ResponseEntity.status(HttpStatus.OK).body(studyService.editComment(req, id));
+    }
+
+    @Operation(summary = "스터디 게시글 댓글 삭제", description = "댓긋 Id를 입력받아 댓글 삭제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @DeleteMapping("/study/comment/{id}")
+    public void deleteComment(@PathVariable(name = "id") Long id) {
+        studyService.deleteComment(id);
+    }
+
+
 
     @Operation(summary = "스터디 좋아요", description = "좋아요를 하면 전체 스터디 정보 리턴")
     @ApiResponses(value = {

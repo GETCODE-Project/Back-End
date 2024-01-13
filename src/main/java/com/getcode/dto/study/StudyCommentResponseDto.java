@@ -15,11 +15,13 @@ public class StudyCommentResponseDto {
     private String content;
     private String modifiedDate;
     private String email;
+    private String nickname;
     public static StudyCommentResponseDto toDto(StudyComment studyComment) {
         return new StudyCommentResponseDto (
                 studyComment.getContent(),
-                studyComment.getMember().getNickname(),
-                studyComment.getModifiedDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"))
+                studyComment.getModifiedDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
+                studyComment.getMember().getEmail(),
+                studyComment.getMember().getNickname()
         );
     }
 }

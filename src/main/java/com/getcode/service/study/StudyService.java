@@ -6,6 +6,7 @@ import com.getcode.domain.member.Member;
 import com.getcode.domain.study.Study;
 import com.getcode.domain.study.StudyComment;
 import com.getcode.domain.study.StudyLike;
+import com.getcode.domain.study.StudySpecification;
 import com.getcode.domain.study.StudySubject;
 import com.getcode.domain.study.WishStudy;
 import com.getcode.dto.study.CreatedStudyResponseDto;
@@ -19,6 +20,7 @@ import com.getcode.dto.study.StudySubjectDto;
 import com.getcode.dto.study.StudyWishDto;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.study.MatchMemberException;
+import com.getcode.exception.study.NotFoundCommentException;
 import com.getcode.exception.study.NotFoundStudyException;
 import com.getcode.exception.study.NotLikeException;
 import com.getcode.exception.study.NotWishException;
@@ -35,9 +37,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -141,6 +145,21 @@ public class StudyService {
         return StudyCommentResponseDto.toDto(res);
     }
 
+    // 댓글 수정
+    @Transactional
+    public StudyCommentResponseDto editComment(StudyCommentRequestDto studyCommentRequestDto, Long id) {
+        StudyComment studyComment = studyCommentRepository.findById(id).orElseThrow(NotFoundCommentException::new);
+        studyComment.editComment(studyCommentRequestDto.getContent());
+        return StudyCommentResponseDto.toDto(studyComment);
+    }
+
+    // 댓글 삭제
+    @Transactional
+    public void deleteComment(Long id) {
+        StudyComment studyComment = studyCommentRepository.findById(id).orElseThrow(NotFoundCommentException::new);
+        studyCommentRepository.delete(studyComment);
+    }
+
     // 스터디 좋아요
     @Transactional
     public StudyInfoResponseDto likeStudy(Long id) {
@@ -197,14 +216,48 @@ public class StudyService {
      * 인기순: count
      * */
     // 스터디 검색
-//    @Transactional(readOnly = true)
-//    public List<StudyResponseDto> searchStudy(String keyword, int pageNumber, String criteria) {
-//        Pageable pageable = PageRequest.of(pageNumber-1, 10,
-//                Sort.by(Sort.Direction.DESC, criteria));
-//        List<Study> studies = studyRepository.findByTitleOrContentContaining(keyword, pageable);
-//        List<StudyResponseDto> res = new ArrayList<>();
-//        studies.forEach(study -> res.add(StudyResponseDto.toDto(study)));
-//        return res;
-//    }
+    @Transactional(readOnly = true)
+    public List<StudyInfoResponseDto> searchStudy(String keyword, String region, Boolean recruitment,
+                                                  Boolean online, Integer year, List<String> subjects,
+                                                  Integer pageNumber, String criteria) {
+        Specification<Study> spec = (root, query, criteriaBuilder) -> null;
+
+        if (keyword != null) {
+            spec = spec.and(StudySpecification.equalsKeyword(keyword));
+        }
+
+        if (region != null) {
+            spec = spec.and(StudySpecification.equalsRegion(region));
+        }
+
+        if (recruitment != null) {
+            spec = spec.and(StudySpecification.equalsRecruitment(recruitment));
+        }
+
+        if (online != null) {
+            spec = spec.and(StudySpecification.equalsOnline(online));
+        }
+
+        if (year != null) {
+            spec = spec.and(StudySpecification.equalsYear(year));
+        }
+
+        if (subjects != null) {
+            spec = spec.and(StudySpecification.containsSubjects(subjects));
+        }
+
+        Pageable pageable = PageRequest.of(pageNumber-1, 10,
+                Sort.by(Sort.Direction.DESC, "modifiedDate"));
+
+        if (criteria != null) {
+            pageable = PageRequest.of(pageNumber-1, 10,
+                    Sort.by(Sort.Direction.DESC, criteria));
+        }
+
+        Page<Study> studies = studyRepository.findAll(spec, pageable);
+        List<StudyInfoResponseDto> res = new ArrayList<>();
+        studies.forEach(study -> res.add(StudyInfoResponseDto.toDto(study)));
+        return res;
+    }
 
 }
