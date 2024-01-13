@@ -29,6 +29,9 @@ public class Community extends BaseTimeEntity {
     @Column(nullable = false)
     private int views;
 
+    @Column(nullable = false)
+    private int count;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "member_id")
     private Member member;
