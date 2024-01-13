@@ -1,0 +1,25 @@
+### 회원가입
+POST http://localhost:8080/api/sign-up
+Content-Type: application/json
+
+{
+  "email" : "abc@abc.com",
+  "nickname" : "Macbook",
+  "password" : "MAC12345"
+}
+
+### 로그인
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email" : "abc@abc.com",
+  "password" : "MAC12345"
+}
+
+### 개인정보
+GET http://localhost:8080/api/userInfo
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhYmNAYWJjLmNvbSIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE3MDUwNjA3MDF9.aalcvU6eJVAyLNFHHROzqr-d-QyrBlzh3K19Y_1bBv5opN7LMM-buvE88R7nHpUYdHfIBX_eaWzM3ZXGjjuXPA
+
+

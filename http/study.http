@@ -1,0 +1,13 @@
+### 스터디 작성
+POST http://localhost:8080/api/study
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhYmNAYWJjLmNvbSIsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE3MDUwNjA3MDF9.aalcvU6eJVAyLNFHHROzqr-d-QyrBlzh3K19Y_1bBv5opN7LMM-buvE88R7nHpUYdHfIBX_eaWzM3ZXGjjuXPA
+
+{
+  "title" : "CPP-like",
+  "content": "본문",
+  "region": "서울",
+  "online": true,
+  "contact": "email: kyun9157@naver.com",
+  "subject": "CS"
+}
