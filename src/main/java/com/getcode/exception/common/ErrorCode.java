@@ -21,6 +21,8 @@ public enum ErrorCode {
     NOT_FOUND_COMMUNITY_EXCEPTION(409, "존재하지 게시글입니다.", BAD_REQUEST),
     NOT_FOUND_COMMENT_EXCEPTION(409, "존재하지 않는 댓글입니다.", BAD_REQUEST),
     NOT_FOUND_PROJECT_EXCEPTION(404, "프로젝트가 존재하지 않습니다", NOT_FOUND);
+    NOT_FOUND_COMMENT_EXCEPTION(409, "존재하지 않는 댓글입니다.", BAD_REQUEST);
+
 
     private final int status;
     private final String message;
