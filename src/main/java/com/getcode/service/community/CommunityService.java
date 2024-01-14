@@ -3,8 +3,13 @@ package com.getcode.service.community;
 import static com.getcode.config.security.SecurityUtil.getCurrentMemberEmail;
 
 import com.getcode.domain.community.Community;
+import com.getcode.domain.community.CommunityComment;
 import com.getcode.domain.community.CommunityLike;
 import com.getcode.domain.member.Member;
+import com.getcode.domain.study.Study;
+import com.getcode.domain.study.StudyComment;
+import com.getcode.dto.community.CommunityCommentRequestDto;
+import com.getcode.dto.community.CommunityCommentResponseDto;
 import com.getcode.dto.community.CommunityEditDto;
 import com.getcode.dto.community.CommunityLikeDto;
 import com.getcode.dto.community.CommunityRequestDto;
@@ -13,7 +18,9 @@ import com.getcode.dto.community.CreatedCommunityResponseDto;
 import com.getcode.exception.community.NotFoundCommunityException;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.study.MatchMemberException;
+import com.getcode.exception.study.NotFoundCommentException;
 import com.getcode.exception.study.NotLikeException;
+import com.getcode.repository.community.CommunityCommentRepository;
 import com.getcode.repository.community.CommunityLikeRepository;
 import com.getcode.repository.community.CommunityRepository;
 import com.getcode.repository.member.MemberRepository;
@@ -30,6 +37,7 @@ public class CommunityService {
     private final CommunityRepository communityRepository;
     private final MemberRepository memberRepository;
     private final CommunityLikeRepository communityLikeRepository;
+    private final CommunityCommentRepository communityCommentRepository;
 
     // 게시판 생성
     @Transactional
@@ -115,5 +123,31 @@ public class CommunityService {
         );
 
         return CommunityResponseDto.toDto(community);
+    }
+
+    // 스터디 댓글
+    @Transactional
+    public CommunityCommentResponseDto addComment(CommunityCommentRequestDto req, Long id) {
+        Community community = communityRepository.findById(id).orElseThrow(NotFoundCommunityException::new);
+        Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
+        CommunityComment res = communityCommentRepository.save(req.toEntity(community, member));
+        return CommunityCommentResponseDto.toDto(res);
+    }
+
+    // 댓글 수정
+    @Transactional
+    public CommunityCommentResponseDto editComment(CommunityCommentRequestDto req, Long id) {
+        CommunityComment communityComment = communityCommentRepository.findById(id)
+                .orElseThrow(NotFoundCommentException::new);
+        communityComment.editComment(req.getContent());
+        return CommunityCommentResponseDto.toDto(communityComment);
+    }
+
+    // 댓글 삭제
+    @Transactional
+    public void deleteComment(Long id) {
+        CommunityComment communityComment = communityCommentRepository.findById(id)
+                .orElseThrow(NotFoundCommentException::new);
+        communityCommentRepository.delete(communityComment);
     }
 }

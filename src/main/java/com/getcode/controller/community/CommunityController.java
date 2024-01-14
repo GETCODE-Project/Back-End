@@ -1,6 +1,8 @@
 package com.getcode.controller.community;
 
 import com.getcode.domain.community.Community;
+import com.getcode.dto.community.CommunityCommentRequestDto;
+import com.getcode.dto.community.CommunityCommentResponseDto;
 import com.getcode.dto.community.CommunityEditDto;
 import com.getcode.dto.community.CommunityRequestDto;
 import com.getcode.dto.community.CommunityResponseDto;
@@ -89,4 +91,34 @@ public class CommunityController {
     public ResponseEntity<CommunityResponseDto> likeCommunity(@PathVariable(name = "id") Long id){
         return ResponseEntity.status(HttpStatus.OK).body(communityService.likeCommunity(id));
     }
+
+    @Operation(summary = "스터디 게시글에 댓글", description = "게시글 Id를 입력받아 해당 게시글을 찾은 후 댓글")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @PostMapping("/community/comment/{id}")
+    public ResponseEntity<CommunityCommentResponseDto> addComment(@PathVariable(name = "id") Long id,
+                                                                  @RequestBody CommunityCommentRequestDto req) {
+        return ResponseEntity.status(HttpStatus.OK).body(communityService.addComment(req, id));
+    }
+
+    @Operation(summary = "게시글 댓글 수정", description = "댓글 Id를 입력받아 댓글 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @PutMapping("/community/comment/{id}")
+    public ResponseEntity<CommunityCommentResponseDto> editComment(@PathVariable(name = "id") Long id,
+                                                               @RequestBody CommunityCommentRequestDto req) {
+        return ResponseEntity.status(HttpStatus.OK).body(communityService.editComment(req, id));
+    }
+
+    @Operation(summary = "스터디 게시글 댓글 삭제", description = "댓긋 Id를 입력받아 댓글 삭제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @DeleteMapping("/community/comment/{id}")
+    public void deleteComment(@PathVariable(name = "id") Long id) {
+        communityService.deleteComment(id);
+    }
+
 }
