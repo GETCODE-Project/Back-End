@@ -1,8 +1,11 @@
 package com.getcode.controller.community;
 
+import com.getcode.domain.community.Community;
+import com.getcode.dto.community.CommunityEditDto;
 import com.getcode.dto.community.CommunityRequestDto;
 import com.getcode.dto.community.CommunityResponseDto;
 import com.getcode.dto.community.CreatedCommunityResponseDto;
+import com.getcode.dto.study.StudyEditDto;
 import com.getcode.dto.study.StudyInfoResponseDto;
 import com.getcode.service.community.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,7 +18,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,7 +48,17 @@ public class CommunityController {
             @ApiResponse(responseCode = "200", description = "OK")
     })
     @GetMapping("/communities")
-    public ResponseEntity<List<CommunityResponseDto>> findAllStudyByMember() {
+    public ResponseEntity<List<CommunityResponseDto>> findAllCommunityByMember() {
         return ResponseEntity.status(HttpStatus.OK).body(communityService.findAllCommunityByMember());
+    }
+
+    @Operation(summary = "게시글 수정", description = "PathVariable, 게시글 변경내용을 입력받아 게시글 수정(제목, 내용)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @PutMapping("/community/{id}")
+    public ResponseEntity<CommunityResponseDto> editCommunity(@PathVariable(name = "id") Long id,
+                                                              @RequestBody CommunityEditDto req) {
+        return ResponseEntity.status(HttpStatus.OK).body(communityService.editCommunity(id, req));
     }
 }

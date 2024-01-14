@@ -5,11 +5,15 @@ import static com.getcode.config.security.SecurityUtil.getCurrentMemberEmail;
 import com.getcode.domain.community.Community;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.study.Study;
+import com.getcode.dto.community.CommunityEditDto;
 import com.getcode.dto.community.CommunityRequestDto;
 import com.getcode.dto.community.CommunityResponseDto;
 import com.getcode.dto.community.CreatedCommunityResponseDto;
+import com.getcode.dto.study.StudyEditDto;
 import com.getcode.dto.study.StudyInfoResponseDto;
 import com.getcode.exception.member.NotFoundMemberException;
+import com.getcode.exception.study.MatchMemberException;
+import com.getcode.exception.study.NotFoundStudyException;
 import com.getcode.repository.community.CommunityRepository;
 import com.getcode.repository.member.MemberRepository;
 import java.util.ArrayList;
@@ -40,5 +44,21 @@ public class CommunityService {
         List<CommunityResponseDto> res = new ArrayList<>();
         communities.forEach(community -> res.add(CommunityResponseDto.toDto(community)));
         return res;
+    }
+
+    // 게시판 수정
+    @Transactional
+    public CommunityResponseDto editCommunity(Long id, CommunityEditDto req) {
+        Community community = communityRepository.findById(id).orElseThrow(NotFoundStudyException::new);
+        Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
+        Member findMember = community.getMember();
+
+        if (!member.equals(findMember)) {
+            throw new MatchMemberException();
+        }
+
+        community.editCommunity(req);
+
+        return CommunityResponseDto.toDto(community);
     }
 }
