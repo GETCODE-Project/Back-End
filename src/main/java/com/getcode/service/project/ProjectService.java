@@ -9,8 +9,8 @@ import com.getcode.dto.project.res.ProjectDetailResponseDto;
 import com.getcode.dto.project.res.ProjectInfoResponseDto;
 import com.getcode.dto.s3.S3FileDto;
 import com.getcode.exception.member.NotFoundMemberException;
-import com.getcode.exception.project.*;
-import com.getcode.repository.MemberRepository;
+import com.getcode.exception.project.NotFoundProjectException;
+import com.getcode.repository.member.MemberRepository;
 import com.getcode.repository.project.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -20,7 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
 import java.util.stream.Collectors;
-
+import com.getcode.exception.project.*;
+import com.getcode.repository.MemberRepository;
 
 @RequiredArgsConstructor
 @Service
