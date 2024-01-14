@@ -62,7 +62,7 @@ public class CommunityService {
         return CommunityResponseDto.toDto(community);
     }
 
-    // 게시글 삭제
+    // 게시글 삭
     @Transactional
     public void deleteCommunity(Long id) {
         Community community = communityRepository.findById(id).orElseThrow(NotFoundStudyException::new);
@@ -75,5 +75,13 @@ public class CommunityService {
         }
 
         communityRepository.delete(community);
+    }
+
+    // 특정 게시글 조회
+    @Transactional
+    public CommunityResponseDto findCommunity(Long id) {
+        Community community = communityRepository.findById(id).orElseThrow(NotFoundStudyException::new);
+        community.increaseViews();
+        return CommunityResponseDto.toDto(community);
     }
 }

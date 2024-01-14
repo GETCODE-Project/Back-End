@@ -5,7 +5,6 @@ import com.getcode.dto.community.CommunityEditDto;
 import com.getcode.dto.community.CommunityRequestDto;
 import com.getcode.dto.community.CommunityResponseDto;
 import com.getcode.dto.community.CreatedCommunityResponseDto;
-import com.getcode.dto.study.StudyEditDto;
 import com.getcode.dto.study.StudyInfoResponseDto;
 import com.getcode.service.community.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -72,5 +71,14 @@ public class CommunityController {
     @DeleteMapping("/community/{id}")
     public void deleteCommunity(@PathVariable(name = "id") Long id) {
         communityService.deleteCommunity(id);
+    }
+
+    @Operation(summary = "특정 게시글 조회", description = "PathVariable을 입력받아 게시글 조회후 조회수 1 증가")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @GetMapping("/community/{id}")
+    public ResponseEntity<CommunityResponseDto> findStudy(@PathVariable(name = "id") Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(communityService.findCommunity(id));
     }
 }
