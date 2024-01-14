@@ -9,9 +9,7 @@ import com.getcode.dto.project.res.ProjectDetailResponseDto;
 import com.getcode.dto.project.res.ProjectInfoResponseDto;
 import com.getcode.dto.s3.S3FileDto;
 import com.getcode.exception.member.NotFoundMemberException;
-import com.getcode.exception.project.NotFoundProjectException;
-import com.getcode.exception.project.NotOwnLikeException;
-import com.getcode.exception.project.NotOwnWishException;
+import com.getcode.exception.project.*;
 import com.getcode.repository.MemberRepository;
 import com.getcode.repository.project.*;
 import lombok.RequiredArgsConstructor;
@@ -128,11 +126,11 @@ public class ProjectService {
     }
 
 
-    //프로젝트 수정 진행중ing
+    //프로젝트 수정
     @Transactional
     public void updateProject(Long id, ProjectUpdateRequestDto requestDto, String memberEmail, String fileType, List<MultipartFile> multipartFiles) {
 
-        Project project = projectRepository.findById(id).orElseThrow();
+        Project project = projectRepository.findById(id).orElseThrow(NotFoundCommentException::new);
 
         if(project.getMember() != null && project.getMember().getEmail().equals(memberEmail)){
 
@@ -169,7 +167,7 @@ public class ProjectService {
 
 
         } else {
-            throw new NotFoundMemberException();
+            throw new NotMatchMemberException();
         }
 
     }
@@ -289,8 +287,7 @@ public class ProjectService {
     @Transactional
     public int updateComment(Long id, Long projectId, String memberEmail, CommentUpdateRequestDto requestDto) {
 
-        ProjectComment projectComment = projectCommentRepository.findById(id).orElseThrow();
-
+        ProjectComment projectComment = projectCommentRepository.findById(id).orElseThrow(NotFoundCommentException::new);
 
         if(projectComment.getProject().getId().equals(projectId) && projectComment.getMember().getEmail().equals(memberEmail)){
 
@@ -304,7 +301,7 @@ public class ProjectService {
 
     //전체 프로젝트 조회(조건 검색) 조건: 주제, 기술스택, 년도 | 정렬 조건: 최신순, 과거순, 좋아요순
     @Transactional
-    public List<ProjectInfoResponseDto> getProjectList(int size, int page, String sort, String keyword, List<String> subject, List<String> techStack, String year) {
+    public List<ProjectInfoResponseDto> getProjectList(int size, int page, String sort, String keyword, List<String> subject, List<String> techStack, Integer year) {
 
         Sort sortCriteria;
 
@@ -318,43 +315,28 @@ public class ProjectService {
 
         Pageable pageable = PageRequest.of(page -1, size, sortCriteria);
 
-        List<ProjectTech> projectTeches = null;
-        if(techStack != null && !techStack.isEmpty()){
-            projectTeches = techStack.stream()
-                    .map(ProjectTech::new)
-                    .collect(Collectors.toList());
-        }
-
-        List<ProjectSubject> projectSubject = null;
-        if(subject != null && !subject.isEmpty()){
-            projectSubject = subject.stream()
-                    .map(ProjectSubject::new)
-                    .collect(Collectors.toList());
-        }
-
 
         List<Specification<Project>> specifications = new ArrayList<>();
 
         if (!techStack.isEmpty() && techStack != null) {
-            specifications.add(ProjectSpecification.techStackLike(projectTeches));
+            specifications.add(ProjectSpecification.techStackLike(techStack));
         }
 
         if (!subject.isEmpty() && subject != null) {
-            specifications.add(ProjectSpecification.subjectLike(projectSubject));
+            specifications.add(ProjectSpecification.subjectLike(subject));
         }
 
         if (year != null) {
             specifications.add(ProjectSpecification.yearBetween(year));
         }
 
-        if (keyword != null && !keyword.equals(" ")) {
-            specifications.add(ProjectSpecification.keywordLikeTitle(keyword));
-            specifications.add(ProjectSpecification.keywordLikeContent(keyword));
+        if (keyword != null && !keyword.isEmpty()) {
+            specifications.add(ProjectSpecification.keywordLikeTitleOrContentOrIntroduction(keyword));
         }
 
         Specification<Project> combinedSpec = ProjectSpecification.combineSpecifications(specifications);
 
-        Page<Project> projectPage = projectRepository.findAll(combinedSpec, pageable);
+        Slice<Project> projectPage = projectRepository.findAll(combinedSpec, pageable);
         List<ProjectInfoResponseDto> responseDto = new ArrayList<>();
 
         projectPage.forEach(project -> responseDto.add(new ProjectInfoResponseDto(project)));

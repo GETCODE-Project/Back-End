@@ -66,19 +66,6 @@ public class ProjectController {
 
     }
 
-/*
-    @Operation(summary = "프로젝트 이미지 업로드 api")
-    @PostMapping("/add/image")
-    public ResponseEntity<?> insertImage(@Parameter(description = "프로젝트 이미지")
-                                             @RequestPart(name = "fileType") String fileType,
-                                         @RequestPart(name = "files") List<MultipartFile> multipartFiles)
-    {
-
-        List<String> imageUrl = projectService.insertImageInS3(fileType, multipartFiles);
-
-        return ResponseEntity.ok().body(imageUrl);
-    }
-*/
 
     @Operation(summary = "github url 중복확인 api")
     @GetMapping("/add/checkUrl")
@@ -120,6 +107,8 @@ public class ProjectController {
         projectService.updateProject(id, requestDto,memberEmail, fileType, multipartFiles);
         return ResponseEntity.ok().body("수정완료");
     }
+
+
 
 
     @Operation(summary = "프로젝트 좋아요 api")
@@ -172,21 +161,19 @@ public class ProjectController {
     @Operation(summary = "전체 프로젝트 조회 api")
     @GetMapping("/all")
     ResponseEntity<List<ProjectInfoResponseDto>> getProjectList(@Parameter(description = "정렬 기준")
-                                     @Pattern(regexp = "createDate|pastOrder|likeCnt|", message = "sort 값은 latestOrder, pastOrder, likeCnt,  중 하나여야 합니다")
-                                     @RequestParam(defaultValue = "latestOrder") String sort,
+                                     @RequestParam(defaultValue = "latestOrder", required = false) String sort,
                                                                 @Parameter(description = "페이지 수")
                                      @Min(value = 0, message = "page값은 0이상이어야 합니다")
                                      @RequestParam(defaultValue = "0") int page,
                                                                 @Parameter(description = "한 페이지에 담기는 개수")
                                      @Positive(message = "size값은 1이상이어야 합니다")
                                      @RequestParam(defaultValue = "10") int size,
-                                                                @Parameter(description = "검색어") @RequestParam(defaultValue = "") String keyword,
-                                                                @Parameter(description = "검색 조건") @RequestParam(defaultValue = "") List<String> subject,
-                                                                @Parameter(description = "기술스택") @RequestParam(defaultValue = "") List<String> techStack,
-                                                                @Parameter(description = "년도") @RequestParam(defaultValue = "") String year
+                                                                @Parameter(description = "검색어") @RequestParam(defaultValue = "", required = false) String keyword,
+                                                                @Parameter(description = "검색 조건") @RequestParam(defaultValue = "", required = false) List<String> subject,
+                                                                @Parameter(description = "기술스택") @RequestParam(defaultValue = "", required = false) List<String> techStack,
+                                                                @Parameter(description = "년도") @RequestParam(defaultValue = "", required = false) Integer year
     )
     {
-
 
 
       List<ProjectInfoResponseDto> projectLists = projectService.getProjectList(size, page, sort, keyword, subject, techStack, year);

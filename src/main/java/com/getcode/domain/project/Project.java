@@ -76,17 +76,6 @@ public class Project extends BaseTimeEntity {
 
 
 
-
-    public void stackAdd(ProjectTech projectTech){
-        this.techStacks.add(projectTech);
-    }
-    public void projectSubjectAdd(ProjectSubject projectSubject){
-        this.projectSubjects.add(projectSubject);
-    }
-    public void projectImageAdd (ProjectImage projectImage){
-        this.projectImages.add(projectImage);
-    }
-
     //리팩토링 필수
     public void updateProject(ProjectUpdateRequestDto requestDto){
 
@@ -107,7 +96,7 @@ public class Project extends BaseTimeEntity {
         if(requestDto.getImageUrls() != null) {
             this.getProjectImages().clear();
             List<ProjectImage> newImage = requestDto.getImageUrls().stream()
-                    .map(projectImage -> new ProjectImage(projectImage.getImageUrl(), this))
+                    .map(projectImage -> new ProjectImage(projectImage, this))
                     .collect(Collectors.toList());
             this.getProjectImages().addAll(newImage);
         }
