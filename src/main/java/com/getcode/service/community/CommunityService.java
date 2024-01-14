@@ -61,4 +61,19 @@ public class CommunityService {
 
         return CommunityResponseDto.toDto(community);
     }
+
+    // 게시글 삭제
+    @Transactional
+    public void deleteCommunity(Long id) {
+        Community community = communityRepository.findById(id).orElseThrow(NotFoundStudyException::new);
+
+        Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
+        Member findMember = community.getMember();
+
+        if (member.getId() != findMember.getId()) {
+            throw new MatchMemberException();
+        }
+
+        communityRepository.delete(community);
+    }
 }
