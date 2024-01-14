@@ -186,7 +186,6 @@ public class StudyService {
                 }
         );
 
-
         return StudyInfoResponseDto.toDto(study);
     }
 

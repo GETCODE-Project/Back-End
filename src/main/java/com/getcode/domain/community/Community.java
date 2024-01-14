@@ -38,7 +38,6 @@ public class Community extends BaseTimeEntity {
     @Column(nullable = false)
     private int count;
 
-//    @Enumerated(value = EnumType.STRING)
     @Convert(converter = CommunityTypeConverter.class)
     private CommunityCategory category;
 
