@@ -18,10 +18,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 
@@ -50,27 +47,32 @@ public class ProjectService {
                 .map(project -> {
                     //S3파일 삭제하기 위해 받은 값을 String으로 변환
                     List<ProjectImage> projectImages = projectImageRepository.findAllByProjectId(id);
-                    List<String> imageUrls = new ArrayList<>();
-
-                    for(ProjectImage projectImage : projectImages){
-                        String url = projectImage.getImageUrl();
-                        imageUrls.add(url);
-                    }
-
-                    //변환한 url S3에서 삭제
-                    for(String imageUrl : imageUrls){
-
-                        String[] files = extractPathFromImageUrl(imageUrl);
-
-                        String result = s3Service.deleteFile(files[0], files[1]);
-
-                    }
-
+                    deleteS3File(projectImages);
                     projectRepository.deleteById(id);
                     return 1; // 삭제 성공
                 })
                 .orElseThrow(() -> new NotFoundProjectException()); // 해당 id에 해당하는 프로젝트가 없음
 
+    }
+
+
+    //s3 파일삭제 메소드
+    private void deleteS3File(List<ProjectImage> projectImages){
+        List<String> imageUrls = new ArrayList<>();
+
+        for(ProjectImage projectImage : projectImages){
+            String url = projectImage.getImageUrl();
+            imageUrls.add(url);
+        }
+
+        //변환한 url S3에서 삭제
+        for(String imageUrl : imageUrls){
+
+            String[] files = extractPathFromImageUrl(imageUrl);
+
+            String result = s3Service.deleteFile(files[0], files[1]);
+
+        }
     }
 
 
@@ -133,7 +135,7 @@ public class ProjectService {
         Project project = projectRepository.findById(id).orElseThrow(NotFoundCommentException::new);
 
         if(project.getMember() != null && project.getMember().getEmail().equals(memberEmail)){
-
+            //새로운 파일 추가했을 때 기존 파일 삭제 후 새로운 파일 등록
             if(fileType != null && !multipartFiles.isEmpty()) {
                 List<ProjectImage> projectImages = projectImageRepository.findAllByProjectId(id);
                 List<String> imageUrls = new ArrayList<>();
@@ -334,9 +336,11 @@ public class ProjectService {
             specifications.add(ProjectSpecification.keywordLikeTitleOrContentOrIntroduction(keyword));
         }
 
+
+
         Specification<Project> combinedSpec = ProjectSpecification.combineSpecifications(specifications);
 
-        Slice<Project> projectPage = projectRepository.findAll(combinedSpec, pageable);
+        Page<Project> projectPage = projectRepository.findAll(combinedSpec, pageable);
         List<ProjectInfoResponseDto> responseDto = new ArrayList<>();
 
         projectPage.forEach(project -> responseDto.add(new ProjectInfoResponseDto(project)));
