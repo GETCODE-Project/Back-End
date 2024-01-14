@@ -5,7 +5,6 @@ import com.getcode.dto.community.CommunityEditDto;
 import com.getcode.dto.community.CommunityRequestDto;
 import com.getcode.dto.community.CommunityResponseDto;
 import com.getcode.dto.community.CreatedCommunityResponseDto;
-import com.getcode.dto.study.StudyInfoResponseDto;
 import com.getcode.service.community.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -78,7 +77,16 @@ public class CommunityController {
             @ApiResponse(responseCode = "200", description = "OK")
     })
     @GetMapping("/community/{id}")
-    public ResponseEntity<CommunityResponseDto> findStudy(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<CommunityResponseDto> findCommunity(@PathVariable(name = "id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(communityService.findCommunity(id));
+    }
+
+    @Operation(summary = "게시글 좋아요", description = "좋아요를 하면 전체 게시글 정보 리턴")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @PostMapping("/community-like/{id}")
+    public ResponseEntity<CommunityResponseDto> likeCommunity(@PathVariable(name = "id") Long id){
+        return ResponseEntity.status(HttpStatus.OK).body(communityService.likeCommunity(id));
     }
 }
