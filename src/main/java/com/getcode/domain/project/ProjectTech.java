@@ -1,11 +1,14 @@
 package com.getcode.domain.project;
 
+import com.getcode.domain.common.Subject;
 import com.getcode.domain.common.TechStack;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.List;
+
+@Builder
+@AllArgsConstructor
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -25,5 +28,15 @@ public class ProjectTech {
     @JoinColumn(name = "project_id")
     private Project project;
 
+    public ProjectTech (String techStack){
+        this.techStack = TechStack.fromString(techStack);
+    }
+
+    public ProjectTech getTechStack (TechStack techStacks, Project project){
+        return ProjectTech.builder()
+                .techStack(techStacks)
+                .project(project)
+                .build();
+    }
 
 }

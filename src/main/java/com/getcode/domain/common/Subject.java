@@ -18,7 +18,6 @@ public enum Subject {
 
     private String subject;
 
-
     Subject(String subject) {
         this.subject = subject;
     }
@@ -26,5 +25,16 @@ public enum Subject {
     public String print(){
         return subject;
     }
+
+    public static Subject fromString(String reqValue) {
+        for (Subject subject : Subject.values()) {
+            if (subject.subject.equalsIgnoreCase(reqValue)) {
+                return subject;
+            }
+        }
+        throw new IllegalArgumentException();
+    }
+
+
 
 }

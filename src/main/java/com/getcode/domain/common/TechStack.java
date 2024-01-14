@@ -25,10 +25,19 @@ public enum TechStack {
     GIT("Git"), GITHUB("Github"), AWS("")
     ;
 
-
     private String stack;
+
     TechStack(String stack) {
         this.stack = stack;
+    }
+
+    public static TechStack fromString(String reqValue) {
+        for (TechStack techStack : TechStack.values()) {
+            if (techStack.stack.equalsIgnoreCase(reqValue)) {
+                return techStack;
+            }
+        }
+        throw new IllegalArgumentException();
     }
 
     public String print(){
