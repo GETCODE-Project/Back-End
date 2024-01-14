@@ -138,21 +138,8 @@ public class ProjectService {
             //새로운 파일 추가했을 때 기존 파일 삭제 후 새로운 파일 등록
             if(fileType != null && !multipartFiles.isEmpty()) {
                 List<ProjectImage> projectImages = projectImageRepository.findAllByProjectId(id);
-                List<String> imageUrls = new ArrayList<>();
 
-                for (ProjectImage projectImage : projectImages) {
-                    String url = projectImage.getImageUrl();
-                    imageUrls.add(url);
-                }
-
-                //변환한 url S3에서 삭제
-                for (String imageUrl : imageUrls) {
-
-                    String[] files = extractPathFromImageUrl(imageUrl);
-
-                    String result = s3Service.deleteFile(files[0], files[1]);
-
-                }
+                deleteS3File(projectImages);
 
                 //확장성을 고려하여 List형태로 파일 저장
                 List<S3FileDto> files = s3Service.uploadFiles(fileType, multipartFiles);
@@ -160,9 +147,8 @@ public class ProjectService {
                 List<String> fileUrls = files.stream()
                         .map(S3FileDto::getUploadFileUrl)
                         .collect(Collectors.toList());
+
                 requestDto.setImageUrls(fileUrls);
-
-
             }
 
             project.updateProject(requestDto);
