@@ -3,14 +3,17 @@ package com.getcode.service.projectrecruitment;
 import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.projectrecruitment.ProjectRecruitment;
+import com.getcode.domain.projectrecruitment.ProjectRecruitmentComment;
 import com.getcode.domain.projectrecruitment.ProjectRecruitmentTech;
 import com.getcode.dto.projectrecruitment.req.ProjectRecruitmentRequestDto;
 import com.getcode.dto.projectrecruitment.req.ProjectRecruitmentSubjectDto;
 import com.getcode.dto.projectrecruitment.req.ProjectRecruitmentTechDto;
+import com.getcode.dto.projectrecruitment.req.RecruitmentCommentRequestDto;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.project.NotMatchMemberException;
 import com.getcode.exception.projectrecruitment.NotFoundProjectRecruitmentException;
 import com.getcode.repository.MemberRepository;
+import com.getcode.repository.projectrecruitment.ProjectRecruitmentCommentRepository;
 import com.getcode.repository.projectrecruitment.ProjectRecruitmentRepository;
 import com.getcode.repository.projectrecruitment.ProjectRecruitmentStackRepository;
 import com.getcode.repository.projectrecruitment.ProjectRecruitmentSubjectRepository;
@@ -28,6 +31,7 @@ public class ProjectRecruitmentService {
     private final ProjectRecruitmentRepository projectRecruitmentRepository;
     private final ProjectRecruitmentStackRepository projectRecruitmentStackRepository;
     private final ProjectRecruitmentSubjectRepository projectRecruitmentSubjectRepository;
+    private final ProjectRecruitmentCommentRepository projectRecruitmentCommentRepository;
 
 
 
@@ -65,6 +69,15 @@ public class ProjectRecruitmentService {
         }else {
             throw new NotMatchMemberException();
         }
+
+    }
+
+    public void addComment(Long id, RecruitmentCommentRequestDto requestDto) {
+
+        Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
+        ProjectRecruitment projectRecruitment = projectRecruitmentRepository.findById(id).orElseThrow(NotFoundProjectRecruitmentException::new);
+
+        projectRecruitmentCommentRepository.save(requestDto.toEntity(projectRecruitment, member));
 
     }
 }

@@ -1,6 +1,7 @@
 package com.getcode.controller.projectrecruitment;
 
 import com.getcode.dto.projectrecruitment.req.ProjectRecruitmentRequestDto;
+import com.getcode.dto.projectrecruitment.req.RecruitmentCommentRequestDto;
 import com.getcode.service.projectrecruitment.ProjectRecruitmentService;
 import com.getcode.util.Response;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class ProjectRecruitmentController {
 
     private final ProjectRecruitmentService projectRecruitmentService;
-    @Operation(summary = "프로젝트 모집 글 등록")
+    @Operation(summary = "프로젝트 모집 글 등록 api")
     @PostMapping("/add")
     public ResponseEntity<?> insertProjectRecruitment(@Parameter(description = "프로젝트 모집 요청 값")
                                                           @Valid
@@ -32,7 +33,7 @@ public class ProjectRecruitmentController {
 
     }
 
-    @Operation(summary = "프로젝트 모집 글 삭제")
+    @Operation(summary = "프로젝트 모집 글 삭제 api")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteProjectRecruitment(@Parameter(description = "프로젝트 모집 아이디")
                                                       @PathVariable Long id){
@@ -45,6 +46,19 @@ public class ProjectRecruitmentController {
             return ResponseEntity.status(HttpStatus.OK).body("글 삭제 실패");
         }
     }
+
+
+    @Operation(summary = "프로젝트 모집 댓글 등록 api")
+    @PostMapping("/detail/{id}/comment/add")
+    public ResponseEntity<?> addComment(@Parameter(description = "프로젝트 모집 아이디")
+                                        @PathVariable Long id,
+                                        @RequestBody RecruitmentCommentRequestDto requestDto)
+    {
+        projectRecruitmentService.addComment(id, requestDto);
+
+        return ResponseEntity.status(HttpStatus.OK).body("댓글 등록 완료");
+    }
+
 
 
 
