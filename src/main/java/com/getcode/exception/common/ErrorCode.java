@@ -18,8 +18,8 @@ public enum ErrorCode {
     DUPLICATE_LIKE_EXCEPTION(409, "좋아요는 1번만 가능합니다.", BAD_REQUEST),
     NOT_LIKE_EXCEPTION(409, "자신이 작성한 게시물에 좋아요 불가", BAD_REQUEST),
     NOT_WISH_EXCEPTION(409, "자신이 작성한 게시물에 찜 불가", BAD_REQUEST),
-    NOT_FOUND_COMMENT_EXCEPTION(409, "존재하지 않는 댓글입니다.", BAD_REQUEST);
-
+    NOT_FOUND_COMMENT_EXCEPTION(409, "존재하지 않는 댓글입니다.", BAD_REQUEST),
+    NOT_FOUND_PROJECT_RECRUITMENT_EXCEPTION(404, "프로젝트 모집글이 존재하지 않습니다", BAD_REQUEST);
 
     private final int status;
     private final String message;

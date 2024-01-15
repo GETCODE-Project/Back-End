@@ -11,10 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 @Tag(name = "프로젝트 모집 api기능 명세")
 @Slf4j
 @RequiredArgsConstructor
@@ -33,6 +31,22 @@ public class ProjectRecruitmentController {
         return ResponseEntity.ok().body("글 등록 완료");
 
     }
+
+    @Operation(summary = "프로젝트 모집 글 삭제")
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteProjectRecruitment(@Parameter(description = "프로젝트 모집 아이디")
+                                                      @PathVariable Long id){
+        int result = 0;
+        result = projectRecruitmentService.deleteProjectRecruitment(id);
+
+        if(result == 1) {
+            return ResponseEntity.status(HttpStatus.OK).body("글 삭제 성공");
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body("글 삭제 실패");
+        }
+    }
+
+
 
 
 

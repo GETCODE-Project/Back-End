@@ -8,6 +8,8 @@ import com.getcode.dto.projectrecruitment.req.ProjectRecruitmentRequestDto;
 import com.getcode.dto.projectrecruitment.req.ProjectRecruitmentSubjectDto;
 import com.getcode.dto.projectrecruitment.req.ProjectRecruitmentTechDto;
 import com.getcode.exception.member.NotFoundMemberException;
+import com.getcode.exception.project.NotMatchMemberException;
+import com.getcode.exception.projectrecruitment.NotFoundProjectRecruitmentException;
 import com.getcode.repository.MemberRepository;
 import com.getcode.repository.projectrecruitment.ProjectRecruitmentRepository;
 import com.getcode.repository.projectrecruitment.ProjectRecruitmentStackRepository;
@@ -47,6 +49,22 @@ public class ProjectRecruitmentService {
             projectRecruitmentSubjectRepository.save(ProjectRecruitmentSubjectDto.toEntity(projectRecruitment, subject));
         }
 
+
+    }
+
+    public int deleteProjectRecruitment(Long id) {
+
+        Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
+        ProjectRecruitment projectRecruitment = projectRecruitmentRepository.findById(id).orElseThrow(NotFoundProjectRecruitmentException::new);
+
+        int result = 0;
+
+        if(member == projectRecruitment.getMember()){
+            projectRecruitmentRepository.deleteById(id);
+            return  result = 1;
+        }else {
+            throw new NotMatchMemberException();
+        }
 
     }
 }
