@@ -1,7 +1,7 @@
 package com.getcode.config.security;
 
 import com.getcode.domain.member.Member;
-import com.getcode.repository.MemberRepository;
+import com.getcode.repository.member.MemberRepository;
 import jakarta.transaction.Transactional;
 import java.util.Collections;
 

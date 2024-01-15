@@ -2,14 +2,21 @@ package com.getcode.domain.community;
 
 import com.getcode.domain.common.BaseTimeEntity;
 import com.getcode.domain.member.Member;
+import com.getcode.dto.community.CommunityEditDto;
+import com.getcode.global.CommunityTypeConverter;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Entity
 public class Community extends BaseTimeEntity {
 
@@ -23,15 +30,43 @@ public class Community extends BaseTimeEntity {
 
     @Lob
     @Column(nullable = false)
-    @Size(min = 10)
     private String content;
 
     @Column(nullable = false)
     private int views;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Column(nullable = false)
+    private int count;
+
+    @Convert(converter = CommunityTypeConverter.class)
+    private CommunityCategory category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
+    private List<CommunityComment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
+    private List<CommunityLike> likes = new ArrayList<>();
+
+    public void increaseViews() {
+        this.views +=1;
+    }
+
+    public void increaseCount() {
+        this.count +=1;
+    }
+
+    public void decreaseCount() {
+        this.count -=1;
+    }
+
+    public void editCommunity(CommunityEditDto req) {
+        this.title = req.getTitle();
+        this.content = req.getContent();
+    }
 
 
 }
