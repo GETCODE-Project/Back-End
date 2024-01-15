@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class RecruitmentUpdateRequestDto {
+public class RecruitmentCommentUpdateDto {
 
     private String content;
 

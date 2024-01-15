@@ -2,6 +2,8 @@ package com.getcode.controller.projectrecruitment;
 
 import com.getcode.dto.projectrecruitment.req.ProjectRecruitmentRequestDto;
 import com.getcode.dto.projectrecruitment.req.RecruitmentCommentRequestDto;
+import com.getcode.dto.projectrecruitment.req.RecruitmentCommentUpdateDto;
+import com.getcode.dto.projectrecruitment.req.RecruitmentUpdateRequestDto;
 import com.getcode.service.projectrecruitment.ProjectRecruitmentService;
 import com.getcode.util.Response;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,6 +59,20 @@ public class ProjectRecruitmentController {
         projectRecruitmentService.addComment(id, requestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body("댓글 등록 완료");
+    }
+
+    @Operation(summary = "프로젝트 모집 댓글 수정 api")
+    @PutMapping("/detail/{projectId}/comment/update/{commentId}")
+    public ResponseEntity<?> updateComment(@Parameter(description = "프로젝트 모집 아이디")
+                                           @PathVariable Long projectId,
+                                           @Parameter(description = "프로젝트 모집 댓글 아이디")
+                                           @PathVariable Long commentId,
+                                           @RequestBody RecruitmentCommentUpdateDto requestDto
+                                           ){
+
+        projectRecruitmentService.updateComment(projectId, commentId, requestDto);
+        return ResponseEntity.status(HttpStatus.OK).body("댓글 수정 완료");
+
     }
 
 

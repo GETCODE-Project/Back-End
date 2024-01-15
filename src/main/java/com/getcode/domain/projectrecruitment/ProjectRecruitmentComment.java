@@ -2,6 +2,7 @@ package com.getcode.domain.projectrecruitment;
 
 
 import com.getcode.domain.member.Member;
+import com.getcode.dto.projectrecruitment.req.RecruitmentCommentUpdateDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,5 +29,11 @@ public class ProjectRecruitmentComment {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "project_recruitment_id")
     private ProjectRecruitment projectRecruitment;
+
+
+    public void update(RecruitmentCommentUpdateDto dto){
+        this.content = dto.getContent();
+    }
+
 
 }

@@ -5,11 +5,9 @@ import com.getcode.domain.member.Member;
 import com.getcode.domain.projectrecruitment.ProjectRecruitment;
 import com.getcode.domain.projectrecruitment.ProjectRecruitmentComment;
 import com.getcode.domain.projectrecruitment.ProjectRecruitmentTech;
-import com.getcode.dto.projectrecruitment.req.ProjectRecruitmentRequestDto;
-import com.getcode.dto.projectrecruitment.req.ProjectRecruitmentSubjectDto;
-import com.getcode.dto.projectrecruitment.req.ProjectRecruitmentTechDto;
-import com.getcode.dto.projectrecruitment.req.RecruitmentCommentRequestDto;
+import com.getcode.dto.projectrecruitment.req.*;
 import com.getcode.exception.member.NotFoundMemberException;
+import com.getcode.exception.project.NotFoundCommentException;
 import com.getcode.exception.project.NotMatchMemberException;
 import com.getcode.exception.projectrecruitment.NotFoundProjectRecruitmentException;
 import com.getcode.repository.MemberRepository;
@@ -19,6 +17,7 @@ import com.getcode.repository.projectrecruitment.ProjectRecruitmentStackReposito
 import com.getcode.repository.projectrecruitment.ProjectRecruitmentSubjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class ProjectRecruitmentService {
     private final ProjectRecruitmentCommentRepository projectRecruitmentCommentRepository;
 
 
-
+    @Transactional
     public void insertProjectRecruitment(ProjectRecruitmentRequestDto requestDto) {
 
         Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
@@ -56,6 +55,7 @@ public class ProjectRecruitmentService {
 
     }
 
+    @Transactional
     public int deleteProjectRecruitment(Long id) {
 
         Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
@@ -72,12 +72,33 @@ public class ProjectRecruitmentService {
 
     }
 
+    @Transactional
     public void addComment(Long id, RecruitmentCommentRequestDto requestDto) {
 
         Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
         ProjectRecruitment projectRecruitment = projectRecruitmentRepository.findById(id).orElseThrow(NotFoundProjectRecruitmentException::new);
 
         projectRecruitmentCommentRepository.save(requestDto.toEntity(projectRecruitment, member));
+
+    }
+
+    @Transactional
+    public void updateComment(Long projectId, Long commentId, RecruitmentCommentUpdateDto requestDto) {
+
+        Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
+        ProjectRecruitmentComment projectRecruitmentComment = projectRecruitmentCommentRepository.findById(commentId).orElseThrow(NotFoundCommentException::new);
+
+        if(!member.getEmail().equals(projectRecruitmentComment.getMember().getEmail())){
+            throw new NotMatchMemberException();
+        }
+
+        if(!projectRecruitmentComment.getProjectRecruitment().getId().equals(projectId)){
+            throw new NotFoundProjectRecruitmentException();
+        }
+
+        projectRecruitmentComment.update(requestDto);
+
+
 
     }
 }
