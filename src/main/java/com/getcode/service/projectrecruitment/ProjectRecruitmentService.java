@@ -4,6 +4,7 @@ import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.projectrecruitment.*;
 import com.getcode.dto.projectrecruitment.req.*;
+import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentDetailResDto;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.project.NotFoundCommentException;
 import com.getcode.exception.project.NotMatchMemberException;
@@ -183,5 +184,13 @@ public class ProjectRecruitmentService {
         }
 
 
+    }
+
+    @Transactional
+    public ProjectRecruitmentDetailResDto getDetailRecruitment(Long id) {
+        ProjectRecruitment projectRecruitment = projectRecruitmentRepository.findById(id).orElseThrow(NotFoundProjectRecruitmentException::new);
+        projectRecruitment.viewCntUp();
+        ProjectRecruitmentDetailResDto resDto =  new ProjectRecruitmentDetailResDto(projectRecruitment);
+        return resDto;
     }
 }

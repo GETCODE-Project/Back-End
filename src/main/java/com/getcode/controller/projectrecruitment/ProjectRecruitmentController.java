@@ -4,6 +4,7 @@ import com.getcode.dto.projectrecruitment.req.ProjectRecruitmentRequestDto;
 import com.getcode.dto.projectrecruitment.req.RecruitmentCommentRequestDto;
 import com.getcode.dto.projectrecruitment.req.RecruitmentCommentUpdateDto;
 import com.getcode.dto.projectrecruitment.req.RecruitmentUpdateRequestDto;
+import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentDetailResDto;
 import com.getcode.service.projectrecruitment.ProjectRecruitmentService;
 import com.getcode.util.Response;
 import io.swagger.v3.oas.annotations.Operation;
@@ -121,7 +122,15 @@ public class ProjectRecruitmentController {
 
     }
 
+    @Operation(summary = "프로젝트 모집 상세조회 api")
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<?> getDetailRecruitment(@Parameter(description = "프로젝트 모집 아이디")
+                                                  @PathVariable Long id)
+    {
 
+        ProjectRecruitmentDetailResDto resDto = projectRecruitmentService.getDetailRecruitment(id);
+        return ResponseEntity.status(HttpStatus.OK).body(resDto);
+    }
 
 
 

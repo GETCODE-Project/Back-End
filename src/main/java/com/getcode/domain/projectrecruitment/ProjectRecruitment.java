@@ -66,11 +66,11 @@ public class ProjectRecruitment extends BaseTimeEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "projectRecruitment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProjectRecruitmentLike> projectRecruitmentLikes = new ArrayList<>();
+    private List<ProjectRecruitmentLike> likes = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "projectRecruitment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProjectRecruitmentComment> projectRecruitmentComments = new ArrayList<>();
+    private List<ProjectRecruitmentComment> comments = new ArrayList<>();
 
     public void likeCntUp(){
         this.likeCnt += 1;
