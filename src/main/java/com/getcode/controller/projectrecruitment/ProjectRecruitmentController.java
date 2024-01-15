@@ -75,7 +75,7 @@ public class ProjectRecruitmentController {
 
     }
 
-    @Operation(summary = "프로젝트 모집 댓글 수정기능 구현")
+    @Operation(summary = "프로젝트 모집 댓글 수정 api")
     @DeleteMapping("/detail/{projectId}/comment/delete/{commentId}")
     public ResponseEntity<?> deleteComment(@Parameter(description = "프로젝트 모집 아이디")
                                                @PathVariable Long projectId,
@@ -84,6 +84,24 @@ public class ProjectRecruitmentController {
     {
         projectRecruitmentService.deleteComment(projectId, commentId);
         return ResponseEntity.status(HttpStatus.OK).body("댓글 삭제 완료");
+    }
+
+
+    @Operation(summary = "프로젝트 모집 좋아요 api")
+    @PostMapping("/like/{projectId}")
+    public ResponseEntity<?> likeProjectRecruitment(@Parameter(description = "프로젝트 모집 아이디")
+                                                        @PathVariable Long projectId)
+    {
+
+        int result = projectRecruitmentService.likeProjectRecruitment(projectId);
+        if(result == 1){
+            return ResponseEntity.status(HttpStatus.OK).body("좋아요 등록");
+        } else if (result == -1) {
+            return ResponseEntity.status(HttpStatus.OK).body("좋아요 삭제");
+        } else {
+          return ResponseEntity.status(HttpStatus.OK).body("좋아요 등록 또는 삭제 실패");
+        }
+
     }
 
 
