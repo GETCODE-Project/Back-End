@@ -104,6 +104,23 @@ public class ProjectRecruitmentController {
 
     }
 
+    @Operation(summary = "프로젝트 모집 찜 api")
+    @PostMapping("/wish/{projectId}")
+    public ResponseEntity<?> wishProjectRecruitment(@Parameter(description = "프로젝트 모집 아이디")
+                                                        @PathVariable Long projectId)
+    {
+
+        int result = projectRecruitmentService.wishProjectRecruitment(projectId);
+        if(result == 1){
+            return ResponseEntity.status(HttpStatus.OK).body("찜 등록");
+        } else if (result == -1) {
+            return ResponseEntity.status(HttpStatus.OK).body("찜 삭제");
+        } else {
+          return ResponseEntity.status(HttpStatus.OK).body("찜 등록 또는 삭제 실패");
+        }
+
+    }
+
 
 
 

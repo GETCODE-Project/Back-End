@@ -2,15 +2,13 @@ package com.getcode.service.projectrecruitment;
 
 import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.member.Member;
-import com.getcode.domain.projectrecruitment.ProjectRecruitment;
-import com.getcode.domain.projectrecruitment.ProjectRecruitmentComment;
-import com.getcode.domain.projectrecruitment.ProjectRecruitmentLike;
-import com.getcode.domain.projectrecruitment.ProjectRecruitmentTech;
+import com.getcode.domain.projectrecruitment.*;
 import com.getcode.dto.projectrecruitment.req.*;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.project.NotFoundCommentException;
 import com.getcode.exception.project.NotMatchMemberException;
 import com.getcode.exception.project.NotOwnLikeException;
+import com.getcode.exception.project.NotOwnWishException;
 import com.getcode.exception.projectrecruitment.NotFoundProjectRecruitmentException;
 import com.getcode.repository.MemberRepository;
 import com.getcode.repository.projectrecruitment.*;
@@ -31,6 +29,7 @@ public class ProjectRecruitmentService {
     private final ProjectRecruitmentSubjectRepository projectRecruitmentSubjectRepository;
     private final ProjectRecruitmentCommentRepository projectRecruitmentCommentRepository;
     private final ProjectRecruitmentLikeRepository projectRecruitmentLikeRepository;
+    private final ProjectRecruitmentWishRepository projectRecruitmentWishRepository;
 
 
     @Transactional
@@ -152,14 +151,36 @@ public class ProjectRecruitmentService {
             projectRecruitmentRepository.save(projectRecruitment);
             return 1;
         }
+    }
 
+    public int wishProjectRecruitment(Long projectId) {
+        Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
+        ProjectRecruitment projectRecruitment = projectRecruitmentRepository.findById(projectId).orElseThrow(NotFoundProjectRecruitmentException::new);
 
+        WishProjectRecruitment wishProjectRecruitment = projectRecruitmentWishRepository.findByProjectRecruitmentAndMember(projectRecruitment, member);
 
+        String owner = member.getEmail();
 
+        if(owner == projectRecruitment.getMember().getEmail()){
+            throw new NotOwnWishException();
+        }
 
+        if(wishProjectRecruitment != null){
+            projectRecruitmentWishRepository.delete(wishProjectRecruitment);
 
+            projectRecruitmentRepository.save(projectRecruitment);
+            return -1;
 
+        } else {
+            projectRecruitmentWishRepository.save(
+                    WishProjectRecruitment.builder()
+                            .projectRecruitment(projectRecruitment)
+                            .member(member)
+                            .build());
 
+            projectRecruitmentRepository.save(projectRecruitment);
+            return 1;
+        }
 
 
     }

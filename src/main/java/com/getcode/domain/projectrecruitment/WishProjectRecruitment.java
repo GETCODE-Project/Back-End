@@ -3,9 +3,10 @@ package com.getcode.domain.projectrecruitment;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.project.Project;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+@AllArgsConstructor
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
