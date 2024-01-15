@@ -2,10 +2,10 @@ package com.getcode.domain.projectrecruitment;
 
 import com.getcode.domain.common.TechStack;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@AllArgsConstructor
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
