@@ -75,6 +75,16 @@ public class ProjectRecruitmentController {
 
     }
 
+    @Operation(summary = "프로젝트 모집 댓글 수정기능 구현")
+    @DeleteMapping("/detail/{projectId}/comment/delete/{commentId}")
+    public ResponseEntity<?> deleteComment(@Parameter(description = "프로젝트 모집 아이디")
+                                               @PathVariable Long projectId,
+                                           @Parameter(description = "프로젝트 모집 댓글 아이디")
+                                               @PathVariable Long commentId)
+    {
+        projectRecruitmentService.deleteComment(projectId, commentId);
+        return ResponseEntity.status(HttpStatus.OK).body("댓글 삭제 완료");
+    }
 
 
 

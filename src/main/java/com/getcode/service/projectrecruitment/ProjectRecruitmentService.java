@@ -93,11 +93,29 @@ public class ProjectRecruitmentService {
         }
 
         if(!projectRecruitmentComment.getProjectRecruitment().getId().equals(projectId)){
-            throw new NotFoundProjectRecruitmentException();
+            throw new NotFoundCommentException();
         }
 
         projectRecruitmentComment.update(requestDto);
 
+
+
+    }
+
+    public void deleteComment(Long projectId, Long commentId) {
+
+        Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
+        ProjectRecruitmentComment projectRecruitmentComment = projectRecruitmentCommentRepository.findById(commentId).orElseThrow(NotFoundCommentException::new);
+
+        if(!member.getEmail().equals(projectRecruitmentComment.getMember().getEmail())){
+            throw new NotMatchMemberException();
+        }
+
+        if(!projectRecruitmentComment.getProjectRecruitment().getId().equals(projectId)){
+            throw new NotFoundCommentException();
+        }
+
+        projectRecruitmentCommentRepository.deleteById(commentId);
 
 
     }
