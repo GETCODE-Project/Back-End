@@ -16,13 +16,16 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+@PropertySource("classpath:private-file/application.properties")
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class S3Service {
+
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 

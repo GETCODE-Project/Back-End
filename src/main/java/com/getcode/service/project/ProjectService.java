@@ -21,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
 import java.util.stream.Collectors;
 import com.getcode.exception.project.*;
-import com.getcode.repository.MemberRepository;
 
 @RequiredArgsConstructor
 @Service

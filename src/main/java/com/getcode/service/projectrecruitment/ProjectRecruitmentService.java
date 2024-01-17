@@ -11,7 +11,7 @@ import com.getcode.exception.project.NotMatchMemberException;
 import com.getcode.exception.project.NotOwnLikeException;
 import com.getcode.exception.project.NotOwnWishException;
 import com.getcode.exception.projectrecruitment.NotFoundProjectRecruitmentException;
-import com.getcode.repository.MemberRepository;
+import com.getcode.repository.member.MemberRepository;
 import com.getcode.repository.projectrecruitment.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
