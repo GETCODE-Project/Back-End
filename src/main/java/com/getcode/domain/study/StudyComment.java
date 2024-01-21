@@ -1,6 +1,7 @@
 package com.getcode.domain.study;
 
 import com.getcode.domain.common.BaseTimeEntity;
+import com.getcode.domain.community.Community;
 import com.getcode.domain.member.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,6 +39,17 @@ public class StudyComment extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_id")
     private Study study;
+
+    //연관관계 메서드//
+    public void foreignKey(Member member){
+        this.member = member;
+        member.getStudyComments().add(this);
+    }
+
+    public void foreignKey(Study study){
+        this.study = study;
+        study.getComments().add(this);
+    }
 
     public void editComment(String content) {
         this.content = content;

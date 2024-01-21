@@ -1,6 +1,7 @@
 package com.getcode.domain.study;
 
 import com.getcode.domain.common.BaseTimeEntity;
+import com.getcode.domain.community.Community;
 import com.getcode.domain.member.Member;
 import com.getcode.dto.study.StudyEditDto;
 
@@ -71,8 +72,17 @@ public class Study extends BaseTimeEntity {
     @OneToMany(mappedBy = "study", cascade = CascadeType.ALL)
     private List<StudySubject> subjects = new ArrayList<>();
 
+    @OneToMany(mappedBy = "study", cascade = CascadeType.ALL)
+    private List<WishStudy> wishes = new ArrayList<>();
+
     @Column(nullable = false)
     private int count;
+
+    //연관관계 메서드//
+    public void foreignKey(Member member){
+        this.member = member;
+        member.getStudy().add(this);
+    }
 
     public void increaseViews() {
         this.views +=1;

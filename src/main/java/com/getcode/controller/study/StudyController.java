@@ -1,7 +1,5 @@
 package com.getcode.controller.study;
 
-
-
 import com.getcode.dto.study.CreatedStudyResponseDto;
 import com.getcode.dto.study.StudyCommentRequestDto;
 import com.getcode.dto.study.StudyCommentResponseDto;
@@ -75,13 +73,10 @@ public class StudyController {
             @RequestParam(value = "year", required = false) Integer year,
             @RequestParam(value = "subjects", required = false) List<String> subjects,
             @RequestParam(value = "criteria", required = false) String criteria,
-            @RequestParam(value = "pageNumber") Integer pageNumber
-
-    ) {
+            @RequestParam(value = "pageNumber") Integer pageNumber) {
         return ResponseEntity.status(HttpStatus.OK).body(studyService.searchStudy(
                 keyword, region, recruitment, online, year, subjects, pageNumber, criteria));
     }
-
 
     @Operation(summary = "로그인한 사용자가 작성한 스터디 모집글 전체 조회", description = "특정 사용자가 작성한 게시물 조회")
     @ApiResponses(value = {
@@ -102,7 +97,7 @@ public class StudyController {
         return ResponseEntity.status(HttpStatus.OK).body(studyService.addComment(req, id));
     }
 
-    @Operation(summary = "스터디 게시글 댓글 수정", description = "댓긋 Id를 입력받아 댓글 수정")
+    @Operation(summary = "스터디 게시글 댓글 수정", description = "댓글 Id를 입력받아 댓글 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK")
     })
@@ -112,7 +107,7 @@ public class StudyController {
         return ResponseEntity.status(HttpStatus.OK).body(studyService.editComment(req, id));
     }
 
-    @Operation(summary = "스터디 게시글 댓글 삭제", description = "댓긋 Id를 입력받아 댓글 삭제")
+    @Operation(summary = "스터디 게시글 댓글 삭제", description = "댓글 Id를 입력받아 댓글 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK")
     })
@@ -120,8 +115,6 @@ public class StudyController {
     public void deleteComment(@PathVariable(name = "id") Long id) {
         studyService.deleteComment(id);
     }
-
-
 
     @Operation(summary = "스터디 좋아요", description = "좋아요를 하면 전체 스터디 정보 리턴")
     @ApiResponses(value = {
@@ -131,8 +124,6 @@ public class StudyController {
     public ResponseEntity<StudyInfoResponseDto> addComment(@PathVariable(name = "id") Long id){
         return ResponseEntity.status(HttpStatus.OK).body(studyService.likeStudy(id));
     }
-
-
 
     @Operation(summary = "스터디 모집글 수정", description = "PathVariable, 스터디 변경내용을 입력받아 스터디 수정")
     @ApiResponses(value = {

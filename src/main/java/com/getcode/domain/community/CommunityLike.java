@@ -28,5 +28,15 @@ public class CommunityLike {
     @JoinColumn(name = "community_id")
     private Community community;
 
+    //연관관계 메서드//
+    public void foreignKey(Member member){
+        this.member = member;
+        member.getCommunityLikes().add(this);
+    }
+
+    public void foreignKey(Community community){
+        this.community = community;
+        community.getLikes().add(this);
+    }
 
 }

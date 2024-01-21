@@ -1,5 +1,6 @@
 package com.getcode.domain.study;
 
+import com.getcode.domain.member.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,4 +32,10 @@ public class StudySubject {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_id")
     private Study study;
+
+    //연관관계 메서드//
+    public void foreignKey(Study study){
+        this.study = study;
+        study.getSubjects().add(this);
+    }
 }

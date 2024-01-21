@@ -35,4 +35,15 @@ public class StudyLike {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_id")
     private Study study;
+
+    //연관관계 메서드//
+    public void foreignKey(Member member){
+        this.member = member;
+        member.getStudyLikes().add(this);
+    }
+
+    public void foreignKey(Study study){
+        this.study = study;
+        study.getLikes().add(this);
+    }
 }

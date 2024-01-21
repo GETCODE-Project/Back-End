@@ -88,10 +88,11 @@ public class CommunityService {
         communityRepository.delete(community);
     }
 
-    // 특정 게시글 조회
+    // 특정 게시글 조회 V
     @Transactional
     public CommunityResponseDto findCommunity(Long id) {
-        Community community = communityRepository.findById(id).orElseThrow(NotFoundCommunityException::new);
+        Community community = communityRepository.findById(id)
+                .orElseThrow(NotFoundCommunityException::new);
         community.increaseViews();
         return CommunityResponseDto.toDto(community);
     }

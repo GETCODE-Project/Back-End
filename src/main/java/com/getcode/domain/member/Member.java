@@ -2,7 +2,11 @@ package com.getcode.domain.member;
 
 import com.getcode.domain.common.BaseTimeEntity;
 import com.getcode.domain.community.Community;
+import com.getcode.domain.community.CommunityComment;
+import com.getcode.domain.community.CommunityLike;
 import com.getcode.domain.study.Study;
+import com.getcode.domain.study.StudyComment;
+import com.getcode.domain.study.StudyLike;
 import com.getcode.domain.study.WishStudy;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -56,16 +60,33 @@ public class Member extends BaseTimeEntity {
 
     private String imageUrl;
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Study> study = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Community> community = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<WishStudy> wishStudy = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<CommunityComment> communityComments = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<CommunityLike> communityLikes = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<StudyComment> studyComments = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<StudyLike> studyLikes = new ArrayList<>();
 
     public void updateEmailVerified() {
         this.emailVerified = true;
