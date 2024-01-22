@@ -8,18 +8,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
 @Configuration
 public class S3Config {
-
     @Value("${cloud.aws.credentials.accessKey}")
     private String accessKey;
     @Value("${cloud.aws.credentials.secretKey}")
     private String secretKey;
     @Value("${cloud.aws.region.static}")
     private String region;
-
-
 
     // S3 클라이언트 객체로, 이 객체를 통해 S3 접근 가능
     @Bean
@@ -30,6 +26,4 @@ public class S3Config {
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
     }
-
-
 }

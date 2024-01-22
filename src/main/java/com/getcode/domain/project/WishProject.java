@@ -24,5 +24,14 @@ public class WishProject {
     @JoinColumn(name = "project_id")
     private Project project;
 
+    public void foreignkey(Member member){
+        this.member = member;
+        member.getWishProject().add(this);
+    }
+
+    public void foreignkey(Project project){
+        this.project = project;
+        project.getWishProjects().add(this);
+    }
 
 }

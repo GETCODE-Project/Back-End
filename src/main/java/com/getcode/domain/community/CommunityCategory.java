@@ -1,13 +1,25 @@
 package com.getcode.domain.community;
 
+import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
-public enum CommunityCategory {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
+public class CommunityCategory {
 
-    QNA("질문"), FREE("자유게시판"), COUNSEL("고민상담");
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "community_category_id")
+    private Long id;
 
-    private final String category;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category_name", nullable = false)
+    private CommunityCategory category;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "community_id")
+    private Community community;
 }

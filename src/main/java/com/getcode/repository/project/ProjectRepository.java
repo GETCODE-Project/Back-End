@@ -12,5 +12,4 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
      boolean existsByGithubUrl(String githubUrl);
      Page<Project> findAll(Specification<Project> combinedSpec, Pageable pageable);
 
-
 }

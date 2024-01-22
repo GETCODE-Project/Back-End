@@ -35,6 +35,7 @@ public class ProjectRequestDto {
     private String githubUrl;
     private int views;
     private int likeCnt;
+    private int wishCnt;
     private List<String> imageUrls;
     private List<String> techStackList;
     private List<String> projectSubjects;

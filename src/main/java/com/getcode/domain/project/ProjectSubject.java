@@ -2,6 +2,7 @@ package com.getcode.domain.project;
 
 
 import com.getcode.domain.common.Subject;
+import com.getcode.dto.project.req.ProjectUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -47,5 +48,10 @@ public class ProjectSubject {
                 .build();
     }
 
-
+    public void foreignkey(Project project){
+        this.project = project;
+        project.getProjectSubjects().add(this);
+    }
+    public void updateSubject(ProjectUpdateRequestDto requestDto) {
+    }
 }

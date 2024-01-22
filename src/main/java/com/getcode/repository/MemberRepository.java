@@ -1,4 +1,4 @@
-package com.getcode.repository.member;
+package com.getcode.repository;
 
 import com.getcode.domain.member.Member;
 import com.getcode.domain.member.SocialType;

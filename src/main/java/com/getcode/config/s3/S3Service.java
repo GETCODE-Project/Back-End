@@ -19,12 +19,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class S3Service {
-
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 

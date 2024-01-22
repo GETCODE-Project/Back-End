@@ -20,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProjectUpdateRequestDto {
-
+    private Long id;
     private String title;
 
     private String content;

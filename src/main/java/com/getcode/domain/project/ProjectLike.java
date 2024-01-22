@@ -24,6 +24,15 @@ public class ProjectLike {
     @JoinColumn(name = "project_id")
     private Project project;
 
+    public void foreignkey(Project project){
+        this.project = project;
+        project.getProjectLikes().add(this);
+    }
+
+    public void foreignkey(Member member){
+        this.member = member;
+        member.getProjectLikes().add(this);
+    }
 
 
 }

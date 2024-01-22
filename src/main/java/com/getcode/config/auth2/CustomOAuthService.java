@@ -5,7 +5,7 @@ import static com.getcode.domain.member.SocialType.NAVER;
 
 import com.getcode.domain.member.Member;
 import com.getcode.domain.member.SocialType;
-import com.getcode.repository.member.MemberRepository;
+import com.getcode.repository.MemberRepository;
 import java.util.Collections;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;

@@ -2,6 +2,7 @@ package com.getcode.domain.project;
 
 import com.getcode.domain.common.Subject;
 import com.getcode.domain.common.TechStack;
+import com.getcode.dto.project.req.ProjectUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -45,6 +46,12 @@ public class ProjectTech {
                 .build();
     }
 
+    public void foreignkey(Project project){
+        this.project = project;
+        project.getTechStacks().add(this);
+    }
 
 
+    public void updateTech(ProjectUpdateRequestDto requestDto) {
+    }
 }

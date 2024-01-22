@@ -29,6 +29,11 @@ public class ProjectImage {
                 .build();
     }
 
+    public void foreignkey(Project project){
+        this.project = project;
+        project.getProjectImages().add(this);
+    }
+
     public ProjectImage(String imageUrl, Project project) {
         this.imageUrl = imageUrl;
         this.project = project;

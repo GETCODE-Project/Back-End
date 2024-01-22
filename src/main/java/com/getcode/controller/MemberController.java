@@ -12,7 +12,7 @@ import com.getcode.dto.member.SignUpDto;
 import com.getcode.dto.member.SignUpResponseDto;
 import com.getcode.dto.s3.S3FileDto;
 import com.getcode.dto.s3.S3FileUpdateDto;
-import com.getcode.service.member.MemberService;
+import com.getcode.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
