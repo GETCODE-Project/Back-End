@@ -2,7 +2,21 @@ package com.getcode.domain.member;
 
 import com.getcode.domain.common.BaseTimeEntity;
 import com.getcode.domain.community.Community;
+import com.getcode.domain.community.CommunityComment;
+import com.getcode.domain.community.CommunityLike;
+
+import com.getcode.domain.project.Project;
+import com.getcode.domain.project.ProjectComment;
+import com.getcode.domain.project.ProjectLike;
+import com.getcode.domain.project.WishProject;
+import com.getcode.domain.projectrecruitment.ProjectRecruitment;
+import com.getcode.domain.projectrecruitment.ProjectRecruitmentComment;
+import com.getcode.domain.projectrecruitment.ProjectRecruitmentLike;
+import com.getcode.domain.projectrecruitment.WishProjectRecruitment;
+
 import com.getcode.domain.study.Study;
+import com.getcode.domain.study.StudyComment;
+import com.getcode.domain.study.StudyLike;
 import com.getcode.domain.study.WishStudy;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -56,17 +70,65 @@ public class Member extends BaseTimeEntity {
 
     private String imageUrl;
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Study> study = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Community> community = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<WishStudy> wishStudy = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<CommunityComment> communityComments = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<CommunityLike> communityLikes = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<StudyComment> studyComments = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<StudyLike> studyLikes = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Project> projects = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<ProjectRecruitment> projectRecruitments = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<WishProject> wishProject = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<WishProjectRecruitment> wishProjectRecruitments = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<ProjectComment> projectComments = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<ProjectLike> projectLikes = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<ProjectRecruitmentLike> projectRecruitmentLikes = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<ProjectRecruitmentComment> projectRecruitmentComments = new ArrayList<>();
     public void updateEmailVerified() {
         this.emailVerified = true;
     }

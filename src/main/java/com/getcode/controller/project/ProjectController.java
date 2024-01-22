@@ -1,5 +1,4 @@
 package com.getcode.controller.project;
-
 import com.getcode.config.s3.S3Service;
 import com.getcode.config.security.SecurityUtil;
 import com.getcode.dto.project.req.CommentRequestDto;
@@ -8,9 +7,7 @@ import com.getcode.dto.project.req.ProjectRequestDto;
 import com.getcode.dto.project.req.ProjectUpdateRequestDto;
 import com.getcode.dto.project.res.ProjectDetailResponseDto;
 import com.getcode.dto.project.res.ProjectInfoResponseDto;
-import com.getcode.dto.s3.S3FileDto;
 import com.getcode.service.project.ProjectService;
-import com.getcode.util.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,9 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Tag(name = "프로젝트 관련 기능 api명세")
 @Slf4j
@@ -43,25 +38,18 @@ public class ProjectController {
     public ResponseEntity<?> addProject(@Parameter(description = "프로젝트 등록 값")
                                         @Valid @RequestPart ProjectRequestDto projectRequestDto,
                                         @Parameter(description = "프로젝트 이미지")
-                                        @RequestPart(name = "fileType") String fileType,
-                                        @RequestPart(name = "files") List<MultipartFile> multipartFiles
+                                        @RequestPart(name = "fileType", required = false) String fileType,
+                                        @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles
     ){
 
 
-        //확장성을 고려하여 List형태로 파일 저장
-        List<S3FileDto> files = s3Service.uploadFiles(fileType, multipartFiles);
-        //파일 url리스트로 변환
-        List<String> fileUrls = files.stream()
-                .map(S3FileDto::getUploadFileUrl)
-                .collect(Collectors.toList());
 
-        projectRequestDto.setImageUrls(fileUrls);
 
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
-        projectService.insertProject(projectRequestDto, memberEmail);
+        projectService.addProject(projectRequestDto, memberEmail,multipartFiles, fileType);
 
-        return Response.makeResponse(HttpStatus.OK, "등록이 완료되었습니다.");
+        return ResponseEntity.status(HttpStatus.CREATED).body("등록이 완료되었습니다.");
 
     }
 
@@ -69,19 +57,20 @@ public class ProjectController {
     @Operation(summary = "github url 중복확인 api")
     @GetMapping("/add/checkUrl")
     public ResponseEntity<?> checkUrl(@Parameter(description = "github Url") @RequestBody String githubUrl) {
-        Boolean result = projectService.checkGithubUrlDuplication(githubUrl);
 
-        if (!result) {
-            return Response.makeResponse(HttpStatus.OK, "중복된 url입니다.");
+        Boolean result = projectService.checkGithubUrlDuplication(githubUrl);
+        //result: false - 사용가능 , true: 중복
+        if (result) {
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         } else{
-            return Response.makeResponse(HttpStatus.OK, "중복되지 않은 url입니다.");
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         }
 
     }
 
 
     @Operation(summary = "프로젝트 삭제 api")
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}/delete")
     public ResponseEntity<?> deleteProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id){
 
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
@@ -91,18 +80,18 @@ public class ProjectController {
         res = projectService.deleteProject(id, memberEmail);
 
         if(res <= 0 ){
-            Response.makeResponse(HttpStatus.OK, "삭제 실패");
+            return ResponseEntity.status(HttpStatus.OK).body("삭제 실패.");
         }
 
-        return Response.makeResponse(HttpStatus.OK,"삭제가 완료되었습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body("삭제가 완료되었습니다.");
     }
 
 
 
     @Operation(summary = "프로젝트 수정 api")
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}/update")
     public ResponseEntity<?> updateProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id,
-                                           @RequestPart ProjectUpdateRequestDto requestDto,
+                                           @RequestPart(required = false) ProjectUpdateRequestDto requestDto,
                                            @RequestPart(name = "fileType", required = false) String fileType,
                                            @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles
     ){
@@ -110,14 +99,14 @@ public class ProjectController {
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
         projectService.updateProject(id, requestDto,memberEmail, fileType, multipartFiles);
 
-        return Response.makeResponse(HttpStatus.OK,"수정완료");
+        return ResponseEntity.status(HttpStatus.OK).body("수정 완료.");
     }
 
 
 
 
     @Operation(summary = "프로젝트 좋아요 api")
-    @PostMapping("/like/{id}")
+    @PostMapping("/{id}/like")
     ResponseEntity<?> likeProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id){
 
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
@@ -125,27 +114,27 @@ public class ProjectController {
         int result = projectService.likeProject(id, memberEmail);
 
         if(result == 1) {
-            return Response.makeResponse(HttpStatus.OK,"프로젝트 좋아요 성공");
+            return ResponseEntity.status(HttpStatus.OK).body("프로젝트 좋아요 성공.");
         } else if (result == 0) {
-            return Response.makeResponse(HttpStatus.OK,"프로젝트 좋아요 삭제 성공");
+            return ResponseEntity.status(HttpStatus.OK).body("프로젝트 좋아요 삭제 성공.");
         }
-            return Response.makeResponse(HttpStatus.OK,"프로젝트 좋아요 등록 또는 삭제 실패");
+        return ResponseEntity.status(HttpStatus.OK).body("프로젝트 좋아요 등록 또는 삭제 실패");
     }
 
 
     @Operation(summary = "프로젝트 즐겨찾기 api")
-    @PostMapping("/wish/{id}")
+    @PostMapping("/{id}/wish")
     ResponseEntity<?> wishProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id){
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
         int result = projectService.wishProject(id, memberEmail);
 
         if(result == 1){
-            return Response.makeResponse(HttpStatus.OK,"프로젝트 찜 성공");
+            return ResponseEntity.status(HttpStatus.OK).body("프로젝트 찜 성공.");
         } else if (result == 0){
-            return Response.makeResponse(HttpStatus.OK,"프로젝트 찜 삭제 성공");
+            return ResponseEntity.status(HttpStatus.OK).body("프로젝트 찜 삭제 성공.");
         }
-            return Response.makeResponse(HttpStatus.OK,"프로젝트 찜 등록 또는 삭제 실패");
+        return ResponseEntity.status(HttpStatus.OK).body("프로젝트 찜 등록 또는 삭제 실패");
     }
 
 
@@ -156,7 +145,7 @@ public class ProjectController {
 
         ProjectDetailResponseDto responseDto = projectService.getProject(id);
 
-        return Response.makeResponse(HttpStatus.OK, responseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
 
     }
 
@@ -171,16 +160,16 @@ public class ProjectController {
                                      @Parameter(description = "한 페이지에 담기는 개수")
                                      @Positive(message = "size값은 1이상이어야 합니다")
                                      @RequestParam(defaultValue = "10") int size,
-                                                                @Parameter(description = "검색어") @RequestParam(defaultValue = "", required = false) String keyword,
-                                                                @Parameter(description = "검색 조건") @RequestParam(defaultValue = "", required = false) List<String> subject,
-                                                                @Parameter(description = "기술스택") @RequestParam(defaultValue = "", required = false) List<String> techStack,
-                                                                @Parameter(description = "년도") @RequestParam(defaultValue = "", required = false) Integer year
+                                     @Parameter(description = "검색어") @RequestParam(defaultValue = "", required = false) String keyword,
+                                     @Parameter(description = "검색 조건") @RequestParam(defaultValue = "", required = false) List<String> subject,
+                                     @Parameter(description = "기술스택") @RequestParam(defaultValue = "", required = false) List<String> techStack,
+                                     @Parameter(description = "년도") @RequestParam(defaultValue = "2024", required = false) Integer year
     )
     {
 
         List<ProjectInfoResponseDto> projectLists = projectService.getProjectList(size, page, sort, keyword, subject, techStack, year);
 
-        return Response.makeResponse(HttpStatus.OK, projectLists);
+        return ResponseEntity.status(HttpStatus.OK).body(projectLists);
 
     }
 
@@ -199,7 +188,7 @@ public class ProjectController {
 
         projectService.addComment(id, memberEmail, requestDto);
 
-        return Response.makeResponse(HttpStatus.OK,"댓글 등록이 완료되었습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body("댓글 등록이 완료되었습니다.");
 
     }
 
@@ -215,9 +204,9 @@ public class ProjectController {
         int result = projectService.deleteComment(id, projectId, memberEmail);
 
         if(result == 1){
-            return Response.makeResponse(HttpStatus.OK,"댓글 삭제 완료");
+            return ResponseEntity.status(HttpStatus.OK).body("댓글 삭제 완료");
         } else {
-            return Response.makeResponse(HttpStatus.OK,"댓글 삭제 실패");
+            return ResponseEntity.status(HttpStatus.OK).body("댓글 삭제 실패");
         }
 
     }
@@ -234,9 +223,9 @@ public class ProjectController {
         int result = projectService.updateComment(id, projectId, memberEmail, requestDto);
 
         if (result == 1){
-            return Response.makeResponse(HttpStatus.OK,"댓글 수정 완료");
+            return ResponseEntity.status(HttpStatus.OK).body("댓글 수정 완료");
         } else {
-            return Response.makeResponse(HttpStatus.OK,"댓글 수정 실패");
+            return ResponseEntity.status(HttpStatus.OK).body("댓글 수정 실패");
         }
 
 

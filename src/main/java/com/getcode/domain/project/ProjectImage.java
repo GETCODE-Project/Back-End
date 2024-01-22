@@ -34,5 +34,10 @@ public class ProjectImage {
         this.project = project;
     }
 
+    public void foreignkey(Project project){
+        this.project = project;
+        project.getProjectImages().add(this);
+    }
+
 
 }

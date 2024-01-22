@@ -1,31 +1,18 @@
 package com.getcode.controller.community;
 
-import com.getcode.domain.community.Community;
-import com.getcode.dto.community.CommunityCommentRequestDto;
-import com.getcode.dto.community.CommunityCommentResponseDto;
-import com.getcode.dto.community.CommunityEditDto;
-import com.getcode.dto.community.CommunityRequestDto;
-import com.getcode.dto.community.CommunityResponseDto;
-import com.getcode.dto.community.CreatedCommunityResponseDto;
+import com.getcode.dto.community.*;
 import com.getcode.service.community.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "게시판 관련 API 명세")
 @RestController
@@ -40,19 +27,19 @@ public class CommunityController {
             @ApiResponse(responseCode = "201", description = "CREATED")
     })
     @PostMapping("/community")
-    public ResponseEntity<CreatedCommunityResponseDto> createStudy(@Valid @RequestBody CommunityRequestDto req) {
+    public ResponseEntity<CreatedCommunityResponseDto> createCommunity(@Valid @RequestBody CommunityRequestDto req) {
         CreatedCommunityResponseDto res = communityService.createCommunity(req);
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 
-    @Operation(summary = "로그인한 사용자가 작성한 게시글 전체 조회", description = "특정 사용자가 작성한 게시물 조회")
+    @Operation(summary = "로그인한 사용자가 작성한 게시글 목록 조회", description = "특정 사용자가 작성한 게시물 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK")
     })
     @GetMapping("/communities")
     public ResponseEntity<List<CommunityResponseDto>> findAllCommunityByMember() {
         return ResponseEntity.status(HttpStatus.OK).body(communityService.findAllCommunityByMember());
-    }
+    };;;
 
     @Operation(summary = "게시글 수정", description = "PathVariable, 게시글 변경내용을 입력받아 게시글 수정(제목, 내용)")
     @ApiResponses(value = {
@@ -92,9 +79,9 @@ public class CommunityController {
         return ResponseEntity.status(HttpStatus.OK).body(communityService.likeCommunity(id));
     }
 
-    @Operation(summary = "스터디 게시글에 댓글", description = "게시글 Id를 입력받아 해당 게시글을 찾은 후 댓글")
+    @Operation(summary = "커뮤니티 게시글에 댓글", description = "게시글 Id를 입력받아 해당 게시글을 찾은 후 댓글")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK")
+            @ApiResponse(responseCode = "201", description = "CREATED")
     })
     @PostMapping("/community/comment/{id}")
     public ResponseEntity<CommunityCommentResponseDto> addComment(@PathVariable(name = "id") Long id,
@@ -102,7 +89,7 @@ public class CommunityController {
         return ResponseEntity.status(HttpStatus.OK).body(communityService.addComment(req, id));
     }
 
-    @Operation(summary = "게시글 댓글 수정", description = "댓글 Id를 입력받아 댓글 수정")
+    @Operation(summary = "커뮤니티 게시글 댓글 수정", description = "댓글 Id를 입력받아 댓글 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK")
     })
@@ -112,7 +99,7 @@ public class CommunityController {
         return ResponseEntity.status(HttpStatus.OK).body(communityService.editComment(req, id));
     }
 
-    @Operation(summary = "스터디 게시글 댓글 삭제", description = "댓긋 Id를 입력받아 댓글 삭제")
+    @Operation(summary = "커뮤니티 게시글 댓글 삭제", description = "댓긋 Id를 입력받아 댓글 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK")
     })

@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProjectLikeRepository extends JpaRepository<ProjectLike, Long> {
     ProjectLike findByProjectAndMember(Project project, Member member);
+
+    ProjectLike findByProject(Project project);
 }

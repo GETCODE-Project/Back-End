@@ -32,6 +32,17 @@ public class CommunityComment extends BaseTimeEntity {
     @JoinColumn(name = "community_id")
     private Community community;
 
+    //연관관계 메서드//
+    public void foreignKey(Member member){
+        this.member = member;
+        member.getCommunityComments().add(this);
+    }
+
+    public void foreignKey(Community community){
+        this.community = community;
+        community.getComments().add(this);
+    }
+
     public void editComment(String content) {
         this.content = content;
     }

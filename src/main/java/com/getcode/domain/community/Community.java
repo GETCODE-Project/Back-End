@@ -45,11 +45,19 @@ public class Community extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Builder.Default
     @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
     private List<CommunityComment> comments = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
     private List<CommunityLike> likes = new ArrayList<>();
+
+    //연관관계 메서드//
+    public void foreignKey(Member member){
+        this.member = member;
+        member.getCommunity().add(this);
+    }
 
     public void increaseViews() {
         this.views +=1;

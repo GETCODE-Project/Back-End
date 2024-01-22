@@ -131,6 +131,11 @@ public class Project extends BaseTimeEntity {
         this.views += 1;
     }
 
+    public void foreignkey(Member member){
+        this.member = member;
+        member.getProjects().add(this);
+    }
+
 
 
 }

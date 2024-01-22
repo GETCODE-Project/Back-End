@@ -25,5 +25,9 @@ public class WishProjectRecruitment {
     @JoinColumn(name = "project_recruitment_id")
     private ProjectRecruitment projectRecruitment;
 
+    public void foreignkey(Member member){
+        this.member = member;
+        member.getWishProjectRecruitments().add(this);
+    }
 
 }
