@@ -1,12 +1,14 @@
 package com.getcode.dto.project.res;
 
 
+import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.project.*;
 import com.getcode.dto.member.MemberInfoDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,9 +27,14 @@ public class ProjectDetailResponseDto {
     private List<ProjectSubjectResponseDto> projectSubjects;
     private List<ProjectImageUrlResponseDto> imageUrls;
     private List<CommentResponseDto> comments;
-    private MemberInfoDto memberInfo;
+    private String memberNickName;
+    private boolean isWriter;
+    private boolean checkWish;
+    private boolean checkLike;
+    private LocalDateTime createdDate, modifiedDate;
 
-    public ProjectDetailResponseDto(Project project){
+
+    public ProjectDetailResponseDto(Project project, ProjectLike projectLike, WishProject wishProject){
 
         this.projectId  = project.getId();
         this.title  = project.getTitle();
@@ -39,9 +46,31 @@ public class ProjectDetailResponseDto {
         this.projectSubjects  = project.getProjectSubjects().stream().map(ProjectSubjectResponseDto::new).collect(Collectors.toList());
         this.imageUrls  = project.getProjectImages().stream().map(ProjectImageUrlResponseDto::new).collect(Collectors.toList());
         this.comments = project.getProjectComments().stream().map(CommentResponseDto::new).collect(Collectors.toList());
-        MemberInfoDto.toDto(project.getMember());
+        this.memberNickName = project.getMember().getNickname();
+        if (project.getMember().getEmail().equals(SecurityUtil.getCurrentMemberEmail())) {
+            this.isWriter = true;
+        } else {
+            this.isWriter = false;
+        }
+
+        if(projectLike != null && projectLike.getMember().getEmail().equals(SecurityUtil.getCurrentMemberEmail())){
+            this.checkLike = true;
+        } else {
+            this.checkLike = false;
+        }
+
+        if(wishProject != null && wishProject.getMember().getEmail().equals(SecurityUtil.getCurrentMemberEmail())){
+            this.checkWish = true;
+        } else {
+            this.checkWish = false;
+        }
+
+        this.createdDate = project.getCreateDate();
+        this.modifiedDate = project.getModifiedDate();
+
 
     }
+
 
 
 

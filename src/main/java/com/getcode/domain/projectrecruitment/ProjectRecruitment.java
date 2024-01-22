@@ -82,5 +82,10 @@ public class ProjectRecruitment extends BaseTimeEntity {
         this.views += 1;
     }
 
+    public void foreignkey(Member member){
+        this.member = member;
+        member.getProjectRecruitments().add(this);
+    }
+
 
 }

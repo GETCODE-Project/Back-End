@@ -35,5 +35,16 @@ public class ProjectRecruitmentComment {
         this.content = dto.getContent();
     }
 
+    public void foreignkey(ProjectRecruitment projectRecruitment){
+        this.projectRecruitment = projectRecruitment;
+        projectRecruitment.getComments().add(this);
+    }
+
+    public void foreignkey(Member member){
+        this.member = member;
+        member.getProjectRecruitmentComments().add(this);
+    }
+
+
 
 }

@@ -32,6 +32,14 @@ public class ProjectComment {
         this.content = requestDto.getContent();
     }
 
+    public void foreignkey(Project project){
+        this.project = project;
+        project.getProjectComments().add(this);
+    }
 
+    public void foreignkey(Member member){
+        this.member = member;
+        member.getProjectComments().add(this);
+    }
 
 }

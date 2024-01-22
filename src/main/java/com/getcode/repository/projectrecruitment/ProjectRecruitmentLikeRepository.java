@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProjectRecruitmentLikeRepository extends JpaRepository<ProjectRecruitmentLike, Long> {
     ProjectRecruitmentLike findByProjectRecruitmentAndMember(ProjectRecruitment projectRecruitment, Member member);
+
+    ProjectRecruitmentLike findByProjectRecruitment(ProjectRecruitment projectRecruitment);
 }

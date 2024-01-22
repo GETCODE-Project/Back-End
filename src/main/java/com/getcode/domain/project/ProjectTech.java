@@ -45,6 +45,9 @@ public class ProjectTech {
                 .build();
     }
 
-
+    public void foreignkey(Project project){
+        this.project = project;
+        project.getTechStacks().add(this);
+    }
 
 }

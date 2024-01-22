@@ -46,6 +46,9 @@ public class ProjectSubject {
                 .project(project)
                 .build();
     }
-
+    public void foreignkey(Project project){
+        this.project = project;
+        project.getProjectSubjects().add(this);
+    }
 
 }

@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProjectWishRepository extends JpaRepository<WishProject, Long> {
     WishProject findByProjectAndMember(Project project, Member member);
+
+    WishProject findByProject(Project project);
 }

@@ -1,6 +1,7 @@
 package com.getcode.service.project;
 
 import com.getcode.config.s3.S3Service;
+import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.project.*;
 import com.getcode.dto.project.ProjectSpecification;
@@ -9,7 +10,7 @@ import com.getcode.dto.project.res.ProjectDetailResponseDto;
 import com.getcode.dto.project.res.ProjectInfoResponseDto;
 import com.getcode.dto.s3.S3FileDto;
 import com.getcode.exception.member.NotFoundMemberException;
-import com.getcode.exception.project.NotFoundProjectException;
+import com.getcode.exception.project.*;
 import com.getcode.repository.member.MemberRepository;
 import com.getcode.repository.project.*;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
 import java.util.stream.Collectors;
-import com.getcode.exception.project.*;
+
 
 @RequiredArgsConstructor
 @Service
@@ -45,7 +46,6 @@ public class ProjectService {
         return existedProject
                 .filter(project -> project.getMember() != null && project.getMember().getEmail().equals(memberEmail)) //로그인한 유저와 글 쓴 유저 일치하는지 확인
                 .map(project -> {
-                    //S3파일 삭제하기 위해 받은 값을 String으로 변환
                     List<ProjectImage> projectImages = projectImageRepository.findAllByProjectId(id);
                     deleteS3File(projectImages);
                     projectRepository.deleteById(id);
@@ -95,7 +95,7 @@ public class ProjectService {
 
     //프로젝트 등록
     @Transactional
-    public void insertProject(ProjectRequestDto projectRequestDto, String memberEmail) {
+    public void addProject(ProjectRequestDto projectRequestDto, String memberEmail, List<MultipartFile> multipartFiles, String fileType) {
 
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(NotFoundMemberException::new);
 
@@ -103,8 +103,27 @@ public class ProjectService {
 
         projectRepository.save(project);
 
+        if(fileType != null && !multipartFiles.isEmpty() && multipartFiles != null) {
+
+            //확장성을 고려하여 List형태로 파일 저장
+            List<S3FileDto> files = s3Service.uploadFiles(fileType, multipartFiles);
+            //파일 url리스트로 변환
+            List<String> fileUrls = files.stream()
+                    .map(S3FileDto::getUploadFileUrl)
+                    .collect(Collectors.toList());
+
+            projectRequestDto.setImageUrls(fileUrls);
+
+            List<String> imageList = projectRequestDto.getImageUrls();
+
+            for(String imageUrl : imageList){
+                projectImageRepository.save(ProjectImageDto.toEntity(project, imageUrl));
+            }
+
+        }
+
+
         List<String> techList = projectRequestDto.getTechStackList();
-        List<String> imageList = projectRequestDto.getImageUrls();
         List<String> subjectList = projectRequestDto.getProjectSubjects();
 
         for(String techStack : techList){
@@ -113,9 +132,9 @@ public class ProjectService {
         for(String subject : subjectList){
             projectSubjectRepository.save(ProjectSubjectDto.toEntity(project, subject));
         }
-        for(String imageUrl : imageList){
-            projectImageRepository.save(ProjectImageDto.toEntity(project, imageUrl));
-        }
+
+
+
 
 
     }
@@ -133,6 +152,8 @@ public class ProjectService {
     public void updateProject(Long id, ProjectUpdateRequestDto requestDto, String memberEmail, String fileType, List<MultipartFile> multipartFiles) {
 
         Project project = projectRepository.findById(id).orElseThrow(NotFoundCommentException::new);
+        ProjectTech projectTech = projectStackRepository.findByProjectId(id);
+        ProjectSubject projectSubject = projectSubjectRepository.findByProjectId(id);
 
         if(project.getMember() != null && project.getMember().getEmail().equals(memberEmail)){
             //새로운 파일 추가했을 때 기존 파일 삭제 후 새로운 파일 등록
@@ -152,7 +173,6 @@ public class ProjectService {
             }
 
             project.updateProject(requestDto);
-
 
         } else {
             throw new NotMatchMemberException();
@@ -238,10 +258,16 @@ public class ProjectService {
     public ProjectDetailResponseDto getProject(Long id) {
 
         Project project = projectRepository.findById(id).orElseThrow(NotFoundProjectException::new);
+
+        ProjectLike projectLike = projectLikeRepository.findByProject(project);
+        WishProject wishProject = projectWishRepository.findByProject(project);
         project.viewCntUp();
-        ProjectDetailResponseDto responseDto = new ProjectDetailResponseDto(projectRepository.save(project));
+
+        ProjectDetailResponseDto responseDto = new ProjectDetailResponseDto(projectRepository.save(project), projectLike, wishProject);
+
 
         return responseDto;
+
 
     }
 
@@ -327,10 +353,12 @@ public class ProjectService {
         Specification<Project> combinedSpec = ProjectSpecification.combineSpecifications(specifications);
 
         Page<Project> projectPage = projectRepository.findAll(combinedSpec, pageable);
+
         List<ProjectInfoResponseDto> responseDto = new ArrayList<>();
 
         projectPage.forEach(project -> responseDto.add(new ProjectInfoResponseDto(project)));
         return responseDto;
+
     }
 
 

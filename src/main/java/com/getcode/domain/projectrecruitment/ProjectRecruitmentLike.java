@@ -25,4 +25,15 @@ public class ProjectRecruitmentLike {
     @JoinColumn(name = "project_recruitment_id")
     private ProjectRecruitment projectRecruitment;
 
+    public void foreignkey(ProjectRecruitment projectRecruitment){
+        this.projectRecruitment = projectRecruitment;
+        projectRecruitment.getLikes().add(this);
+    }
+
+    public void foreignkey(Member member){
+        this.member = member;
+        member.getProjectRecruitmentLikes().add(this);
+    }
+
+
 }

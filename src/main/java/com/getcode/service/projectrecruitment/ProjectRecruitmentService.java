@@ -2,6 +2,8 @@ package com.getcode.service.projectrecruitment;
 
 import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.member.Member;
+import com.getcode.domain.project.ProjectLike;
+import com.getcode.domain.project.WishProject;
 import com.getcode.domain.projectrecruitment.*;
 import com.getcode.dto.projectrecruitment.req.*;
 import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentDetailResDto;
@@ -190,7 +192,11 @@ public class ProjectRecruitmentService {
     public ProjectRecruitmentDetailResDto getDetailRecruitment(Long id) {
         ProjectRecruitment projectRecruitment = projectRecruitmentRepository.findById(id).orElseThrow(NotFoundProjectRecruitmentException::new);
         projectRecruitment.viewCntUp();
-        ProjectRecruitmentDetailResDto resDto =  new ProjectRecruitmentDetailResDto(projectRecruitment);
+
+        ProjectRecruitmentLike projectRecruitmentLike = projectRecruitmentLikeRepository.findByProjectRecruitment(projectRecruitment);
+        WishProjectRecruitment wishProjectRecruitment = projectRecruitmentWishRepository.findByProjectRecruitment(projectRecruitment);
+
+        ProjectRecruitmentDetailResDto resDto =  new ProjectRecruitmentDetailResDto(projectRecruitment, projectRecruitmentLike, wishProjectRecruitment);
         return resDto;
     }
 }
