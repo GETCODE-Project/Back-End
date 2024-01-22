@@ -232,9 +232,27 @@ public class ProjectController {
     }
 
 
+    @Operation(summary = "로그인 한 사용자가 작성한 프로젝트 조회")
+    @GetMapping("/my")
+    ResponseEntity<?> getMyProject(){
 
+        String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
+        List<ProjectInfoResponseDto> myProject = projectService.getMyProject(memberEmail);
 
+        return ResponseEntity.status(HttpStatus.OK).body(myProject);
+    }
+
+    @Operation(summary = "로그인 한 사용자가 찜한 프로젝트 조회")
+    @GetMapping("/my")
+    ResponseEntity<?> getMyWishProject(){
+
+        String memberEmail = SecurityUtil.getCurrentMemberEmail();
+
+        List<ProjectInfoResponseDto> myProject = projectService.getMyWishProject(memberEmail);
+
+        return ResponseEntity.status(HttpStatus.OK).body(myProject);
+    }
 
 
 
