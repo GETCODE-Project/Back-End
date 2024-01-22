@@ -2,7 +2,9 @@ package com.getcode.service.mypage;
 
 import com.getcode.domain.member.Member;
 import com.getcode.domain.project.Project;
+import com.getcode.domain.projectrecruitment.ProjectRecruitment;
 import com.getcode.dto.project.res.ProjectInfoResponseDto;
+import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentInfoResDto;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.repository.member.MemberRepository;
 import com.getcode.repository.project.ProjectRepository;
@@ -53,4 +55,17 @@ public class MyPageService {
         return myWishProjectRes;
     }
 
+    public List<ProjectRecruitmentInfoResDto> getMyRecruitment(String memberEmail) {
+
+        Member member = memberRepository.findByEmail(memberEmail).orElseThrow(NotFoundMemberException::new);
+
+        List<ProjectRecruitment> projectRecruitments = member.getProjectRecruitments();
+
+        List<ProjectRecruitmentInfoResDto> myRecruitRes = new ArrayList<>();
+
+        projectRecruitments.forEach(recruitment -> myRecruitRes.add(new ProjectRecruitmentInfoResDto(recruitment)));
+
+        return myRecruitRes;
+
+    }
 }

@@ -2,6 +2,7 @@ package com.getcode.controller.mypage;
 
 import com.getcode.config.security.SecurityUtil;
 import com.getcode.dto.project.res.ProjectInfoResponseDto;
+import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentInfoResDto;
 import com.getcode.service.mypage.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,7 +26,7 @@ public class MyPageController {
     private final MyPageService myPageService;
 
     @Operation(summary = "본인이 작성한 프로젝트 조회")
-    @GetMapping("/my")
+    @GetMapping("/my/project")
     ResponseEntity<?> getMyProject(){
 
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
@@ -37,7 +38,7 @@ public class MyPageController {
 
 
     @Operation(summary = "본인이 찜한 프로젝트 조회")
-    @GetMapping("/my/wish")
+    @GetMapping("/my/project/wish")
     ResponseEntity<?> getMyWishProject(@Parameter(description = "페이지 수") @RequestParam int page,
                                        @Parameter(description = "객체 수") @RequestParam int size){
 
@@ -47,5 +48,18 @@ public class MyPageController {
 
         return ResponseEntity.status(HttpStatus.OK).body(myProject);
     }
+
+    @Operation(summary = "본인이 작성한 프로젝트 모집 조회")
+    @GetMapping("/my/recruit")
+    ResponseEntity<?> getMyRecruitment(){
+
+        String memberEmail = SecurityUtil.getCurrentMemberEmail();
+
+        List<ProjectRecruitmentInfoResDto> myRecruitment = myPageService.getMyRecruitment(memberEmail);
+
+        return ResponseEntity.status(HttpStatus.OK).body(myRecruitment);
+    }
+
+
 
 }
