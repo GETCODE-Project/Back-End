@@ -37,7 +37,7 @@ public class ProjectRecruitmentController {
     }
 
     @Operation(summary = "프로젝트 모집 글 삭제 api")
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}/delete")
     public ResponseEntity<?> deleteProjectRecruitment(@Parameter(description = "프로젝트 모집 아이디")
                                                       @PathVariable Long id){
         int result = 0;
@@ -63,38 +63,38 @@ public class ProjectRecruitmentController {
     }
 
     @Operation(summary = "프로젝트 모집 댓글 수정 api")
-    @PutMapping("/detail/{projectId}/comment/update/{commentId}")
+    @PutMapping("/detail/{recruitmentId}/comment/update/{id}")
     public ResponseEntity<?> updateComment(@Parameter(description = "프로젝트 모집 아이디")
-                                           @PathVariable Long projectId,
+                                           @PathVariable Long recruitmentId,
                                            @Parameter(description = "프로젝트 모집 댓글 아이디")
-                                           @PathVariable Long commentId,
+                                           @PathVariable Long id,
                                            @RequestBody RecruitmentCommentUpdateDto requestDto
                                            ){
 
-        projectRecruitmentService.updateComment(projectId, commentId, requestDto);
+        projectRecruitmentService.updateComment(recruitmentId, id, requestDto);
         return ResponseEntity.status(HttpStatus.OK).body("댓글 수정 완료");
 
     }
 
-    @Operation(summary = "프로젝트 모집 댓글 수정 api")
-    @DeleteMapping("/detail/{projectId}/comment/delete/{commentId}")
+    @Operation(summary = "프로젝트 모집 댓글 삭제 api")
+    @DeleteMapping("/detail/{recruitmentId}/comment/delete/{id}")
     public ResponseEntity<?> deleteComment(@Parameter(description = "프로젝트 모집 아이디")
-                                               @PathVariable Long projectId,
+                                               @PathVariable Long recruitmentId,
                                            @Parameter(description = "프로젝트 모집 댓글 아이디")
-                                               @PathVariable Long commentId)
+                                               @PathVariable Long id)
     {
-        projectRecruitmentService.deleteComment(projectId, commentId);
+        projectRecruitmentService.deleteComment(recruitmentId, id);
         return ResponseEntity.status(HttpStatus.OK).body("댓글 삭제 완료");
     }
 
 
     @Operation(summary = "프로젝트 모집 좋아요 api")
-    @PostMapping("/like/{projectId}")
+    @PostMapping("/{recruitmentId}/like")
     public ResponseEntity<?> likeProjectRecruitment(@Parameter(description = "프로젝트 모집 아이디")
-                                                        @PathVariable Long projectId)
+                                                        @PathVariable Long recruitmentId)
     {
 
-        int result = projectRecruitmentService.likeProjectRecruitment(projectId);
+        int result = projectRecruitmentService.likeProjectRecruitment(recruitmentId);
         if(result == 1){
             return ResponseEntity.status(HttpStatus.OK).body("좋아요 등록");
         } else if (result == -1) {
@@ -106,12 +106,12 @@ public class ProjectRecruitmentController {
     }
 
     @Operation(summary = "프로젝트 모집 찜 api")
-    @PostMapping("/wish/{projectId}")
+    @PostMapping("/{recruitmentId}/wish")
     public ResponseEntity<?> wishProjectRecruitment(@Parameter(description = "프로젝트 모집 아이디")
-                                                        @PathVariable Long projectId)
+                                                        @PathVariable Long recruitmentId)
     {
 
-        int result = projectRecruitmentService.wishProjectRecruitment(projectId);
+        int result = projectRecruitmentService.wishProjectRecruitment(recruitmentId);
         if(result == 1){
             return ResponseEntity.status(HttpStatus.OK).body("찜 등록");
         } else if (result == -1) {
