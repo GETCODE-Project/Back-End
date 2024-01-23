@@ -85,16 +85,16 @@ public class ProjectRecruitmentService {
     }
 
     @Transactional
-    public void updateComment(Long projectId, Long commentId, RecruitmentCommentUpdateDto requestDto) {
+    public void updateComment(Long recruitmentId, Long id, RecruitmentCommentUpdateDto requestDto) {
 
         Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
-        ProjectRecruitmentComment projectRecruitmentComment = projectRecruitmentCommentRepository.findById(commentId).orElseThrow(NotFoundCommentException::new);
+        ProjectRecruitmentComment projectRecruitmentComment = projectRecruitmentCommentRepository.findById(id).orElseThrow(NotFoundCommentException::new);
 
         if(!member.getEmail().equals(projectRecruitmentComment.getMember().getEmail())){
             throw new NotMatchMemberException();
         }
 
-        if(!projectRecruitmentComment.getProjectRecruitment().getId().equals(projectId)){
+        if(!projectRecruitmentComment.getProjectRecruitment().getId().equals(recruitmentId)){
             throw new NotFoundCommentException();
         }
 
@@ -104,29 +104,29 @@ public class ProjectRecruitmentService {
 
     }
 
-    public void deleteComment(Long projectId, Long commentId) {
+    public void deleteComment(Long recruitmentId, Long id) {
 
         Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
-        ProjectRecruitmentComment projectRecruitmentComment = projectRecruitmentCommentRepository.findById(commentId).orElseThrow(NotFoundCommentException::new);
+        ProjectRecruitmentComment projectRecruitmentComment = projectRecruitmentCommentRepository.findById(id).orElseThrow(NotFoundCommentException::new);
 
         if(!member.getEmail().equals(projectRecruitmentComment.getMember().getEmail())){
             throw new NotMatchMemberException();
         }
 
-        if(!projectRecruitmentComment.getProjectRecruitment().getId().equals(projectId)){
+        if(!projectRecruitmentComment.getProjectRecruitment().getId().equals(recruitmentId)){
             throw new NotFoundCommentException();
         }
 
-        projectRecruitmentCommentRepository.deleteById(commentId);
+        projectRecruitmentCommentRepository.deleteById(id);
 
 
     }
 
     @Transactional
-    public int likeProjectRecruitment(Long projectId) {
+    public int likeProjectRecruitment(Long recruitmentId) {
 
         Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
-        ProjectRecruitment projectRecruitment = projectRecruitmentRepository.findById(projectId).orElseThrow(NotFoundProjectRecruitmentException::new);
+        ProjectRecruitment projectRecruitment = projectRecruitmentRepository.findById(recruitmentId).orElseThrow(NotFoundProjectRecruitmentException::new);
 
         ProjectRecruitmentLike projectRecruitmentLike = projectRecruitmentLikeRepository.findByProjectRecruitmentAndMember(projectRecruitment, member);
 
@@ -156,9 +156,9 @@ public class ProjectRecruitmentService {
         }
     }
 
-    public int wishProjectRecruitment(Long projectId) {
+    public int wishProjectRecruitment(Long recruitmentId) {
         Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
-        ProjectRecruitment projectRecruitment = projectRecruitmentRepository.findById(projectId).orElseThrow(NotFoundProjectRecruitmentException::new);
+        ProjectRecruitment projectRecruitment = projectRecruitmentRepository.findById(recruitmentId).orElseThrow(NotFoundProjectRecruitmentException::new);
 
         WishProjectRecruitment wishProjectRecruitment = projectRecruitmentWishRepository.findByProjectRecruitmentAndMember(projectRecruitment, member);
 

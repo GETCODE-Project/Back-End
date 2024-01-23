@@ -61,5 +61,17 @@ public class MyPageController {
     }
 
 
+    @Operation(summary = "본인이 찜한 프로젝트 모집 조회")
+    @GetMapping("/my/recruit/wish")
+    ResponseEntity<?> getMyWishRecruitment(@Parameter(description = "페이지 수") @RequestParam int page,
+                                       @Parameter(description = "객체 수") @RequestParam int size){
+
+        String memberEmail = SecurityUtil.getCurrentMemberEmail();
+
+        List<ProjectRecruitmentInfoResDto> myWishRecruitment = myPageService.getMyWishRecruitment(memberEmail, size, page);
+
+        return ResponseEntity.status(HttpStatus.OK).body(myWishRecruitment);
+    }
+
 
 }

@@ -8,6 +8,7 @@ import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentInfoResDto;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.repository.member.MemberRepository;
 import com.getcode.repository.project.ProjectRepository;
+import com.getcode.repository.projectrecruitment.ProjectRecruitmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ public class MyPageService {
 
     private final MemberRepository memberRepository;
     private final ProjectRepository projectRepository;
+    private final ProjectRecruitmentRepository projectRecruitmentRepository;
 
     @Transactional(readOnly = true)
     public List<ProjectInfoResponseDto> getMyProject(String memberEmail) {
@@ -66,6 +68,23 @@ public class MyPageService {
         projectRecruitments.forEach(recruitment -> myRecruitRes.add(new ProjectRecruitmentInfoResDto(recruitment)));
 
         return myRecruitRes;
+
+    }
+
+    public List<ProjectRecruitmentInfoResDto> getMyWishRecruitment(String memberEmail, int size, int page) {
+
+        Member member = memberRepository.findByEmail(memberEmail).orElseThrow(NotFoundMemberException::new);
+
+        Pageable pageable = PageRequest.of(page-1, size);
+
+        List<ProjectRecruitment> recruitments = projectRecruitmentRepository.findAllWishRecruitByMemberId(member.getId(),pageable);
+
+        List<ProjectRecruitmentInfoResDto> myWishRecruitRes = new ArrayList<>();
+
+        recruitments.forEach(recruitment -> myWishRecruitRes.add(new ProjectRecruitmentInfoResDto(recruitment)));
+
+        return myWishRecruitRes;
+
 
     }
 }
