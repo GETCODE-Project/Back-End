@@ -78,14 +78,7 @@ public class StudyController {
                 keyword, region, recruitment, online, year, subjects, pageNumber, criteria));
     }
 
-    @Operation(summary = "로그인한 사용자가 작성한 스터디 모집글 전체 조회", description = "특정 사용자가 작성한 게시물 조회")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK")
-    })
-    @GetMapping("/studies")
-    public ResponseEntity<List<StudyInfoResponseDto>> findAllStudyByMember() {
-        return ResponseEntity.status(HttpStatus.OK).body(studyService.findAllStudyByMember());
-    }
+
 
     @Operation(summary = "스터디 게시글에 댓글", description = "스터디 Id를 입력받아 해당 스터디를 찾은 후 댓글")
     @ApiResponses(value = {
