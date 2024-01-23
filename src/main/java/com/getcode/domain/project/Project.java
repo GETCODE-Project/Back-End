@@ -59,15 +59,15 @@ public class Project extends BaseTimeEntity {
     private List<WishProject> wishProjects = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     private List<ProjectTech> techStacks = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     private List<ProjectImage> projectImages = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     private List<ProjectSubject> projectSubjects = new ArrayList<>();
 
     @Builder.Default
@@ -79,19 +79,14 @@ public class Project extends BaseTimeEntity {
     //리팩토링 필수
     public void updateProject(ProjectUpdateRequestDto requestDto){
 
-        if(requestDto.getTitle() != null) {
             this.title = requestDto.getTitle();
-        }
-        if(requestDto.getContent() != null) {
             this.content = requestDto.getContent();
-        }
-        if(requestDto.getIntroduction() != null) {
             this.introduction = requestDto.getIntroduction();
-        }
-        if(requestDto.getGithubUrl() != null){
             this.githubUrl = requestDto.getGithubUrl();
-        }
 
+
+
+      /*
         //casecade 타입을 all로 설정해놓아서 기존 부모와 연결된 List객체를 삭제하고 새로 만들어준다.
         if(requestDto.getImageUrls() != null) {
             this.getProjectImages().clear();
@@ -116,6 +111,8 @@ public class Project extends BaseTimeEntity {
                     .collect(Collectors.toList());
             this.projectSubjects.addAll(newSubject);
         }
+
+        */
     }
 
 

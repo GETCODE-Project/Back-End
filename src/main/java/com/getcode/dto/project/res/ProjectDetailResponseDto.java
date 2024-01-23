@@ -26,7 +26,6 @@ public class ProjectDetailResponseDto {
     private List<ProjectStackResponseDto> techStackList;
     private List<ProjectSubjectResponseDto> projectSubjects;
     private List<ProjectImageUrlResponseDto> imageUrls;
-    private List<CommentResponseDto> comments;
     private String memberNickName;
     private boolean isWriter;
     private boolean checkWish;
@@ -45,7 +44,6 @@ public class ProjectDetailResponseDto {
         this.techStackList  = project.getTechStacks().stream().map(ProjectStackResponseDto::new).collect(Collectors.toList());
         this.projectSubjects  = project.getProjectSubjects().stream().map(ProjectSubjectResponseDto::new).collect(Collectors.toList());
         this.imageUrls  = project.getProjectImages().stream().map(ProjectImageUrlResponseDto::new).collect(Collectors.toList());
-        this.comments = project.getProjectComments().stream().map(CommentResponseDto::new).collect(Collectors.toList());
         this.memberNickName = project.getMember().getNickname();
         if (project.getMember().getEmail().equals(SecurityUtil.getCurrentMemberEmail())) {
             this.isWriter = true;

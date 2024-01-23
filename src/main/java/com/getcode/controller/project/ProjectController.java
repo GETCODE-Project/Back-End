@@ -5,6 +5,7 @@ import com.getcode.dto.project.req.CommentRequestDto;
 import com.getcode.dto.project.req.CommentUpdateRequestDto;
 import com.getcode.dto.project.req.ProjectRequestDto;
 import com.getcode.dto.project.req.ProjectUpdateRequestDto;
+import com.getcode.dto.project.res.CommentResponseDto;
 import com.getcode.dto.project.res.ProjectDetailResponseDto;
 import com.getcode.dto.project.res.ProjectInfoResponseDto;
 import com.getcode.service.project.ProjectService;
@@ -55,7 +56,7 @@ public class ProjectController {
 
 
     @Operation(summary = "github url 중복확인 api")
-    @GetMapping("/add/checkUrl")
+    @PostMapping("/add/checkUrl")
     public ResponseEntity<?> checkUrl(@Parameter(description = "github Url") @RequestBody String githubUrl) {
 
         Boolean result = projectService.checkGithubUrlDuplication(githubUrl);
@@ -150,6 +151,8 @@ public class ProjectController {
     }
 
 
+
+
     @Operation(summary = "전체 프로젝트 조회 api")
     @GetMapping("/all")
     ResponseEntity<?> getProjectList(@Parameter(description = "정렬 기준: latestOrder, pastOrder, likeCnt중 하나여야 합니다.")
@@ -233,16 +236,13 @@ public class ProjectController {
 
 
 
+    @Operation(summary = "특정 프로젝트 게시글 댓글정보 조회")
+    @GetMapping("/{projectId}/comment")
+    ResponseEntity<?> getProjectComment(@Parameter(description = "프로젝트 아이디")@PathVariable Long projectId){
 
-
-
-
-
-
-
-
-
-
+        List<CommentResponseDto> responseDto = projectService.getProjectComment(projectId);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
 
 
 

@@ -6,6 +6,7 @@ import com.getcode.domain.member.Member;
 import com.getcode.domain.project.*;
 import com.getcode.dto.project.ProjectSpecification;
 import com.getcode.dto.project.req.*;
+import com.getcode.dto.project.res.CommentResponseDto;
 import com.getcode.dto.project.res.ProjectDetailResponseDto;
 import com.getcode.dto.project.res.ProjectInfoResponseDto;
 import com.getcode.dto.s3.S3FileDto;
@@ -152,8 +153,6 @@ public class ProjectService {
     public void updateProject(Long id, ProjectUpdateRequestDto requestDto, String memberEmail, String fileType, List<MultipartFile> multipartFiles) {
 
         Project project = projectRepository.findById(id).orElseThrow(NotFoundCommentException::new);
-        ProjectTech projectTech = projectStackRepository.findByProjectId(id);
-        ProjectSubject projectSubject = projectSubjectRepository.findByProjectId(id);
 
         if(project.getMember() != null && project.getMember().getEmail().equals(memberEmail)){
             //새로운 파일 추가했을 때 기존 파일 삭제 후 새로운 파일 등록
@@ -173,6 +172,7 @@ public class ProjectService {
             }
 
             project.updateProject(requestDto);
+
 
         } else {
             throw new NotMatchMemberException();
@@ -273,6 +273,9 @@ public class ProjectService {
 
 
 
+
+
+
     //프로젝트 댓글 등록
     @Transactional
     public void addComment(Long id, String memberEmail, CommentRequestDto requestDto) {
@@ -362,6 +365,16 @@ public class ProjectService {
     }
 
 
+    //특정 프로젝트 댓글 정보 List return
+    public List<CommentResponseDto> getProjectComment(Long projectId) {
 
+       List<ProjectComment> projectComments = projectCommentRepository.findByProjectId(projectId);
+       List<CommentResponseDto> responseDto = new ArrayList<>();
 
+       for(ProjectComment projectComment : projectComments){
+          responseDto.add(new CommentResponseDto(projectComment));
+       }
+       return responseDto;
+
+    }
 }

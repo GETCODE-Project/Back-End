@@ -1,11 +1,10 @@
 package com.getcode.domain.project;
 
-import com.getcode.domain.common.Subject;
+
 import com.getcode.domain.common.TechStack;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
 
 @Builder
 @AllArgsConstructor
