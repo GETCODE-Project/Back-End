@@ -5,17 +5,22 @@ import com.getcode.dto.projectrecruitment.req.RecruitmentCommentRequestDto;
 import com.getcode.dto.projectrecruitment.req.RecruitmentCommentUpdateDto;
 import com.getcode.dto.projectrecruitment.req.RecruitmentUpdateRequestDto;
 import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentDetailResDto;
+import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentInfoResDto;
 import com.getcode.service.projectrecruitment.ProjectRecruitmentService;
 import com.getcode.util.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "프로젝트 모집 api기능 명세")
 @Slf4j
@@ -132,7 +137,26 @@ public class ProjectRecruitmentController {
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
+    @Operation(summary = "프로젝트 모집글 전체조회 api")
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllRecruitment(@Parameter(description = "정렬 기준: latestOrder, pastOrder, likeCnt중 하나여야 합니다.")
+                                                   @RequestParam(defaultValue = "latestOrder", required = false) String sort,
+                                               @Parameter(description = "페이지 수")
+                                                   @Min(value = 0, message = "page값은 0이상이어야 합니다")
+                                                   @RequestParam(defaultValue = "0") int page,
+                                               @Parameter(description = "한 페이지에 담기는 개수")
+                                                   @Positive(message = "size값은 1이상이어야 합니다")
+                                                   @RequestParam(defaultValue = "10") int size,
+                                               @Parameter(description = "검색어") @RequestParam(defaultValue = "", required = false) String keyword,
+                                               @Parameter(description = "검색 조건") @RequestParam(defaultValue = "", required = false) List<String> subject,
+                                               @Parameter(description = "기술스택") @RequestParam(defaultValue = "", required = false) List<String> techStack,
+                                               @Parameter(description = "년도") @RequestParam(defaultValue = "2024", required = false) Integer year)
+    {
 
+        List<ProjectRecruitmentInfoResDto> resDtoList = projectRecruitmentService.getAllRecuritment(sort, page, size, keyword, subject, techStack, year);
+
+        return ResponseEntity.status(HttpStatus.OK).body(resDtoList);
+    }
 
 
 

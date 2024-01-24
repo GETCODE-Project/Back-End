@@ -2,11 +2,16 @@ package com.getcode.service.projectrecruitment;
 
 import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.member.Member;
+import com.getcode.domain.project.Project;
 import com.getcode.domain.project.ProjectLike;
 import com.getcode.domain.project.WishProject;
 import com.getcode.domain.projectrecruitment.*;
+import com.getcode.dto.project.ProjectSpecification;
+import com.getcode.dto.project.res.ProjectInfoResponseDto;
+import com.getcode.dto.projectrecruitment.ProjectRecruitmentSpecification;
 import com.getcode.dto.projectrecruitment.req.*;
 import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentDetailResDto;
+import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentInfoResDto;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.project.NotFoundCommentException;
 import com.getcode.exception.project.NotMatchMemberException;
@@ -16,9 +21,15 @@ import com.getcode.exception.projectrecruitment.NotFoundProjectRecruitmentExcept
 import com.getcode.repository.member.MemberRepository;
 import com.getcode.repository.projectrecruitment.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -198,5 +209,50 @@ public class ProjectRecruitmentService {
 
         ProjectRecruitmentDetailResDto resDto =  new ProjectRecruitmentDetailResDto(projectRecruitment, projectRecruitmentLike, wishProjectRecruitment);
         return resDto;
+    }
+
+    public List<ProjectRecruitmentInfoResDto> getAllRecuritment(String sort, int page, int size, String keyword, List<String> subject, List<String> techStack, Integer year) {
+
+        Sort sortCriteria;
+
+        if(sort.equals("pastOrder")){
+            sortCriteria = Sort.by(Sort.Direction.ASC, "modifiedDate");
+        } else if (sort.equals("likeCnt")) {
+            sortCriteria = Sort.by(Sort.Direction.DESC, "likeCnt");
+        } else {
+            sortCriteria = Sort.by(Sort.Direction.DESC, "modifiedDate");
+        }
+
+        Pageable pageable = PageRequest.of(page -1, size, sortCriteria);
+
+        List<Specification<ProjectRecruitment>> specifications = new ArrayList<>();
+
+        if (!techStack.isEmpty() && techStack != null) {
+            specifications.add(ProjectRecruitmentSpecification.techStackLike(techStack));
+        }
+
+        if (!subject.isEmpty() && subject != null) {
+            specifications.add(ProjectRecruitmentSpecification.subjectLike(subject));
+        }
+
+        if (year != null) {
+            specifications.add(ProjectRecruitmentSpecification.yearBetween(year));
+        }
+
+        if (keyword != null && !keyword.isEmpty()) {
+            specifications.add(ProjectRecruitmentSpecification.keywordLikeTitleOrContent(keyword));
+        }
+
+
+
+        Specification<ProjectRecruitment> combinedSpec = ProjectRecruitmentSpecification.combineSpecifications(specifications);
+
+        Page<ProjectRecruitment> recruitmentPage = projectRecruitmentRepository.findAll(combinedSpec, pageable);
+
+        List<ProjectRecruitmentInfoResDto> responseDto = new ArrayList<>();
+
+        recruitmentPage.forEach(recruitment -> responseDto.add(new ProjectRecruitmentInfoResDto(recruitment)));
+
+        return responseDto;
     }
 }

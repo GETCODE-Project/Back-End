@@ -22,7 +22,7 @@ public enum TechStack {
     FLUTTER("Flutter"), DART("Dart"),
 
     //기타
-    GIT("Git"), GITHUB("Github"), AWS("")
+    GIT("Git"), GITHUB("Github"), AWS("AWS")
     ;
 
     private String stack;

@@ -26,6 +26,7 @@ public class ProjectRecruitmentInfoResDto {
     private LocalDateTime createDate, modifiedDate;
     private List<ProjectRecruitmentSubjectResDto> subjects;
     private List<ProjectRecruitmentStackResDto> techStacks;
+    private String memberNickName;
 
 
 
@@ -42,7 +43,7 @@ public class ProjectRecruitmentInfoResDto {
         this.subjects = projectRecruitment.getSubjects().stream().map(ProjectRecruitmentSubjectResDto::new).collect(Collectors.toList());
         this.modifiedDate = projectRecruitment.getModifiedDate();
         this.createDate = projectRecruitment.getCreateDate();
-
+        this.memberNickName = projectRecruitment.getMember().getNickname();
 
     }
 
