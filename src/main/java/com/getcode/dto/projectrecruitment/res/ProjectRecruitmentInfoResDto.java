@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class ProjectRecruitmentInfoResDto {
 
-
+    private Long projectRecruitmentId;
     private String title;
     private String content;
     private String siDo;
@@ -26,10 +26,14 @@ public class ProjectRecruitmentInfoResDto {
     private LocalDateTime createDate, modifiedDate;
     private List<ProjectRecruitmentSubjectResDto> subjects;
     private List<ProjectRecruitmentStackResDto> techStacks;
+    private String memberNickName;
+    private Boolean checkLike;
+    private Boolean checkWish;
 
 
 
     public ProjectRecruitmentInfoResDto(ProjectRecruitment projectRecruitment){
+        this.projectRecruitmentId = projectRecruitment.getId();
         this.title = projectRecruitment.getTitle();
         this.content = projectRecruitment.getContent();
         this.siDo = projectRecruitment.getSiDo();
@@ -42,8 +46,15 @@ public class ProjectRecruitmentInfoResDto {
         this.subjects = projectRecruitment.getSubjects().stream().map(ProjectRecruitmentSubjectResDto::new).collect(Collectors.toList());
         this.modifiedDate = projectRecruitment.getModifiedDate();
         this.createDate = projectRecruitment.getCreateDate();
-
+        this.memberNickName = projectRecruitment.getMember().getNickname();
 
     }
 
+    public void setCheckLike(Boolean recruitmentLikedByUser) {
+        this.checkLike = recruitmentLikedByUser;
+    }
+
+    public void setCheckWish(Boolean recruitmentWishedByUser) {
+        this.checkWish = recruitmentWishedByUser;
+    }
 }

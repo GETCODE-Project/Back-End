@@ -3,8 +3,10 @@ package com.getcode.service.mypage;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.project.Project;
 import com.getcode.domain.projectrecruitment.ProjectRecruitment;
+import com.getcode.domain.study.Study;
 import com.getcode.dto.project.res.ProjectInfoResponseDto;
 import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentInfoResDto;
+import com.getcode.dto.study.StudyInfoResponseDto;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.repository.member.MemberRepository;
 import com.getcode.repository.project.ProjectRepository;
@@ -17,6 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.getcode.config.security.SecurityUtil.getCurrentMemberEmail;
+
 @RequiredArgsConstructor
 @Service
 public class MyPageService {
@@ -87,4 +92,15 @@ public class MyPageService {
 
 
     }
+
+    // 특정 사용자가 작성한 게시물 조회
+    @Transactional(readOnly = true)
+    public List<StudyInfoResponseDto> findAllStudyByMember() {
+        Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
+        List<Study> studies = member.getStudy();
+        List<StudyInfoResponseDto> res = new ArrayList<>();
+        studies.forEach(study -> res.add(StudyInfoResponseDto.toDto(study)));
+        return res;
+    }
+
 }

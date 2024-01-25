@@ -5,6 +5,7 @@ import com.getcode.dto.project.req.CommentRequestDto;
 import com.getcode.dto.project.req.CommentUpdateRequestDto;
 import com.getcode.dto.project.req.ProjectRequestDto;
 import com.getcode.dto.project.req.ProjectUpdateRequestDto;
+import com.getcode.dto.project.res.CommentResponseDto;
 import com.getcode.dto.project.res.ProjectDetailResponseDto;
 import com.getcode.dto.project.res.ProjectInfoResponseDto;
 import com.getcode.service.project.ProjectService;
@@ -55,7 +56,7 @@ public class ProjectController {
 
 
     @Operation(summary = "github url 중복확인 api")
-    @GetMapping("/add/checkUrl")
+    @PostMapping("/add/checkUrl")
     public ResponseEntity<?> checkUrl(@Parameter(description = "github Url") @RequestBody String githubUrl) {
 
         Boolean result = projectService.checkGithubUrlDuplication(githubUrl);
@@ -150,6 +151,8 @@ public class ProjectController {
     }
 
 
+
+
     @Operation(summary = "전체 프로젝트 조회 api")
     @GetMapping("/all")
     ResponseEntity<?> getProjectList(@Parameter(description = "정렬 기준: latestOrder, pastOrder, likeCnt중 하나여야 합니다.")
@@ -163,11 +166,12 @@ public class ProjectController {
                                      @Parameter(description = "검색어") @RequestParam(defaultValue = "", required = false) String keyword,
                                      @Parameter(description = "검색 조건") @RequestParam(defaultValue = "", required = false) List<String> subject,
                                      @Parameter(description = "기술스택") @RequestParam(defaultValue = "", required = false) List<String> techStack,
-                                     @Parameter(description = "년도") @RequestParam(defaultValue = "2024", required = false) Integer year
+                                     @Parameter(description = "년도") @RequestParam(defaultValue = "2024", required = false) Integer year,
+                                     @Parameter(description = "사용자 id") @RequestParam(required = false) Long memberId
     )
     {
 
-        List<ProjectInfoResponseDto> projectLists = projectService.getProjectList(size, page, sort, keyword, subject, techStack, year);
+        List<ProjectInfoResponseDto> projectLists = projectService.getProjectList(size, page, sort, keyword, subject, techStack, year, memberId);
 
         return ResponseEntity.status(HttpStatus.OK).body(projectLists);
 
@@ -233,16 +237,13 @@ public class ProjectController {
 
 
 
+    @Operation(summary = "특정 프로젝트 게시글 댓글정보 조회")
+    @GetMapping("/{projectId}/comment")
+    ResponseEntity<?> getProjectComment(@Parameter(description = "프로젝트 아이디")@PathVariable Long projectId){
 
-
-
-
-
-
-
-
-
-
+        List<CommentResponseDto> responseDto = projectService.getProjectComment(projectId);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
 
 
 

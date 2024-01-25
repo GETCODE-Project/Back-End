@@ -18,7 +18,7 @@ public class ProjectRecruitmentStackResDto {
 
     public ProjectRecruitmentStackResDto(ProjectRecruitmentTech projectRecruitmentTech){
         this.id = projectRecruitmentTech.getId();
-        this.teckStack = String.valueOf(projectRecruitmentTech.getTechStack());
+        this.teckStack = String.valueOf(projectRecruitmentTech.getTechStack().print());
     }
 
 }

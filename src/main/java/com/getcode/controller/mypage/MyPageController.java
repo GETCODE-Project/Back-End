@@ -3,9 +3,12 @@ package com.getcode.controller.mypage;
 import com.getcode.config.security.SecurityUtil;
 import com.getcode.dto.project.res.ProjectInfoResponseDto;
 import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentInfoResDto;
+import com.getcode.dto.study.StudyInfoResponseDto;
 import com.getcode.service.mypage.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -71,6 +74,15 @@ public class MyPageController {
         List<ProjectRecruitmentInfoResDto> myWishRecruitment = myPageService.getMyWishRecruitment(memberEmail, size, page);
 
         return ResponseEntity.status(HttpStatus.OK).body(myWishRecruitment);
+    }
+
+    @Operation(summary = "로그인한 사용자가 작성한 스터디 모집글 전체 조회", description = "특정 사용자가 작성한 게시물 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @GetMapping("/studies")
+    public ResponseEntity<List<StudyInfoResponseDto>> findAllStudyByMember() {
+        return ResponseEntity.status(HttpStatus.OK).body(myPageService.findAllStudyByMember());
     }
 
 

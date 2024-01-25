@@ -95,15 +95,7 @@ public class StudyService {
         return res;
     }
 
-    // 특정 사용자가 작성한 게시물 조회
-    @Transactional(readOnly = true)
-    public List<StudyInfoResponseDto> findAllStudyByMember() {
-        Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
-        List<Study> studies = member.getStudy();
-        List<StudyInfoResponseDto> res = new ArrayList<>();
-        studies.forEach(study -> res.add(StudyInfoResponseDto.toDto(study)));
-        return res;
-    }
+
 
     // 스터디 수정
     @Transactional

@@ -3,14 +3,19 @@ package com.getcode.dto.projectrecruitment.res;
 import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.projectrecruitment.ProjectRecruitment;
 import com.getcode.domain.projectrecruitment.ProjectRecruitmentComment;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@Getter
+@NoArgsConstructor
 public class RecruitmentCommentResDto {
 
     private Long id;
     private String content;
     private String memberNickName;
-
-    private boolean isWriter;
+    private Boolean isWriter;
 
     public RecruitmentCommentResDto(ProjectRecruitmentComment projectRecruitmentComment){
         this.id = projectRecruitmentComment.getId();
