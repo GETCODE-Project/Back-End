@@ -158,6 +158,18 @@ public class ProjectRecruitmentController {
         return ResponseEntity.status(HttpStatus.OK).body(resDtoList);
     }
 
+    @Operation(summary = "프로젝트 모집글 수정 api")
+    @PutMapping("/{id}/update")
+    public ResponseEntity<?> updateRecruitment(@RequestBody RecruitmentUpdateRequestDto requestDto,
+                                               @Parameter(description = "프로젝트 모집글 id") @PathVariable Long id)
+    {
+
+
+        projectRecruitmentService.updateRecruitment(requestDto, id);
+
+        return ResponseEntity.status(HttpStatus.OK).body("수정 완료.");
+    }
+
 
 
 }

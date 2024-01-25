@@ -5,12 +5,14 @@ import com.getcode.domain.member.Member;
 
 
 import com.getcode.domain.project.*;
+import com.getcode.dto.projectrecruitment.req.RecruitmentUpdateRequestDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Builder
 @Getter
@@ -62,7 +64,7 @@ public class ProjectRecruitment extends BaseTimeEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "projectRecruitment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProjectRecruitmentSubject> Subjects = new ArrayList<>();
+    private List<ProjectRecruitmentSubject> subjects = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "projectRecruitment", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -88,4 +90,29 @@ public class ProjectRecruitment extends BaseTimeEntity {
     }
 
 
+    public void update(RecruitmentUpdateRequestDto requestDto) {
+        this.title = requestDto.getTitle();
+        this.content = requestDto.getContent();
+        this.siDo = requestDto.getSiDo();
+        this.guGun = requestDto.getGuGun();
+        this.online = requestDto.getOnline();
+        this.recruitment = requestDto.getRecruitment();
+
+        //casecade 타입을 all로 설정해놓아서 기존 부모와 연결된 List객체를 삭제하고 새로 만들어준다.
+        if(requestDto.getTechStackList() != null) {
+            this.getTechStacks().clear();
+            List<ProjectRecruitmentTech> newStack = requestDto.getTechStackList().stream()
+                    .map(recruitmentTech -> new ProjectRecruitmentTech(this, recruitmentTech))
+                    .collect(Collectors.toList());
+            this.techStacks.addAll(newStack);
+        }
+
+        if(requestDto.getSubjects() != null) {
+            this.subjects.clear();
+            List<ProjectRecruitmentSubject> newSubject = requestDto.getSubjects().stream()
+                    .map(recruitmentSubject -> new ProjectRecruitmentSubject(this,  recruitmentSubject))
+                    .collect(Collectors.toList());
+            this.subjects.addAll(newSubject);
+        }
+    }
 }

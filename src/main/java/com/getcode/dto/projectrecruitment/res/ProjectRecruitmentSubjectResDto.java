@@ -17,7 +17,7 @@ public class ProjectRecruitmentSubjectResDto {
 
     public ProjectRecruitmentSubjectResDto(ProjectRecruitmentSubject projectRecruitmentSubject){
         this.id = projectRecruitmentSubject.getId();
-        this.subject = String.valueOf(projectRecruitmentSubject.getSubject());
+        this.subject = String.valueOf(projectRecruitmentSubject.getSubject().print());
     }
 
 

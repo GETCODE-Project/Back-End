@@ -24,6 +24,11 @@ public class ProjectRecruitmentTech {
     @JoinColumn(name = "project_recruitment_id")
     private ProjectRecruitment projectRecruitment;
 
+    public ProjectRecruitmentTech(ProjectRecruitment projectRecruitment, String techStack){
+        this.techStack = TechStack.fromString(techStack);
+        this.projectRecruitment = projectRecruitment;
+    }
+
     public void foreignkey(ProjectRecruitment projectRecruitment){
         this.projectRecruitment = projectRecruitment;
         projectRecruitment.getTechStacks().add(this);

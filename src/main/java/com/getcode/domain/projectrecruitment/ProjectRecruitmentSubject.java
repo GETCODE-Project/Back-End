@@ -25,6 +25,10 @@ public class ProjectRecruitmentSubject {
     @JoinColumn(name = "project_recruitment_id")
     private ProjectRecruitment projectRecruitment;
 
+    public ProjectRecruitmentSubject(ProjectRecruitment projectRecruitment, String subject){
+        this.subject = Subject.fromString(subject);
+        this.projectRecruitment = projectRecruitment;
+    }
     public void foreignkey(ProjectRecruitment projectRecruitment){
         this.projectRecruitment = projectRecruitment;
         projectRecruitment.getSubjects().add(this);

@@ -46,6 +46,7 @@ public class ProjectRecruitmentService {
     private final ProjectRecruitmentWishRepository projectRecruitmentWishRepository;
 
 
+    //프로젝트 모집글 등록
     @Transactional
     public void insertProjectRecruitment(ProjectRecruitmentRequestDto requestDto) {
 
@@ -67,7 +68,7 @@ public class ProjectRecruitmentService {
 
 
     }
-
+    //프로젝트 모집글 삭제
     @Transactional
     public int deleteProjectRecruitment(Long id) {
 
@@ -84,7 +85,7 @@ public class ProjectRecruitmentService {
         }
 
     }
-
+    //프로젝트 모집글 댓글 등록
     @Transactional
     public void addComment(Long id, RecruitmentCommentRequestDto requestDto) {
 
@@ -94,7 +95,7 @@ public class ProjectRecruitmentService {
         projectRecruitmentCommentRepository.save(requestDto.toEntity(projectRecruitment, member));
 
     }
-
+    //프로젝트 모집글 댓글 수정
     @Transactional
     public void updateComment(Long recruitmentId, Long id, RecruitmentCommentUpdateDto requestDto) {
 
@@ -114,7 +115,7 @@ public class ProjectRecruitmentService {
 
 
     }
-
+    //프로젝트 모집글 댓글 삭제
     public void deleteComment(Long recruitmentId, Long id) {
 
         Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
@@ -132,7 +133,7 @@ public class ProjectRecruitmentService {
 
 
     }
-
+    //프로젝트 모집글 좋아요
     @Transactional
     public int likeProjectRecruitment(Long recruitmentId) {
 
@@ -166,7 +167,7 @@ public class ProjectRecruitmentService {
             return 1;
         }
     }
-
+    //프로젝트 모집글 찜
     public int wishProjectRecruitment(Long recruitmentId) {
         Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
         ProjectRecruitment projectRecruitment = projectRecruitmentRepository.findById(recruitmentId).orElseThrow(NotFoundProjectRecruitmentException::new);
@@ -198,7 +199,7 @@ public class ProjectRecruitmentService {
 
 
     }
-
+    //프로젝트 모집글 상세조회
     @Transactional
     public ProjectRecruitmentDetailResDto getDetailRecruitment(Long id) {
         ProjectRecruitment projectRecruitment = projectRecruitmentRepository.findById(id).orElseThrow(NotFoundProjectRecruitmentException::new);
@@ -211,6 +212,7 @@ public class ProjectRecruitmentService {
         return resDto;
     }
 
+    //프로젝트 모집글 전체 조회
     public List<ProjectRecruitmentInfoResDto> getAllRecuritment(String sort, int page, int size, String keyword, List<String> subject, List<String> techStack, Integer year) {
 
         Sort sortCriteria;
@@ -254,5 +256,21 @@ public class ProjectRecruitmentService {
         recruitmentPage.forEach(recruitment -> responseDto.add(new ProjectRecruitmentInfoResDto(recruitment)));
 
         return responseDto;
+    }
+
+    //프로젝트 모집글 수정
+    public void updateRecruitment(RecruitmentUpdateRequestDto requestDto, Long id) {
+
+        String memberEmail = SecurityUtil.getCurrentMemberEmail();
+        ProjectRecruitment projectRecruitment = projectRecruitmentRepository.findById(id).orElseThrow(NotFoundProjectRecruitmentException::new);
+
+            if (projectRecruitment.getMember().getEmail().equals(memberEmail)) {
+                projectRecruitment.update(requestDto);
+                projectRecruitmentRepository.save(projectRecruitment);
+            } else {
+                throw new NotMatchMemberException();
+            }
+
+
     }
 }
