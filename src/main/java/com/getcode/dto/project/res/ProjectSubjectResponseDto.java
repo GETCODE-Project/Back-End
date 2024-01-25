@@ -15,7 +15,7 @@ public class ProjectSubjectResponseDto {
 
     public ProjectSubjectResponseDto(ProjectSubject subject){
         this.id = subject.getId();
-        this.subject = String.valueOf(subject.getSubject());
+        this.subject = String.valueOf(subject.getSubject().print());
     }
 
 }

@@ -59,15 +59,15 @@ public class Project extends BaseTimeEntity {
     private List<WishProject> wishProjects = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectTech> techStacks = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectImage> projectImages = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectSubject> projectSubjects = new ArrayList<>();
 
     @Builder.Default
@@ -85,8 +85,6 @@ public class Project extends BaseTimeEntity {
             this.githubUrl = requestDto.getGithubUrl();
 
 
-
-      /*
         //casecade 타입을 all로 설정해놓아서 기존 부모와 연결된 List객체를 삭제하고 새로 만들어준다.
         if(requestDto.getImageUrls() != null) {
             this.getProjectImages().clear();
@@ -112,7 +110,7 @@ public class Project extends BaseTimeEntity {
             this.projectSubjects.addAll(newSubject);
         }
 
-        */
+
     }
 
 

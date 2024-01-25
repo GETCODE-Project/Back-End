@@ -6,9 +6,7 @@ import com.getcode.domain.member.Member;
 import com.getcode.domain.project.*;
 import com.getcode.dto.project.ProjectSpecification;
 import com.getcode.dto.project.req.*;
-import com.getcode.dto.project.res.CommentResponseDto;
-import com.getcode.dto.project.res.ProjectDetailResponseDto;
-import com.getcode.dto.project.res.ProjectInfoResponseDto;
+import com.getcode.dto.project.res.*;
 import com.getcode.dto.s3.S3FileDto;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.project.*;
@@ -153,6 +151,9 @@ public class ProjectService {
     public void updateProject(Long id, ProjectUpdateRequestDto requestDto, String memberEmail, String fileType, List<MultipartFile> multipartFiles) {
 
         Project project = projectRepository.findById(id).orElseThrow(NotFoundCommentException::new);
+        List<ProjectTech> projectTech = projectStackRepository.findAllByProjectId(id);
+        List<ProjectSubject> projectSubject = projectSubjectRepository.findAllByProjectId(id);
+
 
         if(project.getMember() != null && project.getMember().getEmail().equals(memberEmail)){
             //새로운 파일 추가했을 때 기존 파일 삭제 후 새로운 파일 등록
@@ -352,20 +353,21 @@ public class ProjectService {
         }
 
 
-
         Specification<Project> combinedSpec = ProjectSpecification.combineSpecifications(specifications);
 
         Page<Project> projectPage = projectRepository.findAll(combinedSpec, pageable);
 
         List<ProjectInfoResponseDto> responseDto = new ArrayList<>();
 
-        projectPage.forEach(project -> responseDto.add(new ProjectInfoResponseDto(project)));
+        projectPage.forEach((project) ->responseDto.add(new ProjectInfoResponseDto(project)));
+
         return responseDto;
 
     }
 
 
     //특정 프로젝트 댓글 정보 List return
+    @Transactional
     public List<CommentResponseDto> getProjectComment(Long projectId) {
 
        List<ProjectComment> projectComments = projectCommentRepository.findByProjectId(projectId);

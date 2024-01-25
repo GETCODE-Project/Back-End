@@ -14,7 +14,7 @@ public class ProjectStackResponseDto {
 
     public ProjectStackResponseDto(ProjectTech projectTech){
         this.id = projectTech.getId();
-        this.techStack = String.valueOf(projectTech.getTechStack());
+        this.techStack = String.valueOf(projectTech.getTechStack().print());
     }
 
 }

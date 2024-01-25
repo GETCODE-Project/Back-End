@@ -1,6 +1,9 @@
 package com.getcode.dto.project.res;
 
+import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.project.Project;
+import com.getcode.domain.project.ProjectLike;
+import com.getcode.domain.project.WishProject;
 import com.getcode.dto.member.MemberInfoDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -36,6 +39,11 @@ public class ProjectInfoResponseDto {
 
     private String memberNickName;
 
+    private List<Boolean> checkLike;
+    private List<Boolean> checkWish;
+
+
+
     public ProjectInfoResponseDto(Project project) {
         this.projectId = project.getId();
         this.title = project.getTitle();
@@ -56,4 +64,8 @@ public class ProjectInfoResponseDto {
         this.memberNickName = project.getMember().getNickname();
 
     }
+
+
+
+
 }
