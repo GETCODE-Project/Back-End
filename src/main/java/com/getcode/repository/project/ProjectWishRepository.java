@@ -9,4 +9,5 @@ public interface ProjectWishRepository extends JpaRepository<WishProject, Long> 
     WishProject findByProjectAndMember(Project project, Member member);
 
     WishProject findByProject(Project project);
+    Boolean existsByProjectIdAndMemberId(Long projectId, Long memberId);
 }

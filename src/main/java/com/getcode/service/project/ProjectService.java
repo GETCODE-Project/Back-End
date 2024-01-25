@@ -319,9 +319,12 @@ public class ProjectService {
 
     //전체 프로젝트 조회(조건 검색) 조건: 주제, 기술스택, 년도 | 정렬 조건: 최신순, 과거순, 좋아요순
     @Transactional
-    public List<ProjectInfoResponseDto> getProjectList(int size, int page, String sort, String keyword, List<String> subject, List<String> techStack, Integer year) {
+    public List<ProjectInfoResponseDto> getProjectList(int size, int page, String sort, String keyword,
+                                                       List<String> subject, List<String> techStack,
+                                                       Integer year, Long memberId) {
 
         Sort sortCriteria;
+
 
         if(sort.equals("pastOrder")){
             sortCriteria = Sort.by(Sort.Direction.ASC, "modifiedDate");
@@ -359,10 +362,29 @@ public class ProjectService {
 
         List<ProjectInfoResponseDto> responseDto = new ArrayList<>();
 
-        projectPage.forEach((project) ->responseDto.add(new ProjectInfoResponseDto(project)));
+        projectPage.forEach((project) ->{
+
+            ProjectInfoResponseDto dto = new ProjectInfoResponseDto(project);
+
+            if(memberId != null) {
+                // 좋아요 및 찜 정보 가져오기
+                dto.setCheckLike(isProjectLikedByUser(project.getId(), memberId));
+                dto.setCheckWish(isProjectWishedByUser(project.getId(), memberId));
+            }
+
+            responseDto.add(dto);
+        });
 
         return responseDto;
 
+    }
+
+    private Boolean isProjectLikedByUser(Long projectId, Long memberId) {
+        return projectLikeRepository.existsByProjectIdAndMemberId(projectId, memberId);
+    }
+
+    private Boolean isProjectWishedByUser(Long projectId, Long memberId) {
+        return projectWishRepository.existsByProjectIdAndMemberId(projectId, memberId);
     }
 
 
