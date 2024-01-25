@@ -213,7 +213,9 @@ public class ProjectRecruitmentService {
     }
 
     //프로젝트 모집글 전체 조회
-    public List<ProjectRecruitmentInfoResDto> getAllRecuritment(String sort, int page, int size, String keyword, List<String> subject, List<String> techStack, Integer year) {
+    public List<ProjectRecruitmentInfoResDto> getAllRecuritment(String sort, int page, int size, String keyword,
+                                                                List<String> subject, List<String> techStack, Integer year,
+                                                                Long memberId) {
 
         Sort sortCriteria;
 
@@ -253,7 +255,15 @@ public class ProjectRecruitmentService {
 
         List<ProjectRecruitmentInfoResDto> responseDto = new ArrayList<>();
 
-        recruitmentPage.forEach(recruitment -> responseDto.add(new ProjectRecruitmentInfoResDto(recruitment)));
+        recruitmentPage.forEach(recruitment -> {
+
+            ProjectRecruitmentInfoResDto dto = new ProjectRecruitmentInfoResDto(recruitment);
+            if(memberId != null) {
+                dto.setCheckLike(isRecruitmentLikedByUser(recruitment.getId(), memberId));
+                dto.setCheckWish(isRecruitmentWishedByUser(recruitment.getId(), memberId));
+            }
+            responseDto.add(dto);
+        });
 
         return responseDto;
     }
@@ -273,4 +283,14 @@ public class ProjectRecruitmentService {
 
 
     }
+
+    private Boolean isRecruitmentLikedByUser(Long projectRecruitmentId, Long memberId) {
+        return projectRecruitmentLikeRepository.existsByProjectRecruitmentIdAndMemberId(projectRecruitmentId, memberId);
+    }
+
+    private Boolean isRecruitmentWishedByUser(Long projectRecruitmentId, Long memberId) {
+        return projectRecruitmentWishRepository.existsByProjectRecruitmentIdAndMemberId(projectRecruitmentId, memberId);
+    }
+
+
 }

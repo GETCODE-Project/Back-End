@@ -150,10 +150,11 @@ public class ProjectRecruitmentController {
                                                @Parameter(description = "검색어") @RequestParam(defaultValue = "", required = false) String keyword,
                                                @Parameter(description = "검색 조건") @RequestParam(defaultValue = "", required = false) List<String> subject,
                                                @Parameter(description = "기술스택") @RequestParam(defaultValue = "", required = false) List<String> techStack,
-                                               @Parameter(description = "년도") @RequestParam(defaultValue = "2024", required = false) Integer year)
+                                               @Parameter(description = "년도") @RequestParam(defaultValue = "2024", required = false) Integer year,
+                                               @Parameter(description = "사용자 id")@RequestParam(required = false) Long memberId)
     {
 
-        List<ProjectRecruitmentInfoResDto> resDtoList = projectRecruitmentService.getAllRecuritment(sort, page, size, keyword, subject, techStack, year);
+        List<ProjectRecruitmentInfoResDto> resDtoList = projectRecruitmentService.getAllRecuritment(sort, page, size, keyword, subject, techStack, year, memberId);
 
         return ResponseEntity.status(HttpStatus.OK).body(resDtoList);
     }
@@ -163,7 +164,6 @@ public class ProjectRecruitmentController {
     public ResponseEntity<?> updateRecruitment(@RequestBody RecruitmentUpdateRequestDto requestDto,
                                                @Parameter(description = "프로젝트 모집글 id") @PathVariable Long id)
     {
-
 
         projectRecruitmentService.updateRecruitment(requestDto, id);
 

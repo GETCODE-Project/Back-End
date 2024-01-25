@@ -9,4 +9,6 @@ public interface ProjectRecruitmentWishRepository extends JpaRepository<WishProj
     WishProjectRecruitment findByProjectRecruitmentAndMember(ProjectRecruitment projectRecruitment, Member member);
 
     WishProjectRecruitment findByProjectRecruitment(ProjectRecruitment projectRecruitment);
+
+    Boolean existsByProjectRecruitmentIdAndMemberId(Long projectRecruitmentId, Long memberId);
 }

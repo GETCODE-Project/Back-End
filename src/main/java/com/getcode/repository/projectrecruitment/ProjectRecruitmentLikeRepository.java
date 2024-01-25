@@ -9,4 +9,6 @@ public interface ProjectRecruitmentLikeRepository extends JpaRepository<ProjectR
     ProjectRecruitmentLike findByProjectRecruitmentAndMember(ProjectRecruitment projectRecruitment, Member member);
 
     ProjectRecruitmentLike findByProjectRecruitment(ProjectRecruitment projectRecruitment);
+
+    Boolean existsByProjectRecruitmentIdAndMemberId(Long projectRecruitmentId, Long memberId);
 }
