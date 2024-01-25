@@ -15,7 +15,7 @@ public class CommentResponseDto {
     private String memberNickName;
     @Schema(description = "댓글 내용")
     private String content;
-    private boolean isWriter;
+    private Boolean isWriter;
 
     public CommentResponseDto(ProjectComment projectComment){
 

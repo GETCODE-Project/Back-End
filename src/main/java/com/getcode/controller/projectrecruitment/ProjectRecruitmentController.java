@@ -6,6 +6,7 @@ import com.getcode.dto.projectrecruitment.req.RecruitmentCommentUpdateDto;
 import com.getcode.dto.projectrecruitment.req.RecruitmentUpdateRequestDto;
 import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentDetailResDto;
 import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentInfoResDto;
+import com.getcode.dto.projectrecruitment.res.RecruitmentCommentResDto;
 import com.getcode.service.projectrecruitment.ProjectRecruitmentService;
 import com.getcode.util.Response;
 import io.swagger.v3.oas.annotations.Operation;
@@ -168,6 +169,14 @@ public class ProjectRecruitmentController {
         projectRecruitmentService.updateRecruitment(requestDto, id);
 
         return ResponseEntity.status(HttpStatus.OK).body("수정 완료.");
+    }
+
+
+    @Operation(summary = "프로젝트 모집글 댓글 조회 api")
+    @GetMapping("/{recruitmentId}/comment")
+    ResponseEntity<?> getRecruitmentComment(@Parameter(description = "프로젝트 아이디")@PathVariable Long recruitmentId){
+        List<RecruitmentCommentResDto> resDtos = projectRecruitmentService.getRecruitmentComment(recruitmentId);
+        return ResponseEntity.status(HttpStatus.OK).body(resDtos);
     }
 
 

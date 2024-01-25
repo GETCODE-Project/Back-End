@@ -12,6 +12,7 @@ import com.getcode.dto.projectrecruitment.ProjectRecruitmentSpecification;
 import com.getcode.dto.projectrecruitment.req.*;
 import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentDetailResDto;
 import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentInfoResDto;
+import com.getcode.dto.projectrecruitment.res.RecruitmentCommentResDto;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.project.NotFoundCommentException;
 import com.getcode.exception.project.NotMatchMemberException;
@@ -116,6 +117,7 @@ public class ProjectRecruitmentService {
 
     }
     //프로젝트 모집글 댓글 삭제
+    @Transactional
     public void deleteComment(Long recruitmentId, Long id) {
 
         Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
@@ -168,6 +170,7 @@ public class ProjectRecruitmentService {
         }
     }
     //프로젝트 모집글 찜
+    @Transactional
     public int wishProjectRecruitment(Long recruitmentId) {
         Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
         ProjectRecruitment projectRecruitment = projectRecruitmentRepository.findById(recruitmentId).orElseThrow(NotFoundProjectRecruitmentException::new);
@@ -213,6 +216,7 @@ public class ProjectRecruitmentService {
     }
 
     //프로젝트 모집글 전체 조회
+    @Transactional(readOnly = true)
     public List<ProjectRecruitmentInfoResDto> getAllRecuritment(String sort, int page, int size, String keyword,
                                                                 List<String> subject, List<String> techStack, Integer year,
                                                                 Long memberId) {
@@ -269,6 +273,7 @@ public class ProjectRecruitmentService {
     }
 
     //프로젝트 모집글 수정
+    @Transactional
     public void updateRecruitment(RecruitmentUpdateRequestDto requestDto, Long id) {
 
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
@@ -293,4 +298,15 @@ public class ProjectRecruitmentService {
     }
 
 
+    @Transactional(readOnly = true)
+    public List<RecruitmentCommentResDto> getRecruitmentComment(Long recruitmentId) {
+        List<ProjectRecruitmentComment> projectRecruitmentComments = projectRecruitmentCommentRepository.findByProjectRecruitmentId(recruitmentId);
+        List<RecruitmentCommentResDto> dtos = new ArrayList<>();
+
+        for(ProjectRecruitmentComment projectRecruitmentComment : projectRecruitmentComments){
+            dtos.add(new RecruitmentCommentResDto(projectRecruitmentComment));
+        }
+        return dtos;
+
+    }
 }
