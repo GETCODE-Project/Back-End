@@ -127,10 +127,9 @@ public class MemberService {
 
     // 이메일 인증번호 보내기
     public void sendCodeToEmail(String toEmail) {
-        String title = "이메일 인증 번호";
         String authCode = createCode();
 
-        mailService.sendEmail(toEmail, title, authCode);
+        mailService.sendEmail(toEmail, authCode);
 
         redisService.setValues(AUTH_CODE_PREFIX + toEmail, authCode, Duration.ofMillis(authCodeExpirationMills));
     }
