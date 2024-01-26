@@ -44,4 +44,5 @@ public class StudyInfoResponseDto {
                 study.getSubjects().stream().map(StudySubject::getSubject).collect(Collectors.toList())
         );
     }
+
 }
