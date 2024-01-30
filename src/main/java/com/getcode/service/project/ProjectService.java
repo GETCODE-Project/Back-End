@@ -104,12 +104,7 @@ public class ProjectService {
 
         if(fileType != null && !multipartFiles.isEmpty() && multipartFiles != null) {
 
-            //확장성을 고려하여 List형태로 파일 저장
-            List<S3FileDto> files = s3Service.uploadFiles(fileType, multipartFiles);
-            //파일 url리스트로 변환
-            List<String> fileUrls = files.stream()
-                    .map(S3FileDto::getUploadFileUrl)
-                    .collect(Collectors.toList());
+            List<String> fileUrls = uploadS3File(multipartFiles, fileType);
 
             projectRequestDto.setImageUrls(fileUrls);
 
@@ -392,13 +387,24 @@ public class ProjectService {
     @Transactional
     public List<CommentResponseDto> getProjectComment(Long projectId) {
 
-       List<ProjectComment> projectComments = projectCommentRepository.findByProjectId(projectId);
-       List<CommentResponseDto> responseDto = new ArrayList<>();
+        List<ProjectComment> projectComments = projectCommentRepository.findByProjectId(projectId);
+        List<CommentResponseDto> responseDto = new ArrayList<>();
 
-       for(ProjectComment projectComment : projectComments){
-          responseDto.add(new CommentResponseDto(projectComment));
-       }
-       return responseDto;
+        for(ProjectComment projectComment : projectComments){
+            responseDto.add(new CommentResponseDto(projectComment));
+        }
+        return responseDto;
 
     }
+
+    public List<String> uploadS3File(List<MultipartFile> multipartFiles, String fileType){
+        //확장성을 고려하여 List형태로 파일 저장
+        List<S3FileDto> files = s3Service.uploadFiles(fileType, multipartFiles);
+        //파일 url리스트로 변환
+        List<String> fileUrls = files.stream()
+                .map(S3FileDto::getUploadFileUrl)
+                .collect(Collectors.toList());
+        return fileUrls;
+    }
+
 }
