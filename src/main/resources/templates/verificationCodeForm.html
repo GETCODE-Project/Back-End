@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Email Verification</title>
+</head>
+<body>
+<div style="display: flex;
+    flex-direction: column;
+    margin: 100px;">
+    <div style="display: flex;
+        align-items: center;
+        height: 40px;
+        padding-left: 10px;
+        padding-bottom: 5px;
+        box-sizing: border-box;
+        border-bottom: 2px solid #FF4B13;">
+        <img style="width: 110px; height: 24px;" src="https://getcodebucket.s3.ap-northeast-2.amazonaws.com/getcodeLogo.png">
+    </div>
+    <div style="display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 25px;
+        padding-top: 60px;
+        box-sizing: border-box;">
+        <h1 style="font-weight:600; margin: 0;">이메일 주소 인증 코드</h1>
+        <p style="margin: 0;
+            font-weight: 500;
+            line-height: 1.5;
+            text-align: center;
+            color: #3C3C3C;">
+            안녕하세요, 프로젝트 모음 사이트 GET-CODE 입니다.</br>
+            회원가입을 위한 이메일 주소 인증 코드가 발급되었습니다.</br>
+            아래 코드를 회원가입 창으로 돌아가 입력하시면 인증이 완료됩니다.</br>
+        </p>
+        <div style="display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            width: 100%;">
+            <div style="display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-wrap: wrap;
+                width: 70%;
+                padding: 0 30px;
+                box-sizing: border-box;
+                background-color: #FF4B13;
+                border-radius: 3px;">
+                <h3 style="overflow-wrap: break-word;
+                    word-break: break-all;
+                    font-size: 1rem;
+                    color: #fff;" th:text="${code}">회원가입 인증 코드 입니다.</h3>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
