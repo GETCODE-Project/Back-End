@@ -18,7 +18,10 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
+application.properties
+http
 .idea
+http
 *.iws
 *.iml
 *.ipr
@@ -35,4 +38,3 @@ out/
 
 ### VS Code ###
 .vscode/
-**/application.properties
