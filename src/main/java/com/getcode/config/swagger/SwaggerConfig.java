@@ -21,7 +21,12 @@ import java.util.List;
 @SecurityScheme(
         type = SecuritySchemeType.APIKEY,
         in = SecuritySchemeIn.HEADER,
-        name = "Authorization", description = "Auth Token"
+        name = "Authorization", description = "Access Token"
+)
+@SecurityScheme(
+        type = SecuritySchemeType.APIKEY,
+        in = SecuritySchemeIn.HEADER,
+        name = "Authorization-refresh", description = "Refresh Token"
 )
 @Configuration
 public class SwaggerConfig {
@@ -29,8 +34,9 @@ public class SwaggerConfig {
     public GroupedOpenApi openApi() {
         return GroupedOpenApi.builder()
                 .group("api")
-                .addOpenApiCustomizer(oac -> oac.security(
-                        List.of(new SecurityRequirement().addList("Authorization"))
-                )).pathsToMatch("/**").build();
+                .addOpenApiCustomizer(oac -> oac
+                .security(List.of(new SecurityRequirement().addList("Authorization"),
+                        new SecurityRequirement().addList("Authorization-refresh"))))
+                .pathsToMatch("/**").build();
     }
 }

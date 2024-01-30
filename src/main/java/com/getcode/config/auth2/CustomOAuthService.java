@@ -67,10 +67,10 @@ public class CustomOAuthService implements OAuth2UserService<OAuth2UserRequest, 
     }
 
     private SocialType getSocialType(String registrationId) {
-        if(NAVER.equals(registrationId)) {
+        if(NAVER.toString().equals(registrationId)) {
             return NAVER;
         }
-        if(KAKAO.equals(registrationId)) {
+        if(KAKAO.toString().equals(registrationId)) {
             return KAKAO;
         }
         return SocialType.GOOGLE;

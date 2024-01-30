@@ -94,6 +94,8 @@ public class MemberService {
                 .value(tokenDto.getRefreshToken())
                 .build();
 
+        long accessTokenExpirationMillis = tokenProvider.getRefreshTokenExpirationMillis();
+        redisService.setValues(memberRequestDto.getEmail(), tokenDto.getRefreshToken(), Duration.ofMillis(accessTokenExpirationMillis));
         refreshTokenRepository.save(refreshToken);
 
         return tokenDto;
@@ -111,7 +113,6 @@ public class MemberService {
             redisService.setValues(accessToken, "logout", Duration.ofMillis(accessTokenExpirationMillis));
         }
     }
-
 
     // 개인정보
     public MemberInfoDto userInfo() {

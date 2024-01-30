@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
+//    private final RefreshTokenRepository refreshTokenRepository;
     private final RedisService redisService;
 
     @Override
@@ -65,6 +65,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 
                 long refreshTokenExpirationMillis = tokenProvider.getRefreshTokenExpirationMillis();
+                // 리프레시 토큰을 레디스에 저장
                 redisService.setValues(member.getEmail(), tokenDto.getRefreshToken(), Duration.ofMillis(refreshTokenExpirationMillis));
                 // 리프레시 토큰의 경우 DB에 저장
 //                RefreshToken refreshToken = RefreshToken.builder()
@@ -73,7 +74,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 //                        .build();
 //
 //                refreshTokenRepository.save(refreshToken);
-//                tokenProvider.sendAccessAndRefreshToken(response, tokenDto.getAccessToken(), tokenDto.getRefreshToken());
+                tokenProvider.sendAccessAndRefreshToken(response, tokenDto.getAccessToken(), tokenDto.getRefreshToken());
             }
         } catch (Exception e) {
             throw e;

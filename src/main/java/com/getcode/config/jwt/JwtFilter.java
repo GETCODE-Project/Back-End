@@ -1,11 +1,14 @@
 package com.getcode.config.jwt;
 
 import com.getcode.config.redis.RedisService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Duration;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,26 +29,17 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         // Request Header에서 JWT 토큰 꺼내기
-        String jwt = resolveToken(request);
+        String accessToken = tokenProvider.resolveAccessToken(request);
 
         // JWT 토큰 유효성 검사
-        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt) && doNotLogout(jwt)) {
-            Authentication authentication = tokenProvider.getAuthentication(jwt);
+        if (StringUtils.hasText(accessToken) && tokenProvider.validateToken(accessToken) && doNotLogout(accessToken)) {
+            Authentication authentication = tokenProvider.getAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
         filterChain.doFilter(request, response);
-
     }
 
-    // Request Header 에서 토큰 정보를 꺼내오기
-    private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
-            return bearerToken.substring(7);
-        }
-        return null;
-    }
     // 로그아웃 상태 확인
     private boolean doNotLogout(String accessToken) {
         String isLogout = redisService.getValues(accessToken);

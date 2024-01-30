@@ -123,8 +123,6 @@ public class TokenProvider {
         return new Date(now.getTime() + millisecond);
     }
 
-
-
     // 토큰 복호화해서 JWT 토큰에 들어있는 정보 꺼내는 메소드
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken); // 토큰 복호화
@@ -163,9 +161,9 @@ public class TokenProvider {
     }
 
     // 토큰 복호화
-    public Claims parseClaims(String accessToken) {
+    public Claims parseClaims(String token) {
         try {
-            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
+            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
@@ -218,8 +216,8 @@ public class TokenProvider {
     public String resolveRefreshToken(HttpServletRequest request) {
         log.info("JwtTokenProvider.resolveRefreshToken excute, request = {}", request.toString());
         String bearerToken = request.getHeader("Authorization-refresh");
-        if (StringUtils.hasText(bearerToken)) {
-            return bearerToken;
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+            return bearerToken.substring(7);
         }
         return null;
     }
