@@ -141,10 +141,10 @@ public class MemberService {
         String redisAuthCode = redisService.getValue(AUTH_CODE_PREFIX + email);
         boolean authResult = redisService.checkExistsValue(redisAuthCode) && redisAuthCode.equals(authCode);
 
-        if (authResult) {
-            Member member = memberRepository.findByEmail(email).orElseThrow(IllegalArgumentException::new);
-            member.updateEmailVerified();
-        }
+//        if (authResult) {
+//            Member member = memberRepository.findByEmail(email).orElseThrow(IllegalArgumentException::new);
+//            member.updateEmailVerified();
+//        }
         return EmailVerificationResultDto.toDto(authResult);
     }
 

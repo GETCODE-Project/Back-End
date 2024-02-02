@@ -2,6 +2,9 @@ package com.getcode.dto.member;
 
 import com.getcode.domain.member.Authority;
 import com.getcode.domain.member.Member;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +16,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class MemberLoginRequestDto {
+    @NotBlank(message = "이메일을 입력해주세요.")
+    @Email(message = "이메일 형식이 올바르지 않습니다.")
     private String email;
+
+    @NotBlank(message = "비밀번호를 입력해주세요.")
     private String password;
 
     public Member toEntity(PasswordEncoder passwordEncoder) {

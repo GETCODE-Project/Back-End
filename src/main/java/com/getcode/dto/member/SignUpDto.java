@@ -31,8 +31,6 @@ public class SignUpDto {
     @Size(min = 8, message = "비밀번호는 최소 8자 이상입니다.")
     private String password;
 
-    private Authority authority;
-
     public Member toEntity() {
         return Member.builder()
                 .email(email)
