@@ -59,7 +59,7 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "OK")
     })
     @PostMapping("/auth/login")
-    public ResponseEntity<TokenDto> login(@RequestBody MemberLoginRequestDto memberRequestDto) {
+    public ResponseEntity<TokenDto> login(@Valid @RequestBody MemberLoginRequestDto memberRequestDto) {
         return ResponseEntity.ok(memberService.login(memberRequestDto));
     }
 
