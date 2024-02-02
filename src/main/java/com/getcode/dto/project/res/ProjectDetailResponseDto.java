@@ -33,7 +33,7 @@ public class ProjectDetailResponseDto {
     private LocalDateTime createdDate, modifiedDate;
 
 
-    public ProjectDetailResponseDto(Project project, ProjectLike projectLike, WishProject wishProject){
+    public ProjectDetailResponseDto(Project project, Boolean checkLike, Boolean checkWish, Boolean checkWriter){
 
         this.projectId  = project.getId();
         this.title  = project.getTitle();
@@ -45,24 +45,10 @@ public class ProjectDetailResponseDto {
         this.projectSubjects  = project.getProjectSubjects().stream().map(ProjectSubjectResponseDto::new).collect(Collectors.toList());
         this.imageUrls  = project.getProjectImages().stream().map(ProjectImageUrlResponseDto::new).collect(Collectors.toList());
         this.memberNickName = project.getMember().getNickname();
-        if (project.getMember().getEmail().equals(SecurityUtil.getCurrentMemberEmail())) {
-            this.isWriter = true;
-        } else {
-            this.isWriter = false;
-        }
 
-        if(projectLike != null && projectLike.getMember().getEmail().equals(SecurityUtil.getCurrentMemberEmail())){
-            this.checkLike = true;
-        } else {
-            this.checkLike = false;
-        }
-
-        if(wishProject != null && wishProject.getMember().getEmail().equals(SecurityUtil.getCurrentMemberEmail())){
-            this.checkWish = true;
-        } else {
-            this.checkWish = false;
-        }
-
+        this.checkLike = checkLike;
+        this.checkWish = checkWish;
+        this.isWriter = checkWriter;
         this.createdDate = project.getCreateDate();
         this.modifiedDate = project.getModifiedDate();
 
