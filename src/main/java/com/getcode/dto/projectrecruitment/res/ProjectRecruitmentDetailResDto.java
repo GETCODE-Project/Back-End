@@ -4,6 +4,7 @@ import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.projectrecruitment.ProjectRecruitment;
 import com.getcode.domain.projectrecruitment.ProjectRecruitmentLike;
 import com.getcode.domain.projectrecruitment.WishProjectRecruitment;
+import com.getcode.dto.member.MemberInfoDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,6 +34,7 @@ public class ProjectRecruitmentDetailResDto {
     private boolean isWriter;
     private boolean checkLike;
     private boolean checkWish;
+    private MemberInfoDto memberInfoDto;
 
 
     public ProjectRecruitmentDetailResDto(ProjectRecruitment projectRecruitment, ProjectRecruitmentLike projectRecruitmentLike, WishProjectRecruitment wishProjectRecruitment){
@@ -67,6 +69,7 @@ public class ProjectRecruitmentDetailResDto {
             this.checkWish = false;
         }
 
+       this.memberInfoDto =MemberInfoDto.toDto(projectRecruitment.getMember());
 
     }
 

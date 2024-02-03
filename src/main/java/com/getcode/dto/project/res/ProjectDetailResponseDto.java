@@ -26,7 +26,7 @@ public class ProjectDetailResponseDto {
     private List<ProjectStackResponseDto> techStackList;
     private List<ProjectSubjectResponseDto> projectSubjects;
     private List<ProjectImageUrlResponseDto> imageUrls;
-    private String memberNickName;
+    private MemberInfoDto memberInfoDto;
     private boolean isWriter;
     private boolean checkWish;
     private boolean checkLike;
@@ -44,7 +44,7 @@ public class ProjectDetailResponseDto {
         this.techStackList  = project.getTechStacks().stream().map(ProjectStackResponseDto::new).collect(Collectors.toList());
         this.projectSubjects  = project.getProjectSubjects().stream().map(ProjectSubjectResponseDto::new).collect(Collectors.toList());
         this.imageUrls  = project.getProjectImages().stream().map(ProjectImageUrlResponseDto::new).collect(Collectors.toList());
-        this.memberNickName = project.getMember().getNickname();
+        this.memberInfoDto =MemberInfoDto.toDto(project.getMember());
 
         this.checkLike = checkLike;
         this.checkWish = checkWish;
