@@ -199,10 +199,38 @@ public class ProjectRecruitmentService {
         ProjectRecruitment projectRecruitment = projectRecruitmentRepository.findById(id).orElseThrow(NotFoundProjectRecruitmentException::new);
         projectRecruitment.viewCntUp();
 
-        ProjectRecruitmentLike projectRecruitmentLike = projectRecruitmentLikeRepository.findByProjectRecruitment(projectRecruitment);
-        WishProjectRecruitment wishProjectRecruitment = projectRecruitmentWishRepository.findByProjectRecruitment(projectRecruitment);
+        List<ProjectRecruitmentLike> projectRecruitmentLike = projectRecruitmentLikeRepository.findByProjectRecruitment(projectRecruitment);
+        List<WishProjectRecruitment> wishProjectRecruitment = projectRecruitmentWishRepository.findByProjectRecruitment(projectRecruitment);
 
-        ProjectRecruitmentDetailResDto resDto =  new ProjectRecruitmentDetailResDto(projectRecruitment, projectRecruitmentLike, wishProjectRecruitment);
+
+        Boolean checkLike = false;
+        Boolean checkWish = false;
+        Boolean checkWriter = false;
+
+        if(SecurityUtil.getCurrentMemberEmail() != null) {
+            String memberEmail = SecurityUtil.getCurrentMemberEmail();
+
+            for (ProjectRecruitmentLike checkLiked : projectRecruitmentLike) {
+                if(checkLiked.getMember().getEmail().equals(memberEmail)){
+                    checkLike = true;
+                    break;
+                }
+            }
+            for (WishProjectRecruitment checkWished : wishProjectRecruitment) {
+                if(checkWished.getMember().getEmail().equals(memberEmail)){
+                    checkWish = true;
+                    break;
+                }
+            }
+
+            if (projectRecruitment.getMember().getEmail().equals(memberEmail)){
+                checkWriter = true;
+            }
+
+        }
+
+
+        ProjectRecruitmentDetailResDto resDto =  new ProjectRecruitmentDetailResDto(projectRecruitment, checkLike, checkWish, checkWriter);
         return resDto;
     }
 
