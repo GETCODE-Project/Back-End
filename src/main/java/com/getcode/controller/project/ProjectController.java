@@ -166,7 +166,7 @@ public class ProjectController {
                                      @Positive(message = "size값은 1이상이어야 합니다")
                                      @RequestParam(defaultValue = "10") int size,
                                      @Parameter(description = "검색어") @RequestParam(defaultValue = "", required = false) String keyword,
-                                     @Parameter(description = "주제") @RequestParam(defaultValue = "", required = false) List<String> subject,
+                                     @Parameter(description = "주제") @RequestParam(defaultValue = "", required = false) String subject,
                                      @Parameter(description = "기술스택") @RequestParam(defaultValue = "", required = false) List<String> techStack,
                                      @Parameter(description = "년도") @RequestParam(defaultValue = "2024", required = false) Integer year,
                                      @Parameter(description = "사용자 id") @RequestParam(required = false) Long memberId
