@@ -15,6 +15,7 @@ import com.getcode.repository.project.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -146,9 +147,6 @@ public class ProjectService {
     public void updateProject(Long id, ProjectUpdateRequestDto requestDto, String memberEmail, String fileType, List<MultipartFile> multipartFiles) {
 
         Project project = projectRepository.findById(id).orElseThrow(NotFoundCommentException::new);
-        List<ProjectTech> projectTech = projectStackRepository.findAllByProjectId(id);
-        List<ProjectSubject> projectSubject = projectSubjectRepository.findAllByProjectId(id);
-
 
         if(project.getMember() != null && project.getMember().getEmail().equals(memberEmail)){
             //새로운 파일 추가했을 때 기존 파일 삭제 후 새로운 파일 등록
@@ -186,12 +184,6 @@ public class ProjectService {
         Project project = projectRepository.findById(id).orElseThrow(NotFoundProjectException::new);
 
         ProjectLike projectLike = projectLikeRepository.findByProjectAndMember(project, member);
-
-        String owner = project.getMember().getEmail();
-
-        if(owner == memberEmail){
-            throw new NotOwnLikeException();
-        }
 
         if(projectLike != null){
             projectLikeRepository.delete(projectLike);
@@ -255,11 +247,38 @@ public class ProjectService {
 
         Project project = projectRepository.findById(id).orElseThrow(NotFoundProjectException::new);
 
-        ProjectLike projectLike = projectLikeRepository.findByProject(project);
-        WishProject wishProject = projectWishRepository.findByProject(project);
+        List<ProjectLike> projectLike = projectLikeRepository.findByProject(project);
+        List<WishProject> wishProject = projectWishRepository.findByProject(project);
+
+        Boolean checkLike = false;
+        Boolean checkWish = false;
+        Boolean checkWriter = false;
+
+        if(SecurityUtil.getCurrentMemberEmail() != null) {
+            String memberEmail = SecurityUtil.getCurrentMemberEmail();
+
+            for (ProjectLike checkLiked : projectLike) {
+                if(checkLiked.getMember().getEmail().equals(memberEmail)){
+                    checkLike = true;
+                    break;
+                }
+            }
+            for (WishProject checkWished : wishProject) {
+                if(checkWished.getMember().getEmail().equals(memberEmail)){
+                    checkWish = true;
+                    break;
+                }
+            }
+
+            if (project.getMember().getEmail().equals(memberEmail)){
+                checkWriter = true;
+            }
+
+        }
+
         project.viewCntUp();
 
-        ProjectDetailResponseDto responseDto = new ProjectDetailResponseDto(projectRepository.save(project), projectLike, wishProject);
+        ProjectDetailResponseDto responseDto = new ProjectDetailResponseDto(projectRepository.save(project), checkLike, checkWish, checkWriter);
 
 
         return responseDto;
@@ -315,7 +334,7 @@ public class ProjectService {
     //전체 프로젝트 조회(조건 검색) 조건: 주제, 기술스택, 년도 | 정렬 조건: 최신순, 과거순, 좋아요순
     @Transactional
     public List<ProjectInfoResponseDto> getProjectList(int size, int page, String sort, String keyword,
-                                                       List<String> subject, List<String> techStack,
+                                                       String subject, List<String> techStack,
                                                        Integer year, Long memberId) {
 
         Sort sortCriteria;
@@ -338,7 +357,7 @@ public class ProjectService {
             specifications.add(ProjectSpecification.techStackLike(techStack));
         }
 
-        if (!subject.isEmpty() && subject != null) {
+        if (subject != null) {
             specifications.add(ProjectSpecification.subjectLike(subject));
         }
 

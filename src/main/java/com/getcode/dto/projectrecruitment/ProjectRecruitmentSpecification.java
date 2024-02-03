@@ -34,18 +34,16 @@ public class ProjectRecruitmentSpecification {
 
 
     //주제 조건 검사
-    public static Specification<ProjectRecruitment> subjectLike(List<String> subjects){
+    public static Specification<ProjectRecruitment> subjectLike(String subjects){
         return (root, query, criteriaBuilder) -> {
 
-            Join<ProjectRecruitment, ProjectRecruitmentSubject> projectRecruitmentSubjectJoin = root.join("Subjects", JoinType.LEFT);
-            Predicate[] predicates = new Predicate[subjects.size()];
+            Join<ProjectRecruitment, ProjectRecruitmentSubject> projectRecruitmentSubjectJoin = root.join("subjects", JoinType.LEFT);
+            Predicate predicate;
 
-            for(int i=0; i<subjects.size(); i++){
-                Subject subject = Subject.fromString(subjects.get(i));
-                predicates[i] = criteriaBuilder.equal(projectRecruitmentSubjectJoin.get("subject"), subject);
-            }
+                Subject subject = Subject.fromString(subjects);
+                predicate = criteriaBuilder.equal(projectRecruitmentSubjectJoin.get("subject"), subject);
 
-            return criteriaBuilder.or(predicates);
+            return criteriaBuilder.or(predicate);
         };
     }
 

@@ -31,18 +31,15 @@ public class ProjectSpecification  {
     }
 
 
-    public static Specification<Project> subjectLike(List<String> subjects){
+    public static Specification<Project> subjectLike(String subjects){
         return (root, query, criteriaBuilder) -> {
             Join<Project, ProjectSubject> projectSubjectJoin = root.join("projectSubjects", JoinType.LEFT);
 
-            Predicate[] predicates = new Predicate[subjects.size()];
+            Predicate predicates;
 
-            for (int i = 0; i < subjects.size(); i++) {
+                Subject subject = Subject.fromString(subjects);
 
-                Subject subject = Subject.fromString(subjects.get(i));
-
-                predicates[i] = criteriaBuilder.equal(projectSubjectJoin.get("subject"), subject);
-            }
+                predicates = criteriaBuilder.equal(projectSubjectJoin.get("subject"), subject);
 
             return criteriaBuilder.or(predicates);
         };
