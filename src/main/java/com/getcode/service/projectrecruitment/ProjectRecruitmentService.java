@@ -237,7 +237,7 @@ public class ProjectRecruitmentService {
     //프로젝트 모집글 전체 조회
     @Transactional(readOnly = true)
     public List<ProjectRecruitmentInfoResDto> getAllRecuritment(String sort, int page, int size, String keyword,
-                                                                List<String> subject, List<String> techStack, Integer year,
+                                                                String subject, List<String> techStack, Integer year,
                                                                 Long memberId) {
 
         Sort sortCriteria;
@@ -258,7 +258,7 @@ public class ProjectRecruitmentService {
             specifications.add(ProjectRecruitmentSpecification.techStackLike(techStack));
         }
 
-        if (!subject.isEmpty() && subject != null) {
+        if (subject != null) {
             specifications.add(ProjectRecruitmentSpecification.subjectLike(subject));
         }
 
