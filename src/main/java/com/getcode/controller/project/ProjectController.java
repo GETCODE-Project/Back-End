@@ -37,10 +37,10 @@ public class ProjectController {
     @Operation(summary = "프로젝트 정보 등록 api")
     @PostMapping("/add")
     public ResponseEntity<?> addProject(@Parameter(description = "프로젝트 등록 값")
-                                        @Valid @RequestPart ProjectRequestDto projectRequestDto,
-                                        @Parameter(description = "프로젝트 이미지")
-                                        @RequestPart(name = "fileType", required = false) String fileType,
-                                        @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles
+                                        @Valid @RequestBody ProjectRequestDto projectRequestDto
+                                        //@Parameter(description = "프로젝트 이미지")
+                                        //@RequestParam(name = "fileType", required = false) String fileType,
+                                        //@RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles
     ){
 
 
@@ -48,7 +48,7 @@ public class ProjectController {
 
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
-        projectService.addProject(projectRequestDto, memberEmail,multipartFiles, fileType);
+        projectService.addProject(projectRequestDto, memberEmail);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("등록이 완료되었습니다.");
 
@@ -92,13 +92,13 @@ public class ProjectController {
     @Operation(summary = "프로젝트 수정 api")
     @PutMapping("/{id}/update")
     public ResponseEntity<?> updateProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id,
-                                           @RequestPart(required = false) ProjectUpdateRequestDto requestDto,
-                                           @RequestPart(name = "fileType", required = false) String fileType,
-                                           @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles
+                                           @RequestBody(required = false) ProjectUpdateRequestDto requestDto
+                                           //@RequestPart(name = "fileType", required = false) String fileType,
+                                           //@RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles
     ){
 
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
-        projectService.updateProject(id, requestDto,memberEmail, fileType, multipartFiles);
+        projectService.updateProject(id, requestDto,memberEmail);
 
         return ResponseEntity.status(HttpStatus.OK).body("수정 완료.");
     }

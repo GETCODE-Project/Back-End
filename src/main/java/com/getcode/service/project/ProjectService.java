@@ -95,14 +95,14 @@ public class ProjectService {
 
     //프로젝트 등록
     @Transactional
-    public void addProject(ProjectRequestDto projectRequestDto, String memberEmail, List<MultipartFile> multipartFiles, String fileType) {
+    public void addProject(ProjectRequestDto projectRequestDto, String memberEmail) {
 
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(NotFoundMemberException::new);
 
         Project project = projectRequestDto.toProjectEntity(member);
 
         projectRepository.save(project);
-
+/*
         if(fileType != null && !multipartFiles.isEmpty() && multipartFiles != null) {
 
             List<String> fileUrls = uploadS3File(multipartFiles, fileType);
@@ -116,7 +116,7 @@ public class ProjectService {
             }
 
         }
-
+*/
 
         List<String> techList = projectRequestDto.getTechStackList();
         List<String> subjectList = projectRequestDto.getProjectSubjects();
@@ -144,11 +144,12 @@ public class ProjectService {
 
     //프로젝트 수정
     @Transactional
-    public void updateProject(Long id, ProjectUpdateRequestDto requestDto, String memberEmail, String fileType, List<MultipartFile> multipartFiles) {
+    public void updateProject(Long id, ProjectUpdateRequestDto requestDto, String memberEmail) {
 
         Project project = projectRepository.findById(id).orElseThrow(NotFoundCommentException::new);
 
-        if(project.getMember() != null && project.getMember().getEmail().equals(memberEmail)){
+        if (project.getMember() != null && project.getMember().getEmail().equals(memberEmail)) {
+            /*
             //새로운 파일 추가했을 때 기존 파일 삭제 후 새로운 파일 등록
             if(fileType != null && !multipartFiles.isEmpty()) {
                 List<ProjectImage> projectImages = projectImageRepository.findAllByProjectId(id);
@@ -163,11 +164,8 @@ public class ProjectService {
                         .collect(Collectors.toList());
 
                 requestDto.setImageUrls(fileUrls);
-            }
-
+            */
             project.updateProject(requestDto);
-
-
         } else {
             throw new NotMatchMemberException();
         }
