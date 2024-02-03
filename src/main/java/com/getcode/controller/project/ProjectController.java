@@ -57,14 +57,14 @@ public class ProjectController {
 
     @Operation(summary = "github url 중복확인 api")
     @PostMapping("/add/checkUrl")
-    public ResponseEntity<?> checkUrl(@Parameter(description = "github Url") @RequestBody String githubUrl) {
+    public ResponseEntity<?> checkUrl(@Parameter(description = "github Url") @RequestParam String githubUrl) {
 
         Boolean result = projectService.checkGithubUrlDuplication(githubUrl);
         //result: false - 사용가능 , true: 중복
         if (result) {
-            return ResponseEntity.status(HttpStatus.OK).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body("중복된 Url입니다.");
         } else{
-            return ResponseEntity.status(HttpStatus.OK).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body("사용 가능한 Url입니다.");
         }
 
     }

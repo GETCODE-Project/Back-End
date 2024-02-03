@@ -308,11 +308,11 @@ public class ProjectRecruitmentService {
 
     }
 
-    private Boolean isRecruitmentLikedByUser(Long projectRecruitmentId, Long memberId) {
+    public Boolean isRecruitmentLikedByUser(Long projectRecruitmentId, Long memberId) {
         return projectRecruitmentLikeRepository.existsByProjectRecruitmentIdAndMemberId(projectRecruitmentId, memberId);
     }
 
-    private Boolean isRecruitmentWishedByUser(Long projectRecruitmentId, Long memberId) {
+    public Boolean isRecruitmentWishedByUser(Long projectRecruitmentId, Long memberId) {
         return projectRecruitmentWishRepository.existsByProjectRecruitmentIdAndMemberId(projectRecruitmentId, memberId);
     }
 

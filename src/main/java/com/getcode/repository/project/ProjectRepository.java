@@ -19,4 +19,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
 
      @Query("select p from Project p where p.id in (select wp.project.id from WishProject wp where wp.member.id = :memberId)")
      List<Project> findAllWishProjectByMemberId(@Param("memberId") Long memberId, Pageable pageable);
+
+     List<Project> findAllByMemberId(Long memberId, Pageable pageable);
 }
