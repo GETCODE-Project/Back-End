@@ -17,4 +17,6 @@ public interface ProjectRecruitmentRepository extends JpaRepository<ProjectRecru
     List<ProjectRecruitment> findAllWishRecruitByMemberId(@Param("memberId") Long memberId, Pageable pageable);
 
     Page<ProjectRecruitment> findAll(Specification<ProjectRecruitment> combinedSpec, Pageable pageable);
+
+    List<ProjectRecruitment> findAllByMemberId(Long memberId, Pageable pageable);
 }

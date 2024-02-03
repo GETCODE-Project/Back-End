@@ -391,11 +391,11 @@ public class ProjectService {
 
     }
 
-    private Boolean isProjectLikedByUser(Long projectId, Long memberId) {
+    public Boolean isProjectLikedByUser(Long projectId, Long memberId) {
         return projectLikeRepository.existsByProjectIdAndMemberId(projectId, memberId);
     }
 
-    private Boolean isProjectWishedByUser(Long projectId, Long memberId) {
+    public Boolean isProjectWishedByUser(Long projectId, Long memberId) {
         return projectWishRepository.existsByProjectIdAndMemberId(projectId, memberId);
     }
 
