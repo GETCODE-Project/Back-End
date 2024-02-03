@@ -124,6 +124,7 @@ public class ProjectRecruitmentController {
         Boolean checkWish = false;
 
         if(result == 1){
+            checkWish = true;
             return ResponseEntity.status(HttpStatus.OK).body("찜 등록"+ "\n"+ "checkWish: "+checkWish);
         } else if (result == -1) {
             return ResponseEntity.status(HttpStatus.OK).body("찜 삭제"+ "\n"+ "checkWish: "+checkWish);
