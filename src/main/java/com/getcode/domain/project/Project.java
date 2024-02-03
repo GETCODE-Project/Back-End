@@ -86,6 +86,7 @@ public class Project extends BaseTimeEntity {
 
 
         //casecade 타입을 all로 설정해놓아서 기존 부모와 연결된 List객체를 삭제하고 새로 만들어준다.
+        /*
         if(requestDto.getImageUrls() != null) {
             this.getProjectImages().clear();
             List<ProjectImage> newImage = requestDto.getImageUrls().stream()
@@ -93,7 +94,7 @@ public class Project extends BaseTimeEntity {
                     .collect(Collectors.toList());
             this.getProjectImages().addAll(newImage);
         }
-
+*/
         if(requestDto.getTechStackList() != null) {
             this.getTechStacks().clear();
             List<ProjectTech> newStack = requestDto.getTechStackList().stream()

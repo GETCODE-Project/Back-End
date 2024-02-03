@@ -29,7 +29,7 @@ public class ProjectUpdateRequestDto {
 
     private String githubUrl;
 
-    private List<String> imageUrls;
+    //private List<String> imageUrls;
 
     private List<String> techStackList;
 
