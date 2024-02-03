@@ -144,11 +144,7 @@ public class ProjectRecruitmentService {
 
         ProjectRecruitmentLike projectRecruitmentLike = projectRecruitmentLikeRepository.findByProjectRecruitmentAndMember(projectRecruitment, member);
 
-        String owner = member.getEmail();
 
-        if(owner == projectRecruitment.getMember().getEmail()){
-            throw new NotOwnLikeException();
-        }
 
         if(projectRecruitmentLike != null){
             projectRecruitmentLikeRepository.delete(projectRecruitmentLike);
@@ -177,11 +173,6 @@ public class ProjectRecruitmentService {
 
         WishProjectRecruitment wishProjectRecruitment = projectRecruitmentWishRepository.findByProjectRecruitmentAndMember(projectRecruitment, member);
 
-        String owner = member.getEmail();
-
-        if(owner == projectRecruitment.getMember().getEmail()){
-            throw new NotOwnWishException();
-        }
 
         if(wishProjectRecruitment != null){
             projectRecruitmentWishRepository.delete(wishProjectRecruitment);

@@ -37,7 +37,7 @@ public class ProjectRecruitmentSpecification {
     public static Specification<ProjectRecruitment> subjectLike(List<String> subjects){
         return (root, query, criteriaBuilder) -> {
 
-            Join<ProjectRecruitment, ProjectRecruitmentSubject> projectRecruitmentSubjectJoin = root.join("Subjects", JoinType.LEFT);
+            Join<ProjectRecruitment, ProjectRecruitmentSubject> projectRecruitmentSubjectJoin = root.join("subjects", JoinType.LEFT);
             Predicate[] predicates = new Predicate[subjects.size()];
 
             for(int i=0; i<subjects.size(); i++){

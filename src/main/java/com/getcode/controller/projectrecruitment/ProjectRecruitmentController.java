@@ -101,10 +101,13 @@ public class ProjectRecruitmentController {
     {
 
         int result = projectRecruitmentService.likeProjectRecruitment(recruitmentId);
+        Boolean checkLike = false;
+
         if(result == 1){
-            return ResponseEntity.status(HttpStatus.OK).body("좋아요 등록");
+            checkLike = true;
+            return ResponseEntity.status(HttpStatus.OK).body("좋아요 등록"+ "\n"+ "checkLike: "+checkLike);
         } else if (result == -1) {
-            return ResponseEntity.status(HttpStatus.OK).body("좋아요 삭제");
+            return ResponseEntity.status(HttpStatus.OK).body("좋아요 삭제"+ "\n"+ "checkLike: "+checkLike);
         } else {
           return ResponseEntity.status(HttpStatus.OK).body("좋아요 등록 또는 삭제 실패");
         }
@@ -118,10 +121,12 @@ public class ProjectRecruitmentController {
     {
 
         int result = projectRecruitmentService.wishProjectRecruitment(recruitmentId);
+        Boolean checkWish = false;
+
         if(result == 1){
-            return ResponseEntity.status(HttpStatus.OK).body("찜 등록");
+            return ResponseEntity.status(HttpStatus.OK).body("찜 등록"+ "\n"+ "checkWish: "+checkWish);
         } else if (result == -1) {
-            return ResponseEntity.status(HttpStatus.OK).body("찜 삭제");
+            return ResponseEntity.status(HttpStatus.OK).body("찜 삭제"+ "\n"+ "checkWish: "+checkWish);
         } else {
           return ResponseEntity.status(HttpStatus.OK).body("찜 등록 또는 삭제 실패");
         }
