@@ -39,7 +39,7 @@ public class ProjectController {
     public ResponseEntity<?> addProject(@Parameter(description = "프로젝트 등록 값")
                                         @Valid @RequestPart ProjectRequestDto projectRequestDto,
                                         @Parameter(description = "프로젝트 이미지")
-                                        @RequestPart(name = "fileType", required = false) String fileType,
+                                        @RequestParam(name = "fileType", required = false) String fileType,
                                         @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles
     ){
 

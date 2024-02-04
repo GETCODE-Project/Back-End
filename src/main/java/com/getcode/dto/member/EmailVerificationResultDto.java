@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class EmailVerificationResultDto {
 
-    private boolean result;
+    private boolean verificationResult;
 
     public static EmailVerificationResultDto toDto(boolean result) {
         return new EmailVerificationResultDto(result);

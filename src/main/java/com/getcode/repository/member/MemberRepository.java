@@ -19,4 +19,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findBySocialTypeAndSocialId(SocialType socialType, String socialId);
     Optional<Member> findBySocialId(String socialId);
 
+    void deleteByEmail(String email);
+
+
 }

@@ -1,5 +1,10 @@
 package com.getcode.domain.common;
 
+import org.springframework.data.domain.Sort;
+
+import java.util.List;
+import java.util.stream.Stream;
+
 public enum TechStack {
 
     //백엔드 언어
@@ -40,9 +45,13 @@ public enum TechStack {
         throw new IllegalArgumentException();
     }
 
+    public static List<String> techStackList() {
+        return Stream.of(TechStack.values())
+                .map(TechStack::print)
+                .toList();
+    }
+
     public String print(){
         return stack;
     }
-
-
 }
