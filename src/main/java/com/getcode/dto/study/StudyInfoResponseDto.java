@@ -4,6 +4,7 @@ import com.getcode.domain.study.Study;
 import com.getcode.domain.study.StudySubject;
 import com.getcode.dto.member.MemberInfoDto;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
@@ -22,7 +23,7 @@ public class StudyInfoResponseDto {
     private boolean online;
     private int views;
     private int count;
-    private String contact;
+    private List<String> contact;
     private String date;
     private MemberInfoDto member;
     private List<StudyCommentResponseDto> comments;
@@ -37,7 +38,7 @@ public class StudyInfoResponseDto {
                 study.isOnline(),
                 study.getViews(),
                 study.getCount(),
-                study.getContact(),
+                Arrays.stream(study.getContact().split("\\^")).toList(),
                 study.getModifiedDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
                 MemberInfoDto.toDto(study.getMember()),
                 study.getComments().stream().map(StudyCommentResponseDto::toDto).collect(Collectors.toList()),

@@ -13,7 +13,7 @@ public class SecurityUtil {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || authentication.getName() == null) {
-            throw new RuntimeException("Security Context에 인증 정보가 없습니다.");
+            return "false";
         }
         return authentication.getName();
     }
