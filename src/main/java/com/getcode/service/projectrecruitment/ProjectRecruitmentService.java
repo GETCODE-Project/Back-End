@@ -254,11 +254,11 @@ public class ProjectRecruitmentService {
 
         List<Specification<ProjectRecruitment>> specifications = new ArrayList<>();
 
-        if (!techStack.isEmpty() && techStack != null) {
+        if (techStack != null && !techStack.isEmpty()) {
             specifications.add(ProjectRecruitmentSpecification.techStackLike(techStack));
         }
 
-        if (subject != null) {
+        if (subject != null && !subject.isEmpty()) {
             specifications.add(ProjectRecruitmentSpecification.subjectLike(subject));
         }
 
@@ -281,6 +281,7 @@ public class ProjectRecruitmentService {
         recruitmentPage.forEach(recruitment -> {
 
             ProjectRecruitmentInfoResDto dto = new ProjectRecruitmentInfoResDto(recruitment);
+
             if(memberId != null) {
                 dto.setCheckLike(isRecruitmentLikedByUser(recruitment.getId(), memberId));
                 dto.setCheckWish(isRecruitmentWishedByUser(recruitment.getId(), memberId));
