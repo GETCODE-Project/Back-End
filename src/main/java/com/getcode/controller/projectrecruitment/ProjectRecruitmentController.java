@@ -101,10 +101,13 @@ public class ProjectRecruitmentController {
     {
 
         int result = projectRecruitmentService.likeProjectRecruitment(recruitmentId);
+        Boolean checkLike = false;
+
         if(result == 1){
-            return ResponseEntity.status(HttpStatus.OK).body("좋아요 등록");
+            checkLike = true;
+            return ResponseEntity.status(HttpStatus.OK).body("좋아요 등록"+ "\n"+ "checkLike: "+checkLike);
         } else if (result == -1) {
-            return ResponseEntity.status(HttpStatus.OK).body("좋아요 삭제");
+            return ResponseEntity.status(HttpStatus.OK).body("좋아요 삭제"+ "\n"+ "checkLike: "+checkLike);
         } else {
           return ResponseEntity.status(HttpStatus.OK).body("좋아요 등록 또는 삭제 실패");
         }
@@ -118,10 +121,12 @@ public class ProjectRecruitmentController {
     {
 
         int result = projectRecruitmentService.wishProjectRecruitment(recruitmentId);
+        Boolean checkWish = false;
+
         if(result == 1){
-            return ResponseEntity.status(HttpStatus.OK).body("찜 등록");
+            return ResponseEntity.status(HttpStatus.OK).body("찜 등록"+ "\n"+ "checkWish: "+checkWish);
         } else if (result == -1) {
-            return ResponseEntity.status(HttpStatus.OK).body("찜 삭제");
+            return ResponseEntity.status(HttpStatus.OK).body("찜 삭제"+ "\n"+ "checkWish: "+checkWish);
         } else {
           return ResponseEntity.status(HttpStatus.OK).body("찜 등록 또는 삭제 실패");
         }
@@ -149,7 +154,7 @@ public class ProjectRecruitmentController {
                                                    @Positive(message = "size값은 1이상이어야 합니다")
                                                    @RequestParam(defaultValue = "10") int size,
                                                @Parameter(description = "검색어") @RequestParam(defaultValue = "", required = false) String keyword,
-                                               @Parameter(description = "검색 조건") @RequestParam(defaultValue = "", required = false) List<String> subject,
+                                               @Parameter(description = "주제") @RequestParam(defaultValue = "", required = false) String subject,
                                                @Parameter(description = "기술스택") @RequestParam(defaultValue = "", required = false) List<String> techStack,
                                                @Parameter(description = "년도") @RequestParam(defaultValue = "2024", required = false) Integer year,
                                                @Parameter(description = "사용자 id")@RequestParam(required = false) Long memberId)

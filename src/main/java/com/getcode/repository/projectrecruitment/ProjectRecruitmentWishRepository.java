@@ -5,10 +5,12 @@ import com.getcode.domain.projectrecruitment.ProjectRecruitment;
 import com.getcode.domain.projectrecruitment.WishProjectRecruitment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface ProjectRecruitmentWishRepository extends JpaRepository<WishProjectRecruitment, Long> {
     WishProjectRecruitment findByProjectRecruitmentAndMember(ProjectRecruitment projectRecruitment, Member member);
 
-    WishProjectRecruitment findByProjectRecruitment(ProjectRecruitment projectRecruitment);
+    List<WishProjectRecruitment> findByProjectRecruitment(ProjectRecruitment projectRecruitment);
 
     Boolean existsByProjectRecruitmentIdAndMemberId(Long projectRecruitmentId, Long memberId);
 }
