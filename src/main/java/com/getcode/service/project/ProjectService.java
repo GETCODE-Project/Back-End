@@ -351,11 +351,11 @@ public class ProjectService {
 
         List<Specification<Project>> specifications = new ArrayList<>();
 
-        if (!techStack.isEmpty() && techStack != null) {
+        if (techStack != null && !techStack.isEmpty()) {
             specifications.add(ProjectSpecification.techStackLike(techStack));
         }
 
-        if (subject != null) {
+        if (subject != null && !subject.isEmpty()) {
             specifications.add(ProjectSpecification.subjectLike(subject));
         }
 
