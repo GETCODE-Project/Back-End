@@ -6,6 +6,7 @@ import com.getcode.domain.project.Project;
 import com.getcode.domain.project.ProjectLike;
 import com.getcode.domain.project.WishProject;
 import com.getcode.domain.projectrecruitment.*;
+import com.getcode.domain.study.StudySpecification;
 import com.getcode.dto.project.ProjectSpecification;
 import com.getcode.dto.project.res.ProjectInfoResponseDto;
 import com.getcode.dto.projectrecruitment.ProjectRecruitmentSpecification;
@@ -238,9 +239,12 @@ public class ProjectRecruitmentService {
     @Transactional(readOnly = true)
     public List<ProjectRecruitmentInfoResDto> getAllRecuritment(String sort, int page, int size, String keyword,
                                                                 String subject, List<String> techStack, Integer year,
-                                                                Long memberId) {
+                                                                Boolean online, Boolean recruitment
+    ) {
 
         Sort sortCriteria;
+
+        Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseGet(() -> null);
 
         if(sort.equals("pastOrder")){
             sortCriteria = Sort.by(Sort.Direction.ASC, "modifiedDate");
@@ -270,6 +274,14 @@ public class ProjectRecruitmentService {
             specifications.add(ProjectRecruitmentSpecification.keywordLikeTitleOrContent(keyword));
         }
 
+        if (recruitment != null) {
+            specifications.add(ProjectRecruitmentSpecification.recruitmentLike(recruitment));
+        }
+
+        if (online != null) {
+            specifications.add(ProjectRecruitmentSpecification.onlineLike(online));
+        }
+
 
 
         Specification<ProjectRecruitment> combinedSpec = ProjectRecruitmentSpecification.combineSpecifications(specifications);
@@ -278,13 +290,16 @@ public class ProjectRecruitmentService {
 
         List<ProjectRecruitmentInfoResDto> responseDto = new ArrayList<>();
 
-        recruitmentPage.forEach(recruitment -> {
+        recruitmentPage.forEach(ProjectRecruitment -> {
 
-            ProjectRecruitmentInfoResDto dto = new ProjectRecruitmentInfoResDto(recruitment);
+            ProjectRecruitmentInfoResDto dto = new ProjectRecruitmentInfoResDto(ProjectRecruitment);
 
-            if(memberId != null) {
-                dto.setCheckLike(isRecruitmentLikedByUser(recruitment.getId(), memberId));
-                dto.setCheckWish(isRecruitmentWishedByUser(recruitment.getId(), memberId));
+            if(member != null) {
+                dto.setCheckLike(isRecruitmentLikedByUser(ProjectRecruitment.getId(), member.getId()));
+                dto.setCheckWish(isRecruitmentWishedByUser(ProjectRecruitment.getId(), member.getId()));
+            } else{
+                dto.setCheckLike(Boolean.FALSE);
+                dto.setCheckWish(Boolean.FALSE);
             }
             responseDto.add(dto);
         });

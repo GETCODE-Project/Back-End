@@ -63,6 +63,15 @@ public class ProjectRecruitmentSpecification {
 
     }
 
+    public static Specification<ProjectRecruitment> onlineLike(Boolean online){
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("online"), online);
+    }
+
+    public static Specification<ProjectRecruitment> recruitmentLike(Boolean recruitment){
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("recruitment"), recruitment);
+    }
+
+
     public static Specification<ProjectRecruitment> combineSpecifications(List<Specification<ProjectRecruitment>> specifications) {
         Specification<ProjectRecruitment> combinedSpec = Specification.where(null);
 
