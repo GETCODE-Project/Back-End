@@ -72,7 +72,7 @@ public class ProjectController {
 
     @Operation(summary = "프로젝트 삭제 api")
     @DeleteMapping("/{id}/delete")
-    public ResponseEntity<?> deleteProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id){
+    public ResponseEntity<?> deleteProject(@Parameter(description = "프로젝트 아이디") @PathVariable(name = "id") Long id){
 
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
@@ -91,7 +91,7 @@ public class ProjectController {
 
     @Operation(summary = "프로젝트 수정 api")
     @PutMapping("/{id}/update")
-    public ResponseEntity<?> updateProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id,
+    public ResponseEntity<?> updateProject(@Parameter(description = "프로젝트 아이디") @PathVariable(name = "id") Long id,
                                            @RequestBody(required = false) ProjectUpdateRequestDto requestDto
                                            //@RequestPart(name = "fileType", required = false) String fileType,
                                            //@RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles
@@ -108,7 +108,7 @@ public class ProjectController {
 
     @Operation(summary = "프로젝트 좋아요 api")
     @PostMapping("/{id}/like")
-    ResponseEntity<?> likeProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id){
+    ResponseEntity<?> likeProject(@Parameter(description = "프로젝트 아이디") @PathVariable(name = "id") Long id){
 
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
@@ -125,7 +125,7 @@ public class ProjectController {
 
     @Operation(summary = "프로젝트 즐겨찾기 api")
     @PostMapping("/{id}/wish")
-    ResponseEntity<?> wishProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id){
+    ResponseEntity<?> wishProject(@Parameter(description = "프로젝트 아이디") @PathVariable(name = "id") Long id){
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
         int result = projectService.wishProject(id, memberEmail);
@@ -144,7 +144,7 @@ public class ProjectController {
 
     @Operation(summary = "특정 프로젝트 상세정보 조회 api")
     @GetMapping("/detail/{id}")
-    ResponseEntity<?> getProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id){
+    ResponseEntity<?> getProject(@Parameter(description = "프로젝트 아이디") @PathVariable(name = "id") Long id){
 
         ProjectDetailResponseDto responseDto = projectService.getProject(id);
 
@@ -168,12 +168,11 @@ public class ProjectController {
                                      @Parameter(description = "검색어") @RequestParam(defaultValue = "", required = false) String keyword,
                                      @Parameter(description = "주제") @RequestParam(defaultValue = "", required = false) String subject,
                                      @Parameter(description = "기술스택") @RequestParam(defaultValue = "", required = false) List<String> techStack,
-                                     @Parameter(description = "년도") @RequestParam(defaultValue = "2024", required = false) Integer year,
-                                     @Parameter(description = "사용자 id") @RequestParam(required = false) Long memberId
+                                     @Parameter(description = "년도") @RequestParam(defaultValue = "2024", required = false) Integer year
     )
     {
 
-        List<ProjectInfoResponseDto> projectLists = projectService.getProjectList(size, page, sort, keyword, subject, techStack, year, memberId);
+        List<ProjectInfoResponseDto> projectLists = projectService.getProjectList(size, page, sort, keyword, subject, techStack, year);
 
         return ResponseEntity.status(HttpStatus.OK).body(projectLists);
 
@@ -185,7 +184,7 @@ public class ProjectController {
 
     @Operation(summary = "프로젝트 댓글 등록 api")
     @PostMapping("/detail/{id}/comment/add")
-    ResponseEntity<?> addComment(@Parameter(description = "프로젝트 아이디") @PathVariable Long id,
+    ResponseEntity<?> addComment(@Parameter(description = "프로젝트 아이디") @PathVariable(name = "id") Long id,
                                  @RequestBody CommentRequestDto requestDto)
     {
 
@@ -201,8 +200,8 @@ public class ProjectController {
 
     @Operation(summary = "프로젝트 댓글 삭제 api")
     @DeleteMapping("/detail/{projectId}/comment/delete/{id}")
-    ResponseEntity<?> deleteComment(@Parameter(description = "프로젝트 아이디") @PathVariable Long projectId,
-                                    @Parameter(description = "댓글 아이디") @PathVariable Long id)
+    ResponseEntity<?> deleteComment(@Parameter(description = "프로젝트 아이디") @PathVariable(name = "projectId") Long projectId,
+                                    @Parameter(description = "댓글 아이디") @PathVariable(name = "id") Long id)
     {
 
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
@@ -220,8 +219,8 @@ public class ProjectController {
 
     @Operation(summary = "프로젝트 댓글 수정 api")
     @PutMapping("/detail/{projectId}/comment/update/{id}")
-    ResponseEntity<?> updateComment(@Parameter(description = "프로젝트 아이디") @PathVariable Long projectId,
-                                    @Parameter(description = "프로젝트 아이디") @PathVariable Long id,
+    ResponseEntity<?> updateComment(@Parameter(description = "프로젝트 아이디") @PathVariable(name = "projectId") Long projectId,
+                                    @Parameter(description = "프로젝트 아이디") @PathVariable(name = "id") Long id,
                                     @RequestBody CommentUpdateRequestDto requestDto)
     {
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
@@ -241,7 +240,7 @@ public class ProjectController {
 
     @Operation(summary = "특정 프로젝트 게시글 댓글정보 조회")
     @GetMapping("/{projectId}/comment")
-    ResponseEntity<?> getProjectComment(@Parameter(description = "프로젝트 아이디")@PathVariable Long projectId){
+    ResponseEntity<?> getProjectComment(@Parameter(description = "프로젝트 아이디")@PathVariable(name = "projectId") Long projectId){
 
         List<CommentResponseDto> responseDto = projectService.getProjectComment(projectId);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
