@@ -71,7 +71,7 @@ public class MemberService {
             throw new DuplicateNicknameException();
         }
 
-        if (signUpDto.getEmailVerified()) {
+        if (!signUpDto.getEmailVerified()) {
             throw new NotVerifiedException();
         }
 
