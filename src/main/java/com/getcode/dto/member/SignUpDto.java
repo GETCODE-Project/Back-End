@@ -3,10 +3,7 @@ package com.getcode.dto.member;
 import com.getcode.domain.member.Authority;
 import com.getcode.domain.member.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,7 +30,7 @@ public class SignUpDto {
     private String password;
 
     @Schema(description = "이메일 인증 여부")
-    @NotBlank(message = "이메일 인증을 진행해 주세요.")
+    @NotNull(message = "이메일 인증울 진행해주세요.")
     private Boolean emailVerified;
 
     public Member toEntity() {
