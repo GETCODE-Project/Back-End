@@ -4,6 +4,7 @@ import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.projectrecruitment.ProjectRecruitment;
 import com.getcode.domain.projectrecruitment.ProjectRecruitmentLike;
 import com.getcode.domain.projectrecruitment.WishProjectRecruitment;
+import com.getcode.dto.member.MemberInfoDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,9 +34,10 @@ public class ProjectRecruitmentDetailResDto {
     private boolean isWriter;
     private boolean checkLike;
     private boolean checkWish;
+    private MemberInfoDto memberInfoDto;
 
 
-    public ProjectRecruitmentDetailResDto(ProjectRecruitment projectRecruitment, ProjectRecruitmentLike projectRecruitmentLike, WishProjectRecruitment wishProjectRecruitment){
+    public ProjectRecruitmentDetailResDto(ProjectRecruitment projectRecruitment, Boolean checkLike, Boolean checkWish, Boolean checkWriter){
                     this.title = projectRecruitment.getTitle();
                     this.content = projectRecruitment.getContent();
                     this.siDo = projectRecruitment.getSiDo();
@@ -49,24 +51,10 @@ public class ProjectRecruitmentDetailResDto {
                     this.comments = projectRecruitment.getComments().stream().map(RecruitmentCommentResDto::new).collect(Collectors.toList());
                     this.createDate = projectRecruitment.getCreateDate();
                     this.modifiedDate = projectRecruitment.getModifiedDate();
-        if (projectRecruitment.getMember().getEmail().equals(SecurityUtil.getCurrentMemberEmail())) {
-            this.isWriter = true;
-        } else {
-            this.isWriter = false;
-        }
-
-        if(projectRecruitmentLike != null && projectRecruitmentLike.getMember().getEmail().equals(SecurityUtil.getCurrentMemberEmail())){
-            this.checkLike = true;
-        } else {
-            this.checkLike = false;
-        }
-
-        if(wishProjectRecruitment != null && wishProjectRecruitment.getMember().getEmail().equals(SecurityUtil.getCurrentMemberEmail())){
-            this.checkWish = true;
-        } else {
-            this.checkWish = false;
-        }
-
+                    this.memberInfoDto =MemberInfoDto.toDto(projectRecruitment.getMember());
+                    this.isWriter = checkWriter;
+                    this.checkLike = checkLike;
+                    this.checkWish = checkWish;
 
     }
 

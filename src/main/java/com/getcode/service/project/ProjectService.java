@@ -15,6 +15,7 @@ import com.getcode.repository.project.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -94,22 +95,17 @@ public class ProjectService {
 
     //프로젝트 등록
     @Transactional
-    public void addProject(ProjectRequestDto projectRequestDto, String memberEmail, List<MultipartFile> multipartFiles, String fileType) {
+    public void addProject(ProjectRequestDto projectRequestDto, String memberEmail) {
 
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(NotFoundMemberException::new);
 
         Project project = projectRequestDto.toProjectEntity(member);
 
         projectRepository.save(project);
-
+/*
         if(fileType != null && !multipartFiles.isEmpty() && multipartFiles != null) {
 
-            //확장성을 고려하여 List형태로 파일 저장
-            List<S3FileDto> files = s3Service.uploadFiles(fileType, multipartFiles);
-            //파일 url리스트로 변환
-            List<String> fileUrls = files.stream()
-                    .map(S3FileDto::getUploadFileUrl)
-                    .collect(Collectors.toList());
+            List<String> fileUrls = uploadS3File(multipartFiles, fileType);
 
             projectRequestDto.setImageUrls(fileUrls);
 
@@ -120,7 +116,7 @@ public class ProjectService {
             }
 
         }
-
+*/
 
         List<String> techList = projectRequestDto.getTechStackList();
         List<String> subjectList = projectRequestDto.getProjectSubjects();
@@ -148,14 +144,12 @@ public class ProjectService {
 
     //프로젝트 수정
     @Transactional
-    public void updateProject(Long id, ProjectUpdateRequestDto requestDto, String memberEmail, String fileType, List<MultipartFile> multipartFiles) {
+    public void updateProject(Long id, ProjectUpdateRequestDto requestDto, String memberEmail) {
 
         Project project = projectRepository.findById(id).orElseThrow(NotFoundCommentException::new);
-        List<ProjectTech> projectTech = projectStackRepository.findAllByProjectId(id);
-        List<ProjectSubject> projectSubject = projectSubjectRepository.findAllByProjectId(id);
 
-
-        if(project.getMember() != null && project.getMember().getEmail().equals(memberEmail)){
+        if (project.getMember() != null && project.getMember().getEmail().equals(memberEmail)) {
+            /*
             //새로운 파일 추가했을 때 기존 파일 삭제 후 새로운 파일 등록
             if(fileType != null && !multipartFiles.isEmpty()) {
                 List<ProjectImage> projectImages = projectImageRepository.findAllByProjectId(id);
@@ -170,11 +164,8 @@ public class ProjectService {
                         .collect(Collectors.toList());
 
                 requestDto.setImageUrls(fileUrls);
-            }
-
+            */
             project.updateProject(requestDto);
-
-
         } else {
             throw new NotMatchMemberException();
         }
@@ -191,12 +182,6 @@ public class ProjectService {
         Project project = projectRepository.findById(id).orElseThrow(NotFoundProjectException::new);
 
         ProjectLike projectLike = projectLikeRepository.findByProjectAndMember(project, member);
-
-        String owner = project.getMember().getEmail();
-
-        if(owner == memberEmail){
-            throw new NotOwnLikeException();
-        }
 
         if(projectLike != null){
             projectLikeRepository.delete(projectLike);
@@ -260,11 +245,38 @@ public class ProjectService {
 
         Project project = projectRepository.findById(id).orElseThrow(NotFoundProjectException::new);
 
-        ProjectLike projectLike = projectLikeRepository.findByProject(project);
-        WishProject wishProject = projectWishRepository.findByProject(project);
+        List<ProjectLike> projectLike = projectLikeRepository.findByProject(project);
+        List<WishProject> wishProject = projectWishRepository.findByProject(project);
+
+        Boolean checkLike = false;
+        Boolean checkWish = false;
+        Boolean checkWriter = false;
+
+        if(SecurityUtil.getCurrentMemberEmail() != null) {
+            String memberEmail = SecurityUtil.getCurrentMemberEmail();
+
+            for (ProjectLike checkLiked : projectLike) {
+                if(checkLiked.getMember().getEmail().equals(memberEmail)){
+                    checkLike = true;
+                    break;
+                }
+            }
+            for (WishProject checkWished : wishProject) {
+                if(checkWished.getMember().getEmail().equals(memberEmail)){
+                    checkWish = true;
+                    break;
+                }
+            }
+
+            if (project.getMember().getEmail().equals(memberEmail)){
+                checkWriter = true;
+            }
+
+        }
+
         project.viewCntUp();
 
-        ProjectDetailResponseDto responseDto = new ProjectDetailResponseDto(projectRepository.save(project), projectLike, wishProject);
+        ProjectDetailResponseDto responseDto = new ProjectDetailResponseDto(projectRepository.save(project), checkLike, checkWish, checkWriter);
 
 
         return responseDto;
@@ -320,7 +332,7 @@ public class ProjectService {
     //전체 프로젝트 조회(조건 검색) 조건: 주제, 기술스택, 년도 | 정렬 조건: 최신순, 과거순, 좋아요순
     @Transactional
     public List<ProjectInfoResponseDto> getProjectList(int size, int page, String sort, String keyword,
-                                                       List<String> subject, List<String> techStack,
+                                                       String subject, List<String> techStack,
                                                        Integer year, Long memberId) {
 
         Sort sortCriteria;
@@ -343,7 +355,7 @@ public class ProjectService {
             specifications.add(ProjectSpecification.techStackLike(techStack));
         }
 
-        if (!subject.isEmpty() && subject != null) {
+        if (subject != null) {
             specifications.add(ProjectSpecification.subjectLike(subject));
         }
 
@@ -379,11 +391,11 @@ public class ProjectService {
 
     }
 
-    private Boolean isProjectLikedByUser(Long projectId, Long memberId) {
+    public Boolean isProjectLikedByUser(Long projectId, Long memberId) {
         return projectLikeRepository.existsByProjectIdAndMemberId(projectId, memberId);
     }
 
-    private Boolean isProjectWishedByUser(Long projectId, Long memberId) {
+    public Boolean isProjectWishedByUser(Long projectId, Long memberId) {
         return projectWishRepository.existsByProjectIdAndMemberId(projectId, memberId);
     }
 
@@ -392,13 +404,24 @@ public class ProjectService {
     @Transactional
     public List<CommentResponseDto> getProjectComment(Long projectId) {
 
-       List<ProjectComment> projectComments = projectCommentRepository.findByProjectId(projectId);
-       List<CommentResponseDto> responseDto = new ArrayList<>();
+        List<ProjectComment> projectComments = projectCommentRepository.findByProjectId(projectId);
+        List<CommentResponseDto> responseDto = new ArrayList<>();
 
-       for(ProjectComment projectComment : projectComments){
-          responseDto.add(new CommentResponseDto(projectComment));
-       }
-       return responseDto;
+        for(ProjectComment projectComment : projectComments){
+            responseDto.add(new CommentResponseDto(projectComment));
+        }
+        return responseDto;
 
     }
+
+    public List<String> uploadS3File(List<MultipartFile> multipartFiles, String fileType){
+        //확장성을 고려하여 List형태로 파일 저장
+        List<S3FileDto> files = s3Service.uploadFiles(fileType, multipartFiles);
+        //파일 url리스트로 변환
+        List<String> fileUrls = files.stream()
+                .map(S3FileDto::getUploadFileUrl)
+                .collect(Collectors.toList());
+        return fileUrls;
+    }
+
 }

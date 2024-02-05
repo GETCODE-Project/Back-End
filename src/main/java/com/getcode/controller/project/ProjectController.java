@@ -37,10 +37,10 @@ public class ProjectController {
     @Operation(summary = "프로젝트 정보 등록 api")
     @PostMapping("/add")
     public ResponseEntity<?> addProject(@Parameter(description = "프로젝트 등록 값")
-                                        @Valid @RequestPart ProjectRequestDto projectRequestDto,
-                                        @Parameter(description = "프로젝트 이미지")
-                                        @RequestPart(name = "fileType", required = false) String fileType,
-                                        @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles
+                                        @Valid @RequestBody ProjectRequestDto projectRequestDto
+                                        //@Parameter(description = "프로젝트 이미지")
+                                        //@RequestParam(name = "fileType", required = false) String fileType,
+                                        //@RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles
     ){
 
 
@@ -48,7 +48,7 @@ public class ProjectController {
 
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
-        projectService.addProject(projectRequestDto, memberEmail,multipartFiles, fileType);
+        projectService.addProject(projectRequestDto, memberEmail);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("등록이 완료되었습니다.");
 
@@ -57,14 +57,14 @@ public class ProjectController {
 
     @Operation(summary = "github url 중복확인 api")
     @PostMapping("/add/checkUrl")
-    public ResponseEntity<?> checkUrl(@Parameter(description = "github Url") @RequestBody String githubUrl) {
+    public ResponseEntity<?> checkUrl(@Parameter(description = "github Url") @RequestParam String githubUrl) {
 
         Boolean result = projectService.checkGithubUrlDuplication(githubUrl);
         //result: false - 사용가능 , true: 중복
         if (result) {
-            return ResponseEntity.status(HttpStatus.OK).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body("중복된 Url입니다.");
         } else{
-            return ResponseEntity.status(HttpStatus.OK).body(result);
+            return ResponseEntity.status(HttpStatus.OK).body("사용 가능한 Url입니다.");
         }
 
     }
@@ -92,13 +92,13 @@ public class ProjectController {
     @Operation(summary = "프로젝트 수정 api")
     @PutMapping("/{id}/update")
     public ResponseEntity<?> updateProject(@Parameter(description = "프로젝트 아이디") @PathVariable Long id,
-                                           @RequestPart(required = false) ProjectUpdateRequestDto requestDto,
-                                           @RequestPart(name = "fileType", required = false) String fileType,
-                                           @RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles
+                                           @RequestBody(required = false) ProjectUpdateRequestDto requestDto
+                                           //@RequestPart(name = "fileType", required = false) String fileType,
+                                           //@RequestPart(name = "files", required = false) List<MultipartFile> multipartFiles
     ){
 
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
-        projectService.updateProject(id, requestDto,memberEmail, fileType, multipartFiles);
+        projectService.updateProject(id, requestDto,memberEmail);
 
         return ResponseEntity.status(HttpStatus.OK).body("수정 완료.");
     }
@@ -113,11 +113,11 @@ public class ProjectController {
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
         int result = projectService.likeProject(id, memberEmail);
-
+        Boolean checkLike = false;
         if(result == 1) {
-            return ResponseEntity.status(HttpStatus.OK).body("프로젝트 좋아요 성공.");
+            return ResponseEntity.status(HttpStatus.OK).body("프로젝트 좋아요 성공."+ "\n"+ "checkLike: "+checkLike);
         } else if (result == 0) {
-            return ResponseEntity.status(HttpStatus.OK).body("프로젝트 좋아요 삭제 성공.");
+            return ResponseEntity.status(HttpStatus.OK).body("프로젝트 좋아요 삭제 성공."+ "\n"+ "checkLike: "+checkLike);
         }
         return ResponseEntity.status(HttpStatus.OK).body("프로젝트 좋아요 등록 또는 삭제 실패");
     }
@@ -129,11 +129,13 @@ public class ProjectController {
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
         int result = projectService.wishProject(id, memberEmail);
+        Boolean checkWish = false;
 
         if(result == 1){
-            return ResponseEntity.status(HttpStatus.OK).body("프로젝트 찜 성공.");
+            checkWish = true;
+            return ResponseEntity.status(HttpStatus.OK).body("프로젝트 찜 성공."+ "\n"+ "checkWish: "+checkWish);
         } else if (result == 0){
-            return ResponseEntity.status(HttpStatus.OK).body("프로젝트 찜 삭제 성공.");
+            return ResponseEntity.status(HttpStatus.OK).body("프로젝트 찜 삭제 성공." + "\n" + "checkWish: " +checkWish);
         }
         return ResponseEntity.status(HttpStatus.OK).body("프로젝트 찜 등록 또는 삭제 실패");
     }
@@ -164,7 +166,7 @@ public class ProjectController {
                                      @Positive(message = "size값은 1이상이어야 합니다")
                                      @RequestParam(defaultValue = "10") int size,
                                      @Parameter(description = "검색어") @RequestParam(defaultValue = "", required = false) String keyword,
-                                     @Parameter(description = "검색 조건") @RequestParam(defaultValue = "", required = false) List<String> subject,
+                                     @Parameter(description = "주제") @RequestParam(defaultValue = "", required = false) String subject,
                                      @Parameter(description = "기술스택") @RequestParam(defaultValue = "", required = false) List<String> techStack,
                                      @Parameter(description = "년도") @RequestParam(defaultValue = "2024", required = false) Integer year,
                                      @Parameter(description = "사용자 id") @RequestParam(required = false) Long memberId

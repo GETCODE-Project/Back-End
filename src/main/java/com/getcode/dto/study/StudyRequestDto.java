@@ -7,6 +7,8 @@ import com.getcode.domain.study.StudySubject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,7 +37,7 @@ public class StudyRequestDto {
     private boolean online;
 
     @Schema(description = "연락방법", defaultValue = "kyun9151@naver.com")
-    private String contact;
+    private List<String> contact;
 
     @Schema(description = "스터디 주제", defaultValue = "코딩 테스트, 자격증")
     private List<String> subjects;
@@ -49,7 +51,7 @@ public class StudyRequestDto {
                 .online(online)
                 .views(0)
                 .count(0)
-                .contact(contact)
+                .contact(String.join("^", contact))
                 .member(member)
                 .build();
     }

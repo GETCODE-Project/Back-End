@@ -129,9 +129,6 @@ public class Member extends BaseTimeEntity {
     @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<ProjectRecruitmentComment> projectRecruitmentComments = new ArrayList<>();
-    public void updateEmailVerified() {
-        this.emailVerified = true;
-    }
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }

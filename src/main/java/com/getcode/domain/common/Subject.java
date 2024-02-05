@@ -1,5 +1,8 @@
 package com.getcode.domain.common;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 public enum Subject {
 
     TRAVLE("여행")
@@ -35,6 +38,9 @@ public enum Subject {
         throw new IllegalArgumentException();
     }
 
-
-
+    public static List<String> subjectList() {
+        return Stream.of(Subject.values())
+                .map(Subject::print)
+                .toList();
+    }
 }
