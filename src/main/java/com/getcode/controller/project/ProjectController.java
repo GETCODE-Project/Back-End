@@ -168,12 +168,11 @@ public class ProjectController {
                                      @Parameter(description = "검색어") @RequestParam(defaultValue = "", required = false) String keyword,
                                      @Parameter(description = "주제") @RequestParam(defaultValue = "", required = false) String subject,
                                      @Parameter(description = "기술스택") @RequestParam(defaultValue = "", required = false) List<String> techStack,
-                                     @Parameter(description = "년도") @RequestParam(defaultValue = "2024", required = false) Integer year,
-                                     @Parameter(description = "사용자 id") @RequestParam(required = false) Long memberId
+                                     @Parameter(description = "년도") @RequestParam(defaultValue = "2024", required = false) Integer year
     )
     {
 
-        List<ProjectInfoResponseDto> projectLists = projectService.getProjectList(size, page, sort, keyword, subject, techStack, year, memberId);
+        List<ProjectInfoResponseDto> projectLists = projectService.getProjectList(size, page, sort, keyword, subject, techStack, year);
 
         return ResponseEntity.status(HttpStatus.OK).body(projectLists);
 

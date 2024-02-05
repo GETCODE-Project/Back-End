@@ -13,6 +13,7 @@ import com.getcode.exception.project.*;
 import com.getcode.repository.member.MemberRepository;
 import com.getcode.repository.project.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.parameters.P;
@@ -22,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ProjectService {
@@ -333,9 +334,11 @@ public class ProjectService {
     @Transactional
     public List<ProjectInfoResponseDto> getProjectList(int size, int page, String sort, String keyword,
                                                        String subject, List<String> techStack,
-                                                       Integer year, Long memberId) {
+                                                       Integer year) {
 
         Sort sortCriteria;
+
+            Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseGet(() -> null);
 
 
         if(sort.equals("pastOrder")){
@@ -377,24 +380,27 @@ public class ProjectService {
         projectPage.forEach((project) ->{
 
             ProjectInfoResponseDto dto = new ProjectInfoResponseDto(project);
-
-            if(memberId != null) {
-                // 좋아요 및 찜 정보 가져오기
-                dto.setCheckLike(isProjectLikedByUser(project.getId(), memberId));
-                dto.setCheckWish(isProjectWishedByUser(project.getId(), memberId));
+            //로그인 하지 않았을 때
+            if(member != null) {
+                dto.setCheckLike(isProjectLikedByUser(project.getId(), member.getId()));
+                dto.setCheckWish(isProjectWishedByUser(project.getId(), member.getId()));
+            } else{
+                dto.setCheckLike(Boolean.FALSE);
+                dto.setCheckWish(Boolean.FALSE);
             }
+                responseDto.add(dto);
+                // 좋아요 및 찜 정보 가져오기
 
-            responseDto.add(dto);
         });
 
         return responseDto;
 
     }
-
+    //조회한 유저가 좋아요 한 게시글 검사
     public Boolean isProjectLikedByUser(Long projectId, Long memberId) {
         return projectLikeRepository.existsByProjectIdAndMemberId(projectId, memberId);
     }
-
+    //조회한 유저가 찜 한 게시글 검사
     public Boolean isProjectWishedByUser(Long projectId, Long memberId) {
         return projectWishRepository.existsByProjectIdAndMemberId(projectId, memberId);
     }
