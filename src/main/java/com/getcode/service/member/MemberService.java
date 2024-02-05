@@ -89,7 +89,7 @@ public class MemberService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(NotFoundMemberException::new);
 
-        if (member.isEmailVerified()) {
+        if (!member.isEmailVerified()) {
             throw new NotVerifiedException();
         }
 
