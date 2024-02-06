@@ -237,9 +237,10 @@ public class ProjectRecruitmentService {
 
     //프로젝트 모집글 전체 조회
     @Transactional(readOnly = true)
-    public List<ProjectRecruitmentInfoResDto> getAllRecuritment(String sort, int page, int size, String keyword,
+    public List<ProjectRecruitmentInfoResDto> getAllRecuritment(String sort, int pageNumber, int size, String keyword,
                                                                 String subject, List<String> techStack, Integer year,
-                                                                Boolean online, Boolean recruitment
+                                                                Boolean online, Boolean recruitment, String siDo,
+                                                                String guGun
     ) {
 
         Sort sortCriteria;
@@ -254,7 +255,7 @@ public class ProjectRecruitmentService {
             sortCriteria = Sort.by(Sort.Direction.DESC, "modifiedDate");
         }
 
-        Pageable pageable = PageRequest.of(page -1, size, sortCriteria);
+        Pageable pageable = PageRequest.of(pageNumber -1, size, sortCriteria);
 
         List<Specification<ProjectRecruitment>> specifications = new ArrayList<>();
 
@@ -282,6 +283,13 @@ public class ProjectRecruitmentService {
             specifications.add(ProjectRecruitmentSpecification.onlineLike(online));
         }
 
+        if (siDo != null && !siDo.isEmpty()) {
+            specifications.add(ProjectRecruitmentSpecification.siDoLike(siDo));
+        }
+
+        if (guGun != null && !guGun.isEmpty()) {
+            specifications.add(ProjectRecruitmentSpecification.guGunLike(guGun));
+        }
 
 
         Specification<ProjectRecruitment> combinedSpec = ProjectRecruitmentSpecification.combineSpecifications(specifications);

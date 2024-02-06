@@ -18,7 +18,12 @@ public class ProjectRecruitmentSpecification {
     //기술스택 조건 검사
     public static Specification<ProjectRecruitment> techStackLike(List<String> techStacks){
         return (root, query, criteriaBuilder) -> {
-
+/*
+            query.distinct(true);
+            if(ProjectRecruitment.class.equals(query.getResultType())){
+                root.fetch("techStacks", JoinType.LEFT);
+            }
+*/
             Join<ProjectRecruitment, ProjectRecruitmentTech> projectRecruitmentTechJoin = root.join("techStacks", JoinType.LEFT);
             Predicate[] predicates = new Predicate[techStacks.size()];
             //여러개의 기술을 검색할 경우 배열에 저장하는 for문
@@ -82,6 +87,10 @@ public class ProjectRecruitmentSpecification {
         return combinedSpec;
     }
 
-
-
+    public static Specification<ProjectRecruitment> siDoLike(String siDo) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("siDo"), siDo);
+    }
+    public static Specification<ProjectRecruitment> guGunLike(String guGun) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("guGun"), guGun);
+    }
 }

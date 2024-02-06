@@ -47,6 +47,9 @@ public class ProjectRecruitment extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean online;
 
+    @Column(nullable = false)
+    private String contact;
+
     //조회수 default 값 설정
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int views;
