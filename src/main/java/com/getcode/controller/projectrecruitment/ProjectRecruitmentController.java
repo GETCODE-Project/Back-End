@@ -150,7 +150,7 @@ public class ProjectRecruitmentController {
                                                    @RequestParam(defaultValue = "latestOrder", required = false) String sort,
                                                @Parameter(description = "페이지 수")
                                                    @Min(value = 0, message = "page값은 0이상이어야 합니다")
-                                                   @RequestParam(defaultValue = "1") int page,
+                                                   @RequestParam(defaultValue = "1") int pageNumber,
                                                @Parameter(description = "한 페이지에 담기는 개수")
                                                    @Positive(message = "size값은 1이상이어야 합니다")
                                                        @RequestParam(defaultValue = "10") int size,
@@ -159,10 +159,12 @@ public class ProjectRecruitmentController {
                                                @Parameter(description = "기술스택") @RequestParam(defaultValue = "", required = false) List<String> techStack,
                                                @Parameter(description = "년도") @RequestParam(defaultValue = "2024", required = false) Integer year,
                                                @Parameter(description = "온라인, 오프라인 여부") @RequestParam(defaultValue = "", required = false) Boolean online,
-                                               @Parameter(description = "모집여부") @RequestParam(defaultValue = "", required = false) Boolean recruitment)
+                                               @Parameter(description = "모집여부") @RequestParam(defaultValue = "", required = false) Boolean recruitment,
+                                               @Parameter(description = "지역:시/도") @RequestParam(defaultValue = "", required = false) String siDo,
+                                               @Parameter(description = "지역:구/군") @RequestParam(defaultValue = "", required = false) String guGun)
     {
 
-        List<ProjectRecruitmentInfoResDto> resDtoList = projectRecruitmentService.getAllRecuritment(sort, page, size, keyword, subject, techStack, year, online, recruitment);
+        List<ProjectRecruitmentInfoResDto> resDtoList = projectRecruitmentService.getAllRecuritment(sort, pageNumber, size, keyword, subject, techStack, year, online, recruitment, siDo, guGun);
 
         return ResponseEntity.status(HttpStatus.OK).body(resDtoList);
     }

@@ -161,7 +161,7 @@ public class ProjectController {
                                      @RequestParam(defaultValue = "latestOrder", required = false) String sort,
                                      @Parameter(description = "페이지 수")
                                      @Min(value = 0, message = "page값은 0이상이어야 합니다")
-                                     @RequestParam(defaultValue = "0") int page,
+                                     @RequestParam(defaultValue = "0") int pageNumber,
                                      @Parameter(description = "한 페이지에 담기는 개수")
                                      @Positive(message = "size값은 1이상이어야 합니다")
                                      @RequestParam(defaultValue = "10") int size,
@@ -172,7 +172,7 @@ public class ProjectController {
     )
     {
 
-        List<ProjectInfoResponseDto> projectLists = projectService.getProjectList(size, page, sort, keyword, subject, techStack, year);
+        List<ProjectInfoResponseDto> projectLists = projectService.getProjectList(size, pageNumber, sort, keyword, subject, techStack, year);
 
         return ResponseEntity.status(HttpStatus.OK).body(projectLists);
 

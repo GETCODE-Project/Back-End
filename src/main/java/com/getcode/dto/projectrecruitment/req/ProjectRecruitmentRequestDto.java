@@ -26,6 +26,7 @@ public class ProjectRecruitmentRequestDto {
         private boolean recruitment;
         private int views;
         private int likeCnt;
+        private List<String> contact;
         private List<String> subjects;
         private List<String> techStack;
 
@@ -40,6 +41,7 @@ public class ProjectRecruitmentRequestDto {
                     .likeCnt(likeCnt)
                     .recruitment(recruitment)
                     .member(member)
+                    .contact(String.join("^", contact))
                     .build();
         }
 

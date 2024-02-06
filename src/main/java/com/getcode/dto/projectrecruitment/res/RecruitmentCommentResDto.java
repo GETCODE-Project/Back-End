@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.format.DateTimeFormatter;
+
 @AllArgsConstructor
 @Getter
 @NoArgsConstructor
@@ -16,6 +18,7 @@ public class RecruitmentCommentResDto {
     private String content;
     private String memberNickName;
     private Boolean isWriter;
+    private String modifiedDate;
 
     public RecruitmentCommentResDto(ProjectRecruitmentComment projectRecruitmentComment){
         this.id = projectRecruitmentComment.getId();

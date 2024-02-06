@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,7 @@ public class ProjectRecruitmentDetailResDto {
     private boolean checkLike;
     private boolean checkWish;
     private MemberInfoDto memberInfoDto;
-
+    private List<String> contact;
 
     public ProjectRecruitmentDetailResDto(ProjectRecruitment projectRecruitment, Boolean checkLike, Boolean checkWish, Boolean checkWriter){
                     this.title = projectRecruitment.getTitle();
@@ -55,7 +56,7 @@ public class ProjectRecruitmentDetailResDto {
                     this.isWriter = checkWriter;
                     this.checkLike = checkLike;
                     this.checkWish = checkWish;
-
+                    this.contact = Arrays.stream(projectRecruitment.getContact().split("\\^")).toList();
     }
 
 

@@ -23,8 +23,8 @@ public class ProjectDetailResponseDto {
     private String githubUrl;
     private int views;
     private int likeCnt;
-    private List<ProjectStackResponseDto> techStackList;
-    private List<ProjectSubjectResponseDto> projectSubjects;
+    private List<ProjectStackResponseDto> techStacks;
+    private List<ProjectSubjectResponseDto> subjects;
     private List<ProjectImageUrlResponseDto> imageUrls;
     private MemberInfoDto memberInfoDto;
     private boolean isWriter;
@@ -41,8 +41,8 @@ public class ProjectDetailResponseDto {
         this.githubUrl  = project.getGithubUrl();
         this.views  = project.getViews();
         this.likeCnt  = project.getLikeCnt();
-        this.techStackList  = project.getTechStacks().stream().map(ProjectStackResponseDto::new).collect(Collectors.toList());
-        this.projectSubjects  = project.getProjectSubjects().stream().map(ProjectSubjectResponseDto::new).collect(Collectors.toList());
+        this.techStacks  = project.getTechStacks().stream().map(ProjectStackResponseDto::new).collect(Collectors.toList());
+        this.subjects  = project.getProjectSubjects().stream().map(ProjectSubjectResponseDto::new).collect(Collectors.toList());
         this.imageUrls  = project.getProjectImages().stream().map(ProjectImageUrlResponseDto::new).collect(Collectors.toList());
         this.memberInfoDto =MemberInfoDto.toDto(project.getMember());
 

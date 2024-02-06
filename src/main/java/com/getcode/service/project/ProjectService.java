@@ -332,7 +332,7 @@ public class ProjectService {
 
     //전체 프로젝트 조회(조건 검색) 조건: 주제, 기술스택, 년도 | 정렬 조건: 최신순, 과거순, 좋아요순
     @Transactional
-    public List<ProjectInfoResponseDto> getProjectList(int size, int page, String sort, String keyword,
+    public List<ProjectInfoResponseDto> getProjectList(int size, int pageNumber, String sort, String keyword,
                                                        String subject, List<String> techStack,
                                                        Integer year) {
 
@@ -349,7 +349,7 @@ public class ProjectService {
             sortCriteria = Sort.by(Sort.Direction.DESC, "modifiedDate");
         }
 
-        Pageable pageable = PageRequest.of(page -1, size, sortCriteria);
+        Pageable pageable = PageRequest.of(pageNumber -1, size, sortCriteria);
 
 
         List<Specification<Project>> specifications = new ArrayList<>();
