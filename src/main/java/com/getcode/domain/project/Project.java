@@ -1,6 +1,7 @@
 package com.getcode.domain.project;
 
 import com.getcode.domain.common.BaseTimeEntity;
+import com.getcode.domain.common.Subject;
 import com.getcode.domain.common.TechStack;
 import com.getcode.domain.member.Member;
 import com.getcode.dto.project.req.ProjectUpdateRequestDto;
@@ -50,6 +51,11 @@ public class Project extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "subject_name")
+    private Subject subject;
+
+
     @Builder.Default
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectLike> projectLikes = new ArrayList<>();
@@ -68,22 +74,17 @@ public class Project extends BaseTimeEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProjectSubject> projectSubjects = new ArrayList<>();
-
-    @Builder.Default
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectComment> projectComments = new ArrayList<>();
 
 
 
-    //리팩토링 필수
     public void updateProject(ProjectUpdateRequestDto requestDto){
 
             this.title = requestDto.getTitle();
             this.content = requestDto.getContent();
             this.introduction = requestDto.getIntroduction();
             this.githubUrl = requestDto.getGithubUrl();
-
+            this.subject = Subject.fromString(requestDto.getSubject());
 
         //casecade 타입을 all로 설정해놓아서 기존 부모와 연결된 List객체를 삭제하고 새로 만들어준다.
         /*
@@ -101,14 +102,6 @@ public class Project extends BaseTimeEntity {
                     .map(projectStack -> new ProjectTech(projectStack, this))
                     .collect(Collectors.toList());
             this.techStacks.addAll(newStack);
-        }
-
-        if(requestDto.getProjectSubjects() != null) {
-            this.projectSubjects.clear();
-            List<ProjectSubject> newSubject = requestDto.getProjectSubjects().stream()
-                    .map(projectSubject -> new ProjectSubject(projectSubject, this))
-                    .collect(Collectors.toList());
-            this.projectSubjects.addAll(newSubject);
         }
 
 

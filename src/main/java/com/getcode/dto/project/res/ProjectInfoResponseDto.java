@@ -28,9 +28,10 @@ public class ProjectInfoResponseDto {
 
     private List<ProjectStackResponseDto> techStacks;
 
-    private List<ProjectSubjectResponseDto> subjects;
+    private String subject;
+    //private List<ProjectSubjectResponseDto> subjects;
 
-    private ProjectImageUrlResponseDto imageUrl;
+    //private ProjectImageUrlResponseDto imageUrl;
 
     private String memberNickName;
 
@@ -47,6 +48,7 @@ public class ProjectInfoResponseDto {
         this.likeCnt = project.getLikeCnt();
         this.modifiedDate = project.getModifiedDate();
         this.createDate = project.getCreateDate();
+        /*
         List<ProjectImageUrlResponseDto> imageUrls = project.getProjectImages().stream()
                 .limit(1) // 첫 번째 이미지만 선택
                 .map(ProjectImageUrlResponseDto::new)
@@ -55,8 +57,9 @@ public class ProjectInfoResponseDto {
         if (!imageUrls.isEmpty() && imageUrls != null) {
             this.imageUrl = imageUrls.get(0);
         }
+        */
         this.techStacks = project.getTechStacks().stream().map(ProjectStackResponseDto::new).collect(Collectors.toList());
-        this.subjects = project.getProjectSubjects().stream().map(ProjectSubjectResponseDto::new).collect(Collectors.toList());
+        this.subject = project.getSubject().print();
         this.memberNickName = project.getMember().getNickname();
 
     }

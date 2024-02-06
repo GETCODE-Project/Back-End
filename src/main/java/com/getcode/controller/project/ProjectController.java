@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @Tag(name = "프로젝트 관련 기능 api명세")
@@ -115,6 +114,7 @@ public class ProjectController {
         int result = projectService.likeProject(id, memberEmail);
         Boolean checkLike = false;
         if(result == 1) {
+            checkLike = true;
             return ResponseEntity.status(HttpStatus.OK).body("프로젝트 좋아요 성공."+ "\n"+ "checkLike: "+checkLike);
         } else if (result == 0) {
             return ResponseEntity.status(HttpStatus.OK).body("프로젝트 좋아요 삭제 성공."+ "\n"+ "checkLike: "+checkLike);
@@ -123,7 +123,7 @@ public class ProjectController {
     }
 
 
-    @Operation(summary = "프로젝트 즐겨찾기 api")
+    @Operation(summary = "프로젝트 찜 api")
     @PostMapping("/{id}/wish")
     ResponseEntity<?> wishProject(@Parameter(description = "프로젝트 아이디") @PathVariable(name = "id") Long id){
         String memberEmail = SecurityUtil.getCurrentMemberEmail();

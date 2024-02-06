@@ -24,9 +24,9 @@ public class ProjectDetailResponseDto {
     private int views;
     private int likeCnt;
     private List<ProjectStackResponseDto> techStacks;
-    private List<ProjectSubjectResponseDto> subjects;
-    private List<ProjectImageUrlResponseDto> imageUrls;
-    private MemberInfoDto memberInfoDto;
+    private String subject;
+    //private List<ProjectImageUrlResponseDto> imageUrls;
+    private MemberInfoDto member;
     private boolean isWriter;
     private boolean checkWish;
     private boolean checkLike;
@@ -41,10 +41,17 @@ public class ProjectDetailResponseDto {
         this.githubUrl  = project.getGithubUrl();
         this.views  = project.getViews();
         this.likeCnt  = project.getLikeCnt();
-        this.techStacks  = project.getTechStacks().stream().map(ProjectStackResponseDto::new).collect(Collectors.toList());
-        this.subjects  = project.getProjectSubjects().stream().map(ProjectSubjectResponseDto::new).collect(Collectors.toList());
-        this.imageUrls  = project.getProjectImages().stream().map(ProjectImageUrlResponseDto::new).collect(Collectors.toList());
-        this.memberInfoDto =MemberInfoDto.toDto(project.getMember());
+        this.techStacks  = project.getTechStacks().stream()
+                                                    .map(ProjectStackResponseDto::new)
+                                                    .collect(Collectors.toList());
+
+        this.subject  = project.getSubject().print();
+        /*
+        this.imageUrls  = project.getProjectImages().stream()
+                                                    .map(ProjectImageUrlResponseDto::new)
+                                                    .collect(Collectors.toList());
+        */
+        this.member =MemberInfoDto.toDto(project.getMember());
 
         this.checkLike = checkLike;
         this.checkWish = checkWish;
