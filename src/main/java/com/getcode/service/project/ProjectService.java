@@ -30,7 +30,6 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final ProjectStackRepository projectStackRepository;
-    private final ProjectSubjectRepository projectSubjectRepository;
     private final ProjectImageRepository projectImageRepository;
     private final ProjectCommentRepository projectCommentRepository;
     private final MemberRepository memberRepository;
@@ -47,8 +46,10 @@ public class ProjectService {
         return existedProject
                 .filter(project -> project.getMember() != null && project.getMember().getEmail().equals(memberEmail)) //로그인한 유저와 글 쓴 유저 일치하는지 확인
                 .map(project -> {
+                    /*
                     List<ProjectImage> projectImages = projectImageRepository.findAllByProjectId(id);
                     deleteS3File(projectImages);
+                     */
                     projectRepository.deleteById(id);
                     return 1; // 삭제 성공
                 })
@@ -119,17 +120,12 @@ public class ProjectService {
         }
 */
 
-        List<String> techList = projectRequestDto.getTechStackList();
-        List<String> subjectList = projectRequestDto.getProjectSubjects();
+        List<String> techList = projectRequestDto.getTechStacks();
+
 
         for(String techStack : techList){
             projectStackRepository.save(ProjectTechDto.toEntity(project, techStack));
         }
-        for(String subject : subjectList){
-            projectSubjectRepository.save(ProjectSubjectDto.toEntity(project, subject));
-        }
-
-
 
 
 

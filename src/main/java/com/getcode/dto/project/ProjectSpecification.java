@@ -3,7 +3,6 @@ package com.getcode.dto.project;
 import com.getcode.domain.common.Subject;
 import com.getcode.domain.common.TechStack;
 import com.getcode.domain.project.Project;
-import com.getcode.domain.project.ProjectSubject;
 import com.getcode.domain.project.ProjectTech;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -31,17 +30,11 @@ public class ProjectSpecification  {
     }
 
 
-    public static Specification<Project> subjectLike(String subjects){
-        return (root, query, criteriaBuilder) -> {
-            Join<Project, ProjectSubject> projectSubjectJoin = root.join("projectSubjects", JoinType.LEFT);
-
-            Predicate predicates;
-
-                Subject subject = Subject.fromString(subjects);
-
-                predicates = criteriaBuilder.equal(projectSubjectJoin.get("subject"), subject);
-
-            return criteriaBuilder.or(predicates);
+    public static Specification<Project> subjectLike(String subject) {
+        return (root, query, criteriaBuilder) ->
+        {
+            Subject subject1 = Subject.fromString(subject);
+            return criteriaBuilder.equal(root.get("subject"), subject1);
         };
     }
 
