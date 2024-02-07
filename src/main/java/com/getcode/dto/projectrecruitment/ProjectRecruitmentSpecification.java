@@ -2,9 +2,7 @@ package com.getcode.dto.projectrecruitment;
 
 import com.getcode.domain.common.Subject;
 import com.getcode.domain.common.TechStack;
-import com.getcode.domain.project.Project;
 import com.getcode.domain.projectrecruitment.ProjectRecruitment;
-import com.getcode.domain.projectrecruitment.ProjectRecruitmentSubject;
 import com.getcode.domain.projectrecruitment.ProjectRecruitmentTech;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -39,16 +37,12 @@ public class ProjectRecruitmentSpecification {
 
 
     //주제 조건 검사
-    public static Specification<ProjectRecruitment> subjectLike(String subjects){
+    public static Specification<ProjectRecruitment> subjectLike(String subject){
         return (root, query, criteriaBuilder) -> {
 
-            Join<ProjectRecruitment, ProjectRecruitmentSubject> projectRecruitmentSubjectJoin = root.join("subjects", JoinType.LEFT);
-            Predicate predicate;
+                Subject subject1 = Subject.fromString(subject);
+                return criteriaBuilder.equal(root.get("subject"), subject);
 
-                Subject subject = Subject.fromString(subjects);
-                predicate = criteriaBuilder.equal(projectRecruitmentSubjectJoin.get("subject"), subject);
-
-            return criteriaBuilder.or(predicate);
         };
     }
 

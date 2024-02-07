@@ -1,5 +1,6 @@
 package com.getcode.dto.projectrecruitment.req;
 
+import com.getcode.domain.common.Subject;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.projectrecruitment.ProjectRecruitment;
 import lombok.AccessLevel;
@@ -27,7 +28,7 @@ public class ProjectRecruitmentRequestDto {
         private int views;
         private int likeCnt;
         private List<String> contact;
-        private List<String> subjects;
+        private String subject;
         private List<String> techStack;
 
         public ProjectRecruitment toEntity(Member member) {
@@ -42,6 +43,7 @@ public class ProjectRecruitmentRequestDto {
                     .recruitment(recruitment)
                     .member(member)
                     .contact(String.join("^", contact))
+                    .subject(Subject.fromString(subject))
                     .build();
         }
 

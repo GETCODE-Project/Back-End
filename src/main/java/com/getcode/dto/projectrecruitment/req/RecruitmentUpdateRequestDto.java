@@ -19,7 +19,7 @@ public class RecruitmentUpdateRequestDto {
     private Boolean online;
     private Boolean recruitment;
     private List<String> techStackList;
-    private List<String> subjects;
+    private String subject;
 
 
 }
