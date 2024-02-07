@@ -6,7 +6,7 @@ import com.getcode.domain.projectrecruitment.ProjectRecruitment;
 import com.getcode.domain.study.Study;
 import com.getcode.dto.project.res.ProjectInfoResponseDto;
 import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentInfoResDto;
-import com.getcode.dto.study.StudyInfoResponseDto;
+import com.getcode.dto.study.response.StudyInfoResponseDto;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.repository.member.MemberRepository;
 import com.getcode.repository.project.ProjectRepository;

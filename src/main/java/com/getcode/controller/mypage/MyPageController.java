@@ -3,7 +3,7 @@ package com.getcode.controller.mypage;
 import com.getcode.config.security.SecurityUtil;
 import com.getcode.dto.project.res.ProjectInfoResponseDto;
 import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentInfoResDto;
-import com.getcode.dto.study.StudyInfoResponseDto;
+import com.getcode.dto.study.response.StudyInfoResponseDto;
 import com.getcode.service.mypage.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

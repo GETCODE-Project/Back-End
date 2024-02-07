@@ -1,4 +1,4 @@
-package com.getcode.dto.community;
+package com.getcode.dto.community.response;
 
 import com.getcode.domain.community.Community;
 import com.getcode.domain.community.CommunityCategory;
@@ -30,7 +30,7 @@ public class CommunityResponseDto {
                 community.getTitle(),
                 community.getContent(),
                 community.getViews(),
-                community.getCount(),
+                community.getLikeCnt(),
                 community.getModifiedDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
                 community.getCategory(),
                 MemberInfoDto.toDto(community.getMember()),

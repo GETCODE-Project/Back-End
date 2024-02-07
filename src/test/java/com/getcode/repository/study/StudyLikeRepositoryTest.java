@@ -1,8 +1,5 @@
 package com.getcode.repository.study;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.assertj.core.api.Assertions.*;
-
 import com.getcode.domain.member.Member;
 import com.getcode.domain.study.Study;
 import com.getcode.domain.study.StudyLike;
@@ -47,11 +44,11 @@ class StudyLikeRepositoryTest {
         Study study = Study.builder()
                 .title("Java")
                 .content("Spring")
-                .region("New York")
+                .siDo("New York")
                 .recruitment(true)
                 .online(true)
                 .views(0)
-                .count(0)
+                .likeCnt(0)
                 .build();
 
         StudyLike studyLike = StudyLike.builder()

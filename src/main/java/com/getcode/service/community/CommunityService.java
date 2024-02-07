@@ -6,15 +6,12 @@ import com.getcode.domain.community.Community;
 import com.getcode.domain.community.CommunityComment;
 import com.getcode.domain.community.CommunityLike;
 import com.getcode.domain.member.Member;
-import com.getcode.domain.study.Study;
-import com.getcode.domain.study.StudyComment;
-import com.getcode.dto.community.CommunityCommentRequestDto;
-import com.getcode.dto.community.CommunityCommentResponseDto;
-import com.getcode.dto.community.CommunityEditDto;
-import com.getcode.dto.community.CommunityLikeDto;
-import com.getcode.dto.community.CommunityRequestDto;
-import com.getcode.dto.community.CommunityResponseDto;
-import com.getcode.dto.community.CreatedCommunityResponseDto;
+import com.getcode.dto.community.requset.CommunityCommentRequestDto;
+import com.getcode.dto.community.response.CommunityCommentResponseDto;
+import com.getcode.dto.community.requset.CommunityLikeDto;
+import com.getcode.dto.community.requset.CommunityRequestDto;
+import com.getcode.dto.community.response.CommunityResponseDto;
+import com.getcode.dto.community.response.CreatedCommunityResponseDto;
 import com.getcode.exception.community.NotFoundCommunityException;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.study.MatchMemberException;
@@ -59,7 +56,7 @@ public class CommunityService {
 
     // 게시판 수정
     @Transactional
-    public CommunityResponseDto editCommunity(Long id, CommunityEditDto req) {
+    public CommunityResponseDto editCommunity(Long id, CommunityRequestDto req) {
         Community community = communityRepository.findById(id).orElseThrow(NotFoundCommunityException::new);
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
         Member findMember = community.getMember();

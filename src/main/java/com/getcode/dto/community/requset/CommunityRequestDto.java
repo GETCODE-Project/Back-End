@@ -1,9 +1,8 @@
-package com.getcode.dto.community;
+package com.getcode.dto.community.requset;
 
 import com.getcode.domain.community.Community;
 import com.getcode.domain.community.CommunityCategory;
 import com.getcode.domain.member.Member;
-import com.getcode.domain.study.Study;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
@@ -35,7 +34,7 @@ public class CommunityRequestDto {
                 .title(title)
                 .content(content)
                 .views(0)
-                .count(0)
+                .likeCnt(0)
                 .member(member)
                 .category(CommunityCategory.valueOf(category.toUpperCase()))
                 .build();

@@ -2,8 +2,7 @@ package com.getcode.domain.community;
 
 import com.getcode.domain.common.BaseTimeEntity;
 import com.getcode.domain.member.Member;
-import com.getcode.dto.community.CommunityEditDto;
-import com.getcode.global.CommunityTypeConverter;
+import com.getcode.dto.community.requset.CommunityRequestDto;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,13 +31,13 @@ public class Community extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "integer default 0", nullable = false)
     private int views;
 
-    @Column(nullable = false)
-    private int count;
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private int likeCnt;
 
-    @Convert(converter = CommunityTypeConverter.class)
+    @Enumerated(EnumType.STRING)
     private CommunityCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -64,14 +63,14 @@ public class Community extends BaseTimeEntity {
     }
 
     public void increaseCount() {
-        this.count +=1;
+        this.likeCnt +=1;
     }
 
     public void decreaseCount() {
-        this.count -=1;
+        this.likeCnt -=1;
     }
 
-    public void editCommunity(CommunityEditDto req) {
+    public void editCommunity(CommunityRequestDto req) {
         this.title = req.getTitle();
         this.content = req.getContent();
     }

@@ -26,7 +26,7 @@ import java.util.List;
 @SecurityScheme(
         type = SecuritySchemeType.APIKEY,
         in = SecuritySchemeIn.HEADER,
-        name = "Authorization-refresh", description = "Refresh Token"
+        name = "Refresh", description = "Refresh Token"
 )
 @Configuration
 public class SwaggerConfig {
@@ -36,7 +36,7 @@ public class SwaggerConfig {
                 .group("api")
                 .addOpenApiCustomizer(oac -> oac
                 .security(List.of(new SecurityRequirement().addList("Authorization"),
-                        new SecurityRequirement().addList("Authorization-refresh"))))
+                        new SecurityRequirement().addList("Refresh"))))
                 .pathsToMatch("/**").build();
     }
 }

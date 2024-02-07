@@ -185,11 +185,11 @@ public class TokenProvider {
         log.info("Access Token, Refresh Token 헤더 설정 완료");
     }
     public void setAccessTokenHeader(HttpServletResponse response, String accessToken) {
-        response.setHeader("Authorization", accessToken);
+        response.setHeader(AUTHORIZATION_HEADER, accessToken);
     }
 
     public void setRefreshTokenHeader(HttpServletResponse response, String refreshToken) {
-        response.setHeader("Authorization-refresh", refreshToken);
+        response.setHeader(REFRESH_HEADER, refreshToken);
     }
 
     public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken) {
@@ -201,7 +201,7 @@ public class TokenProvider {
     // Request Header에 Access Token 정보를 추출하는 메서드
     public String resolveAccessToken(HttpServletRequest request) {
         log.info("JwtTokenProvider.resolveAccessToken excute, request = {}", request.toString());
-        String bearerToken = request.getHeader("Authorization");
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }
@@ -211,7 +211,7 @@ public class TokenProvider {
     // Request Header에 Refresh Token 정보를 추출하는 메서드
     public String resolveRefreshToken(HttpServletRequest request) {
         log.info("JwtTokenProvider.resolveRefreshToken excute, request = {}", request.toString());
-        String bearerToken = request.getHeader("Authorization-refresh");
+        String bearerToken = request.getHeader(REFRESH_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }
