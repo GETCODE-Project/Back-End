@@ -15,4 +15,8 @@ public class EnumService {
     public List<String> getTechStackList(){
         return TechStack.techStackList();
     }
+
+    public List<String> getStudyFieldList(){
+        return Field.studyFieldList();
+    }
 }

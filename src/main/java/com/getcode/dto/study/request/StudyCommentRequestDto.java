@@ -1,8 +1,8 @@
-package com.getcode.dto.study;
+package com.getcode.dto.study.request;
 
 import com.getcode.domain.member.Member;
 import com.getcode.domain.study.Study;
-import com.getcode.domain.study.WishStudy;
+import com.getcode.domain.study.StudyComment;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,15 +11,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StudyWishDto {
-    private Member member;
-    private Study study;
-
-    public static WishStudy toEntity(Member member, Study study) {
-        return WishStudy.builder()
+public class StudyCommentRequestDto {
+    private String content;
+    public StudyComment toEntity(Study study, Member member) {
+        return StudyComment.builder()
+                .content(content)
                 .member(member)
                 .study(study)
                 .build();
     }
-
 }

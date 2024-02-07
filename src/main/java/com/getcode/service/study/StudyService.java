@@ -1,40 +1,23 @@
 package com.getcode.service.study;
 
-import static com.getcode.config.security.SecurityUtil.*;
-
 import com.getcode.domain.member.Member;
 import com.getcode.domain.study.Study;
 import com.getcode.domain.study.StudyComment;
 import com.getcode.domain.study.StudyLike;
-import com.getcode.domain.study.StudySpecification;
-import com.getcode.domain.study.StudySubject;
 import com.getcode.domain.study.WishStudy;
-import com.getcode.dto.study.CreatedStudyResponseDto;
-import com.getcode.dto.study.StudyCommentRequestDto;
-import com.getcode.dto.study.StudyCommentResponseDto;
-import com.getcode.dto.study.StudyEditDto;
-import com.getcode.dto.study.StudyInfoResponseDto;
-import com.getcode.dto.study.StudyLikeDto;
-import com.getcode.dto.study.StudyRequestDto;
-import com.getcode.dto.study.StudySubjectDto;
-import com.getcode.dto.study.StudyWishDto;
+import com.getcode.dto.study.util.StudyFieldDto;
+import com.getcode.dto.study.util.StudyWishDto;
+import com.getcode.dto.study.request.StudyCommentRequestDto;
+import com.getcode.dto.study.util.StudyLikeDto;
+import com.getcode.dto.study.request.StudyRequestDto;
+import com.getcode.dto.study.response.CreatedStudyResponseDto;
+import com.getcode.dto.study.response.StudyCommentResponseDto;
+import com.getcode.dto.study.response.StudyInfoResponseDto;
+import com.getcode.dto.study.util.StudySpecification;
 import com.getcode.exception.member.NotFoundMemberException;
-import com.getcode.exception.study.MatchMemberException;
-import com.getcode.exception.study.NotFoundCommentException;
-import com.getcode.exception.study.NotFoundStudyException;
-import com.getcode.exception.study.NotLikeException;
-import com.getcode.exception.study.NotWishException;
+import com.getcode.exception.study.*;
 import com.getcode.repository.member.MemberRepository;
-import com.getcode.repository.study.StudyCommentRepository;
-import com.getcode.repository.study.StudyLikeRepository;
-import com.getcode.repository.study.StudyRepository;
-
-import com.getcode.repository.study.StudySubjectRepository;
-import com.getcode.repository.study.WishStudyRepository;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.getcode.repository.study.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -45,6 +28,12 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static com.getcode.config.security.SecurityUtil.getCurrentMemberEmail;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -54,27 +43,28 @@ public class StudyService {
     private final StudyCommentRepository studyCommentRepository;
     private final StudyLikeRepository studyLikeRepository;
     private final WishStudyRepository wishStudyRepository;
-    private final StudySubjectRepository studySubjectRepository;
+    private final StudyFieldRepository studyFieldRepository;
 
     @Transactional
     public CreatedStudyResponseDto createStudy(StudyRequestDto req) {
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
 
-        List<String> subjects = req.getSubjects();
+        List<String> fields = req.getFields();
 
         Study study = studyRepository.save(req.toEntity(member));
 
-        for (String subject : subjects) {
-            studySubjectRepository.save(StudySubjectDto.toEntity(study, subject));
+        for (String subject : fields) {
+            studyFieldRepository.save(StudyFieldDto.toEntity(study, subject));
         }
 
-        return CreatedStudyResponseDto.toDto(study, member, subjects);
+        return CreatedStudyResponseDto.toDto(study, member, fields);
     }
 
     // 특정 게시글 조회
     @Transactional
     public StudyInfoResponseDto findStudy(Long id) {
-        Study study = studyRepository.findById(id).orElseThrow(NotFoundStudyException::new);
+        Study study = studyRepository.findById(id)
+                .orElseThrow(NotFoundStudyException::new);
         study.increaseViews();
         return StudyInfoResponseDto.toDto(study);
     }
@@ -83,23 +73,23 @@ public class StudyService {
     @Transactional(readOnly = true)
     public List<StudyInfoResponseDto> findAllStudy() {
 
-        List<Study> studies = studyRepository.findAllByOrderByModifiedDateDesc().orElseThrow(NotFoundStudyException::new);
+        List<Study> studies = studyRepository.findAllByOrderByModifiedDateDesc()
+                .orElseThrow(NotFoundStudyException::new);
 
         List<StudyInfoResponseDto> res = new ArrayList<>();
 
         for (Study study : studies) {
-            Member member = memberRepository.findById(study.getMember().getId()).orElseThrow(NotFoundMemberException::new);
+            memberRepository.findById(study.getMember().getId())
+                    .orElseThrow(NotFoundMemberException::new);
             res.add(StudyInfoResponseDto.toDto(study));
         }
 
         return res;
     }
 
-
-
     // 스터디 수정
     @Transactional
-    public StudyInfoResponseDto editStudy(Long id, StudyEditDto req) {
+    public StudyInfoResponseDto editStudy(Long id, StudyRequestDto req) {
         Study study = studyRepository.findById(id).orElseThrow(NotFoundStudyException::new);
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
         Member findMember = study.getMember();
@@ -121,7 +111,7 @@ public class StudyService {
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
         Member findMember = study.getMember();
 
-        if (member.getId() != findMember.getId()) {
+        if (!member.getId().equals(findMember.getId())) {
             throw new MatchMemberException();
         }
 
@@ -140,7 +130,8 @@ public class StudyService {
     // 댓글 수정
     @Transactional
     public StudyCommentResponseDto editComment(StudyCommentRequestDto studyCommentRequestDto, Long id) {
-        StudyComment studyComment = studyCommentRepository.findById(id).orElseThrow(NotFoundCommentException::new);
+        StudyComment studyComment = studyCommentRepository.findById(id)
+                .orElseThrow(NotFoundCommentException::new);
         studyComment.editComment(studyCommentRequestDto.getContent());
         return StudyCommentResponseDto.toDto(studyComment);
     }
@@ -188,7 +179,7 @@ public class StudyService {
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
         Study study = studyRepository.findById(id).orElseThrow(NotFoundStudyException::new);
 
-        if (study.getMember().getId() == member.getId()) {
+        if (study.getMember().getId().equals(member.getId())) {
             throw new NotWishException();
         }
 
@@ -208,17 +199,21 @@ public class StudyService {
      * */
     // 스터디 검색
     @Transactional(readOnly = true)
-    public List<StudyInfoResponseDto> searchStudy(String keyword, String region, Boolean recruitment,
-                                                  Boolean online, Integer year, List<String> subjects,
-                                                  Integer pageNumber, String criteria) {
+    public List<StudyInfoResponseDto> searchStudy(String keyword, String siDo, String guGun, Boolean recruitment,
+                                                  Boolean online, Integer year, List<String> fields,
+                                                  int page, int size, String criteria) {
         Specification<Study> spec = (root, query, criteriaBuilder) -> null;
 
         if (keyword != null) {
             spec = spec.and(StudySpecification.equalsKeyword(keyword));
         }
 
-        if (region != null) {
-            spec = spec.and(StudySpecification.equalsRegion(region));
+        if (siDo != null) {
+            spec = spec.and(StudySpecification.equalsSiDo(siDo));
+        }
+
+        if (guGun != null) {
+            spec = spec.and(StudySpecification.equalsGuGun(guGun));
         }
 
         if (recruitment != null) {
@@ -233,15 +228,15 @@ public class StudyService {
             spec = spec.and(StudySpecification.equalsYear(year));
         }
 
-        if (subjects != null) {
-            spec = spec.and(StudySpecification.containsSubjects(subjects));
+        if (fields != null) {
+            spec = spec.and(StudySpecification.containsFields(fields));
         }
 
-        Pageable pageable = PageRequest.of(pageNumber-1, 10,
+        Pageable pageable = PageRequest.of(page-1, size,
                 Sort.by(Sort.Direction.DESC, "modifiedDate"));
 
         if (criteria != null) {
-            pageable = PageRequest.of(pageNumber-1, 10,
+            pageable = PageRequest.of(page-1, size,
                     Sort.by(Sort.Direction.DESC, criteria));
         }
 

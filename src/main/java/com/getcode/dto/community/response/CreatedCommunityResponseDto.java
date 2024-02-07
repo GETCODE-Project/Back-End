@@ -1,12 +1,11 @@
-package com.getcode.dto.community;
+package com.getcode.dto.community.response;
 
 import com.getcode.domain.community.Community;
 import com.getcode.domain.community.CommunityCategory;
 import com.getcode.dto.member.MemberInfoDto;
-import com.getcode.dto.study.StudyCommentResponseDto;
+
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.stream.Collectors;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,7 +28,7 @@ public class CreatedCommunityResponseDto {
                 community.getTitle(),
                 community.getContent(),
                 community.getViews(),
-                community.getCount(),
+                community.getLikeCnt(),
                 community.getModifiedDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
                 community.getCategory(),
                 MemberInfoDto.toDto(community.getMember())

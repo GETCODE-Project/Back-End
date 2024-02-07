@@ -45,7 +45,6 @@ public class Project extends BaseTimeEntity {
     @Column(columnDefinition = "integer default 0",nullable = false)
     private int likeCnt;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;

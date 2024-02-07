@@ -1,4 +1,4 @@
-package com.getcode.dto.community;
+package com.getcode.dto.community.response;
 
 import com.getcode.domain.community.CommunityComment;
 import java.time.format.DateTimeFormatter;

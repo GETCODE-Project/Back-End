@@ -1,6 +1,10 @@
 package com.getcode.controller.community;
 
-import com.getcode.dto.community.*;
+import com.getcode.dto.community.requset.CommunityCommentRequestDto;
+import com.getcode.dto.community.requset.CommunityRequestDto;
+import com.getcode.dto.community.response.CommunityCommentResponseDto;
+import com.getcode.dto.community.response.CommunityResponseDto;
+import com.getcode.dto.community.response.CreatedCommunityResponseDto;
 import com.getcode.service.community.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,8 +32,8 @@ public class CommunityController {
     })
     @PostMapping("/community")
     public ResponseEntity<CreatedCommunityResponseDto> createCommunity(@Valid @RequestBody CommunityRequestDto req) {
-        CreatedCommunityResponseDto res = communityService.createCommunity(req);
-        return ResponseEntity.status(HttpStatus.CREATED).body(res);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(communityService.createCommunity(req));
     }
 
     @Operation(summary = "로그인한 사용자가 작성한 게시글 목록 조회", description = "특정 사용자가 작성한 게시물 조회")
@@ -38,8 +42,9 @@ public class CommunityController {
     })
     @GetMapping("/communities")
     public ResponseEntity<List<CommunityResponseDto>> findAllCommunityByMember() {
-        return ResponseEntity.status(HttpStatus.OK).body(communityService.findAllCommunityByMember());
-    };;;
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(communityService.findAllCommunityByMember());
+    }
 
     @Operation(summary = "게시글 수정", description = "PathVariable, 게시글 변경내용을 입력받아 게시글 수정(제목, 내용)")
     @ApiResponses(value = {
@@ -47,7 +52,7 @@ public class CommunityController {
     })
     @PutMapping("/community/{id}")
     public ResponseEntity<CommunityResponseDto> editCommunity(@PathVariable(name = "id") Long id,
-                                                              @RequestBody CommunityEditDto req) {
+                                                              @RequestBody CommunityRequestDto req) {
         return ResponseEntity.status(HttpStatus.OK).body(communityService.editCommunity(id, req));
     }
 

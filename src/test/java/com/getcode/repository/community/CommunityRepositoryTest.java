@@ -1,12 +1,11 @@
 package com.getcode.repository.community;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 
 import com.getcode.domain.community.Community;
 import com.getcode.domain.community.CommunityCategory;
 import java.util.List;
-import org.assertj.core.api.Assertions;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -40,7 +39,7 @@ class CommunityRepositoryTest {
                 .title(title)
                 .content(content)
                 .views(0)
-                .count(0)
+                .likeCnt(0)
 //                .category(CommunityCategory.valueOf(type))
                 .build();
     }

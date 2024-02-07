@@ -25,4 +25,9 @@ public class ListController {
     public ResponseEntity<List<String>> subjects(){
         return ResponseEntity.ok(enumService.getSubjectList());
     }
+
+    @GetMapping("/studyFiled")
+    public ResponseEntity<List<String>> studyFiled(){
+        return ResponseEntity.ok(enumService.getStudyFieldList());
+    }
 }
