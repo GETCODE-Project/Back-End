@@ -42,7 +42,6 @@ public class ProjectRecruitmentService {
     private final MemberRepository memberRepository;
     private final ProjectRecruitmentRepository projectRecruitmentRepository;
     private final ProjectRecruitmentStackRepository projectRecruitmentStackRepository;
-    private final ProjectRecruitmentSubjectRepository projectRecruitmentSubjectRepository;
     private final ProjectRecruitmentCommentRepository projectRecruitmentCommentRepository;
     private final ProjectRecruitmentLikeRepository projectRecruitmentLikeRepository;
     private final ProjectRecruitmentWishRepository projectRecruitmentWishRepository;
@@ -59,14 +58,11 @@ public class ProjectRecruitmentService {
         projectRecruitmentRepository.save(projectRecruitment);
 
         List<String> techStackList = requestDto.getTechStack();
-        List<String> subjectList = requestDto.getSubjects();
 
         for(String techStack : techStackList){
             projectRecruitmentStackRepository.save(ProjectRecruitmentTechDto.toEntity(projectRecruitment, techStack));
         }
-        for(String subject : subjectList){
-            projectRecruitmentSubjectRepository.save(ProjectRecruitmentSubjectDto.toEntity(projectRecruitment, subject));
-        }
+
 
 
     }

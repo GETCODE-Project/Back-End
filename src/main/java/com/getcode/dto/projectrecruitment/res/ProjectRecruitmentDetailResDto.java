@@ -29,13 +29,12 @@ public class ProjectRecruitmentDetailResDto {
     private int views;
     private int likeCnt;
     private LocalDateTime createDate, modifiedDate;
-    private List<ProjectRecruitmentSubjectResDto> subjects;
+    private String subject;
     private List<ProjectRecruitmentStackResDto> techStacks;
-    private List<RecruitmentCommentResDto> comments;
     private boolean isWriter;
     private boolean checkLike;
     private boolean checkWish;
-    private MemberInfoDto memberInfoDto;
+    private MemberInfoDto member;
     private List<String> contact;
 
     public ProjectRecruitmentDetailResDto(ProjectRecruitment projectRecruitment, Boolean checkLike, Boolean checkWish, Boolean checkWriter){
@@ -48,11 +47,10 @@ public class ProjectRecruitmentDetailResDto {
                     this.views = projectRecruitment.getViews();
                     this.likeCnt = projectRecruitment.getLikeCnt();
                     this.techStacks = projectRecruitment.getTechStacks().stream().map(ProjectRecruitmentStackResDto::new).collect(Collectors.toList());
-                    this.subjects = projectRecruitment.getSubjects().stream().map(ProjectRecruitmentSubjectResDto::new).collect(Collectors.toList());
-                    this.comments = projectRecruitment.getComments().stream().map(RecruitmentCommentResDto::new).collect(Collectors.toList());
+                    this.subject = projectRecruitment.getSubject().print();
                     this.createDate = projectRecruitment.getCreateDate();
                     this.modifiedDate = projectRecruitment.getModifiedDate();
-                    this.memberInfoDto =MemberInfoDto.toDto(projectRecruitment.getMember());
+                    this.member =MemberInfoDto.toDto(projectRecruitment.getMember());
                     this.isWriter = checkWriter;
                     this.checkLike = checkLike;
                     this.checkWish = checkWish;
