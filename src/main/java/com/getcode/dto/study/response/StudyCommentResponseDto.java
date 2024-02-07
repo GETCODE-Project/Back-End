@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class StudyCommentResponseDto {
+    private Long id;
     private String content;
     private LocalDateTime createDate;
     private LocalDateTime modifiedDate;
@@ -21,6 +22,7 @@ public class StudyCommentResponseDto {
     private String nickname;
     public static StudyCommentResponseDto toDto(StudyComment studyComment) {
         return new StudyCommentResponseDto (
+                studyComment.getId(),
                 studyComment.getContent(),
                 studyComment.getCreateDate(),
                 studyComment.getModifiedDate(),

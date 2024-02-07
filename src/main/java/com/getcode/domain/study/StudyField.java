@@ -4,6 +4,8 @@ import com.getcode.domain.common.Field;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
@@ -22,11 +24,4 @@ public class StudyField {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_id")
     private Study study;
-
-    /*연관관계 메서드*/
-    public void foreignKey(Study study){
-        this.study = study;
-        study.getFields().add(this);
-    }
-
 }
