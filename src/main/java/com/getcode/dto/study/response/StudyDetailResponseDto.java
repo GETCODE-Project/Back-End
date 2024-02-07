@@ -1,22 +1,16 @@
 package com.getcode.dto.study.response;
 
 import com.getcode.domain.study.Study;
-import com.getcode.dto.member.MemberInfoDto;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Getter
+@Data
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StudyInfoResponseDto {
+public class StudyDetailResponseDto {
     private Long id;
     private String title;
     private String content;
@@ -30,12 +24,14 @@ public class StudyInfoResponseDto {
     private LocalDateTime createDate;
     private LocalDateTime modifiedDate;
     private String memberNickName;
+    private List<StudyCommentResponseDto> comments;
     private List<String> studyFields;
     private boolean checkLike;
     private boolean checkWish;
+    private boolean isWriter;
 
-    public static StudyInfoResponseDto toDto(Study study, boolean checkLike, boolean checkWish) {
-        return new StudyInfoResponseDto(
+    public static StudyDetailResponseDto toDto(Study study, boolean checkLike, boolean checkWish,boolean isWriter) {
+        return new StudyDetailResponseDto(
                 study.getId(),
                 study.getTitle(),
                 study.getContent().substring(0,15),
@@ -49,9 +45,12 @@ public class StudyInfoResponseDto {
                 study.getCreateDate(),
                 study.getModifiedDate(),
                 study.getMember().getNickname(),
+                study.getComments().stream()
+                .map(StudyCommentResponseDto::toDto).toList(),
                 study.getFields().stream().map(sf -> sf.getField().print()).toList(),
                 checkLike,
-                checkWish
+                checkWish,
+                isWriter
         );
     }
 }

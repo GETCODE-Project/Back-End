@@ -84,5 +84,7 @@ public class Study extends BaseTimeEntity {
         this.guGun = req.getGuGun();
         this.online = req.isOnline();
         this.recruitment = req.isRecruitment();
+        List<StudyField> oldFields = this.fields;
+        oldFields.clear();
     }
 }

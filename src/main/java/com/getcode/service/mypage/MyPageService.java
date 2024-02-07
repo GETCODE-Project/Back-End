@@ -147,7 +147,7 @@ public class MyPageService {
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
         List<Study> studies = member.getStudy();
         List<StudyInfoResponseDto> res = new ArrayList<>();
-        studies.forEach(study -> res.add(StudyInfoResponseDto.toDto(study)));
+        studies.forEach(study -> res.add(StudyInfoResponseDto.toDto(study,false,false)));
         return res;
     }
 

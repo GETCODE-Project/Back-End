@@ -1,6 +1,7 @@
 package com.getcode.controller.study;
 
 import com.getcode.dto.study.response.StudyCommentResponseDto;
+import com.getcode.dto.study.response.StudyDetailResponseDto;
 import com.getcode.dto.study.response.StudyInfoResponseDto;
 import com.getcode.dto.study.request.StudyCommentRequestDto;
 import com.getcode.dto.study.request.StudyRequestDto;
@@ -43,7 +44,7 @@ public class StudyController {
             @ApiResponse(responseCode = "200", description = "OK")
     })
     @GetMapping("/study/{id}")
-    public ResponseEntity<StudyInfoResponseDto> findStudy(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<StudyDetailResponseDto> findStudy(@PathVariable(name = "id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(studyService.findStudy(id));
     }
 
@@ -113,8 +114,8 @@ public class StudyController {
             @ApiResponse(responseCode = "200", description = "OK")
     })
     @PostMapping("/study-like/{id}")
-    public ResponseEntity<StudyInfoResponseDto> addComment(@PathVariable(name = "id") Long id){
-        return ResponseEntity.status(HttpStatus.OK).body(studyService.likeStudy(id));
+    public ResponseEntity<String> addComment(@PathVariable(name = "id") Long id){
+        return ResponseEntity.status(HttpStatus.OK).body("좋아요 완료");
     }
 
     @Operation(summary = "스터디 모집글 수정", description = "PathVariable, 스터디 변경내용을 입력받아 스터디 수정")
