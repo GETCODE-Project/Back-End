@@ -44,7 +44,7 @@ public class CommunityController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK")
     })
-    @GetMapping("/search/studies")
+    @GetMapping("/search/communities")
     public ResponseEntity<List<CommunityInfoResponseDto>> findAllStudy(
             @Parameter(description = "검색어")
             @RequestParam(value = "keyword", required = false) String keyword,
@@ -114,7 +114,7 @@ public class CommunityController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK")
     })
-    @PostMapping("/community-like/{id}")
+    @PostMapping("/community-wish/{id}")
     public ResponseEntity<String> wishCommunity(@PathVariable(name = "id") Long id){
         communityService.wishCommunity(id);
         return ResponseEntity.status(HttpStatus.OK).body("");

@@ -104,7 +104,7 @@ public class MemberController {
     //닉네임 수정
     @Operation(summary = "회원 정보 수정-닉네임", description = "Acceess Token 인증 후, 사용자 개인정보 수정")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "202", description = "Accepted")
+            @ApiResponse(responseCode = "200", description = "Accepted")
     })
     @PatchMapping("/update-nickname")
     public ResponseEntity<String> updateNickname(@RequestParam(name = "nickname")String nickname) {
@@ -114,7 +114,7 @@ public class MemberController {
 
     @Operation(summary = "회원 정보 수정-프로필 이미지", description = "Acceess Token 인증 후, 사용자 개인정보 수정")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "202", description = "Accepted")
+            @ApiResponse(responseCode = "200", description = "Accepted")
     })
     @PatchMapping("/update-profileImg")
     public ResponseEntity<String> updateImageUrl(@RequestPart(name = "fileType") String fileType,
@@ -122,11 +122,5 @@ public class MemberController {
         S3FileDto file = s3Service.uploadFiles(fileType, multipartFiles).get(0);
         S3FileUpdateDto fileUrl = new S3FileUpdateDto(file.getUploadFileUrl());
         return ResponseEntity.status(HttpStatus.OK).body(memberService.addProfile(fileUrl).getImageUrl());
-    }
-
-    @DeleteMapping("/withdraw")
-    public ResponseEntity<?> withdrawMember(){
-
-        return ResponseEntity.ok().body("회원탈퇴 성공");
     }
 }
