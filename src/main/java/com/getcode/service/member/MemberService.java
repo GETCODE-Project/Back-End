@@ -169,6 +169,17 @@ public class MemberService {
     }
 
     @Transactional
+    public void changeNickname(String nickname){
+        Member member = memberRepository.findByEmail(getCurrentMemberEmail())
+                .orElseThrow(NotFoundMemberException::new);
+
+        if (memberRepository.findByNickname(nickname).isPresent()) {
+            throw new DuplicateNicknameException();
+        }
+        member.updateNickname(nickname);
+    }
+
+    @Transactional
     public void deleteMember() {
         Member member = memberRepository.findByEmail(getCurrentMemberEmail())
                 .orElseThrow(NotFoundMemberException::new);

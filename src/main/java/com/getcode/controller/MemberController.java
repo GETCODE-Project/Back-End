@@ -102,14 +102,23 @@ public class MemberController {
     }
 
     //닉네임 수정
+    @Operation(summary = "회원 정보 수정", description = "Acceess Token 인증 후, 사용자 개인정보 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "202", description = "Accepted")
+    })
+    @PatchMapping("/update-nickname")
+    public ResponseEntity<String> updateNickname(@RequestParam(name = "nickname")String nickname) {
+        memberService.changeNickname(nickname);
+        return ResponseEntity.ok("닉네임 변경 성공");
+    }
 
     @Operation(summary = "회원 정보 수정", description = "Acceess Token 인증 후, 사용자 개인정보 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "202", description = "Accepted")
     })
-    @PostMapping("/update-profile")
+    @PatchMapping("/update-profileImg")
     public ResponseEntity<String> updateImageUrl(@RequestPart(name = "fileType") String fileType,
-                                                          @RequestPart(name = "files") List<MultipartFile> multipartFiles) {
+                                                 @RequestPart(name = "files") List<MultipartFile> multipartFiles) {
         S3FileDto file = s3Service.uploadFiles(fileType, multipartFiles).get(0);
         S3FileUpdateDto fileUrl = new S3FileUpdateDto(file.getUploadFileUrl());
         return ResponseEntity.status(HttpStatus.OK).body(memberService.addProfile(fileUrl).getImageUrl());
