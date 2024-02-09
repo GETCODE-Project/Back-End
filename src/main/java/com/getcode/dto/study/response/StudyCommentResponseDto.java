@@ -20,14 +20,16 @@ public class StudyCommentResponseDto {
     private LocalDateTime modifiedDate;
     private String email;
     private String nickname;
-    public static StudyCommentResponseDto toDto(StudyComment studyComment) {
+    private boolean isWriter;
+    public static StudyCommentResponseDto toDto(StudyComment studyComment, boolean isWriter) {
         return new StudyCommentResponseDto (
                 studyComment.getId(),
                 studyComment.getContent(),
                 studyComment.getCreateDate(),
                 studyComment.getModifiedDate(),
                 studyComment.getMember().getEmail(),
-                studyComment.getMember().getNickname()
+                studyComment.getMember().getNickname(),
+                isWriter
         );
     }
 }

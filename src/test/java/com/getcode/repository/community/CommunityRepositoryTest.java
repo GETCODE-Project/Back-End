@@ -3,7 +3,7 @@ package com.getcode.repository.community;
 import static org.assertj.core.api.Assertions.*;
 
 import com.getcode.domain.community.Community;
-import com.getcode.domain.community.CommunityCategory;
+import com.getcode.domain.common.CommunityCategory;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;

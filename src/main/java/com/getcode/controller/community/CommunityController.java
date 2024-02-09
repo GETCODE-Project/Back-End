@@ -3,10 +3,13 @@ package com.getcode.controller.community;
 import com.getcode.dto.community.requset.CommunityCommentRequestDto;
 import com.getcode.dto.community.requset.CommunityRequestDto;
 import com.getcode.dto.community.response.CommunityCommentResponseDto;
-import com.getcode.dto.community.response.CommunityResponseDto;
+import com.getcode.dto.community.response.CommunityDetailResponseDto;
+import com.getcode.dto.community.response.CommunityInfoResponseDto;
 import com.getcode.dto.community.response.CreatedCommunityResponseDto;
+import com.getcode.dto.study.response.StudyInfoResponseDto;
 import com.getcode.service.community.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,13 +38,35 @@ public class CommunityController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(communityService.createCommunity(req));
     }
+    @Operation(summary = "모든 스터디 모집글 전체 조회", description = "pageNumber 필수 => 10개씩 반환"
+            + "criteria => default: modifiedDate(최신순) / views(조회수), count(좋아요))"
+            + "나머지는 필수는 아니고 있으면 필터링해서 찾는다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @GetMapping("/search/studies")
+    public ResponseEntity<List<CommunityInfoResponseDto>> findAllStudy(
+            @Parameter(description = "검색어")
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @Parameter(description = "커뮤니티 유형")
+            @RequestParam(value = "", required = false) String category,
+            @Parameter(description = "정렬 기준: latestOrder, pastOrder, likeCnt중 하나여야 합니다.")
+            @RequestParam(defaultValue = "latestOrder", required = false) String sort,
+            @Parameter(description = "페이지 번호")
+            @RequestParam(value = "page") int page,
+            @Parameter(description = "한 페이지의 아이템 갯수")
+            @RequestParam(value = "size") int size) {
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(communityService.searchCommunity(keyword,category,sort,page,size));
+    }
 
     @Operation(summary = "로그인한 사용자가 작성한 게시글 목록 조회", description = "특정 사용자가 작성한 게시물 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK")
     })
     @GetMapping("/communities")
-    public ResponseEntity<List<CommunityResponseDto>> findAllCommunityByMember() {
+    public ResponseEntity<List<CommunityInfoResponseDto>> findAllCommunityByMember() {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(communityService.findAllCommunityByMember());
     }
@@ -51,9 +76,10 @@ public class CommunityController {
             @ApiResponse(responseCode = "200", description = "OK")
     })
     @PutMapping("/community/{id}")
-    public ResponseEntity<CommunityResponseDto> editCommunity(@PathVariable(name = "id") Long id,
-                                                              @RequestBody CommunityRequestDto req) {
-        return ResponseEntity.status(HttpStatus.OK).body(communityService.editCommunity(id, req));
+    public ResponseEntity<String> editCommunity(@PathVariable(name = "id") Long id,
+                                                                    @RequestBody CommunityRequestDto req) {
+        communityService.editCommunity(id,req);
+        return ResponseEntity.status(HttpStatus.OK).body("게시글 수정 성공");
     }
 
     @Operation(summary = "특정 게시글 삭제", description = "PathVariable 입력 후, 작성한 게시글 삭제")
@@ -71,17 +97,27 @@ public class CommunityController {
             @ApiResponse(responseCode = "200", description = "OK")
     })
     @GetMapping("/community/{id}")
-    public ResponseEntity<CommunityResponseDto> findCommunity(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<CommunityDetailResponseDto> findCommunity(@PathVariable(name = "id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(communityService.findCommunity(id));
     }
 
-    @Operation(summary = "게시글 좋아요", description = "좋아요를 하면 전체 게시글 정보 리턴")
+    @Operation(description = "게시글 좋아요")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK")
     })
     @PostMapping("/community-like/{id}")
-    public ResponseEntity<CommunityResponseDto> likeCommunity(@PathVariable(name = "id") Long id){
+    public ResponseEntity<String> likeCommunity(@PathVariable(name = "id") Long id){
         return ResponseEntity.status(HttpStatus.OK).body(communityService.likeCommunity(id));
+    }
+
+    @Operation(description = "게시글 찜하기")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK")
+    })
+    @PostMapping("/community-like/{id}")
+    public ResponseEntity<String> wishCommunity(@PathVariable(name = "id") Long id){
+        communityService.wishCommunity(id);
+        return ResponseEntity.status(HttpStatus.OK).body("");
     }
 
     @Operation(summary = "커뮤니티 게시글에 댓글", description = "게시글 Id를 입력받아 해당 게시글을 찾은 후 댓글")
@@ -89,9 +125,10 @@ public class CommunityController {
             @ApiResponse(responseCode = "201", description = "CREATED")
     })
     @PostMapping("/community/comment/{id}")
-    public ResponseEntity<CommunityCommentResponseDto> addComment(@PathVariable(name = "id") Long id,
-                                                                  @RequestBody CommunityCommentRequestDto req) {
-        return ResponseEntity.status(HttpStatus.OK).body(communityService.addComment(req, id));
+    public ResponseEntity<String> addComment(@PathVariable(name = "id") Long id,
+                                             @RequestBody CommunityCommentRequestDto req) {
+        communityService.addComment(req, id);
+        return ResponseEntity.status(HttpStatus.OK).body("댓글 등록 성공");
     }
 
     @Operation(summary = "커뮤니티 게시글 댓글 수정", description = "댓글 Id를 입력받아 댓글 수정")
@@ -99,9 +136,10 @@ public class CommunityController {
             @ApiResponse(responseCode = "200", description = "OK")
     })
     @PutMapping("/community/comment/{id}")
-    public ResponseEntity<CommunityCommentResponseDto> editComment(@PathVariable(name = "id") Long id,
-                                                               @RequestBody CommunityCommentRequestDto req) {
-        return ResponseEntity.status(HttpStatus.OK).body(communityService.editComment(req, id));
+    public ResponseEntity<String> editComment(@PathVariable(name = "id") Long id,
+                                                                   @RequestBody CommunityCommentRequestDto req) {
+        communityService.editComment(req, id);
+        return ResponseEntity.status(HttpStatus.OK).body("댓글 수정 성공");
     }
 
     @Operation(summary = "커뮤니티 게시글 댓글 삭제", description = "댓긋 Id를 입력받아 댓글 삭제")
@@ -109,8 +147,9 @@ public class CommunityController {
             @ApiResponse(responseCode = "200", description = "OK")
     })
     @DeleteMapping("/community/comment/{id}")
-    public void deleteComment(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<String> deleteComment(@PathVariable(name = "id") Long id) {
         communityService.deleteComment(id);
+        return ResponseEntity.status(HttpStatus.OK).body("댓글 삭제 성공");
     }
 
 }

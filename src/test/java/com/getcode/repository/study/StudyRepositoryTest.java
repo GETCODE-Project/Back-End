@@ -89,7 +89,7 @@ class StudyRepositoryTest {
 
         StudyField ss3 = StudyField.builder()
                 .study(study2)
-                .field(Field.GO)
+                .field(Field.ALGORITHM)
                 .build();
         StudyField s4 = StudyField.builder()
                 .study(study4)

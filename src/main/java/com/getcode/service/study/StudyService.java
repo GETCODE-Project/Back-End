@@ -64,27 +64,31 @@ public class StudyService {
     // 특정 게시글 조회
     @Transactional
     public StudyDetailResponseDto findStudy(Long id) {
-        String currentMemberEmail = getCurrentMemberEmail();
-        Member member = memberRepository.findByEmail(currentMemberEmail)
-                .orElseThrow(NotFoundMemberException::new);
         Study study = studyRepository.findById(id)
                 .orElseThrow(NotFoundStudyException::new);
+        String currentMemberEmail = getCurrentMemberEmail();
+        if(!currentMemberEmail.equals("false")) {
+            study.increaseViews();
+            List<StudyCommentResponseDto> dtos = study.getComments().stream()
+                    .map(sc -> StudyCommentResponseDto.toDto(sc, false)).toList();
+            return StudyDetailResponseDto.toDto(study,dtos,false,false,false);
+        }
 
+        Member member = memberRepository.findByEmail(currentMemberEmail)
+                .orElseThrow(NotFoundMemberException::new);
         Long memberId = member.getId();
         Long studyId = study.getId();
+        List<StudyCommentResponseDto> dtos = study.getComments().stream()
+                .map(sc -> StudyCommentResponseDto.toDto(sc, sc.getMember().equals(member)))
+                .toList();
         boolean likeCond = studyLikeRepository
                 .findByMemberIdAndStudyId(memberId, studyId).isPresent();
         boolean wishCond = wishStudyRepository
                 .findByMemberIdAndStudyId(memberId, studyId).isPresent();
+        boolean isWriter = study.getMember().equals(member);
 
-        boolean isWriter = false;
-        if (!Boolean.parseBoolean(currentMemberEmail)) {
-            if (study.getMember().equals(member)) {
-                isWriter = true;
-            }
-        }
         study.increaseViews();
-        return StudyDetailResponseDto.toDto(study,likeCond,wishCond,isWriter);
+        return StudyDetailResponseDto.toDto(study, dtos, likeCond, wishCond, isWriter);
     }
 
     // 스터디 수정
@@ -115,8 +119,8 @@ public class StudyService {
             studyFieldRepository.save(StudyFieldDto.toEntity(study, field));
         }
 
-        // 수정 요망
-        return StudyInfoResponseDto.toDto(studyRepository.save(study),likeCond,wishCond);
+        return StudyInfoResponseDto
+                .toDto(studyRepository.save(study),likeCond,wishCond);
     }
 
     // 스터디 삭제
@@ -140,7 +144,7 @@ public class StudyService {
         Study study = studyRepository.findById(id).orElseThrow(NotFoundStudyException::new);
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
         StudyComment res = studyCommentRepository.save(studyCommentRequestDto.toEntity(study, member));
-        return StudyCommentResponseDto.toDto(res);
+        return StudyCommentResponseDto.toDto(res,true);
     }
 
     // 댓글 수정
@@ -149,7 +153,7 @@ public class StudyService {
         StudyComment studyComment = studyCommentRepository.findById(id)
                 .orElseThrow(NotFoundCommentException::new);
         studyComment.editComment(studyCommentRequestDto.getContent());
-        return StudyCommentResponseDto.toDto(studyComment);
+        return StudyCommentResponseDto.toDto(studyComment,true);
     }
 
     // 댓글 삭제
@@ -192,10 +196,6 @@ public class StudyService {
 
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
         Study study = studyRepository.findById(id).orElseThrow(NotFoundStudyException::new);
-
-        if (study.getMember().getId().equals(member.getId())) {
-            throw new NotWishException();
-        }
 
         Optional<WishStudy> wish = wishStudyRepository.findByMemberIdAndStudyId(member.getId(), id);
 
