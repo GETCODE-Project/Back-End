@@ -1,7 +1,7 @@
 package com.getcode.dto.community.requset;
 
 import com.getcode.domain.community.Community;
-import com.getcode.domain.community.CommunityCategory;
+import com.getcode.domain.common.CommunityCategory;
 import com.getcode.domain.member.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

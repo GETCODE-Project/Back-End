@@ -1,7 +1,7 @@
 package com.getcode.dto.community.response;
 
 import com.getcode.domain.community.Community;
-import com.getcode.domain.community.CommunityCategory;
+import com.getcode.domain.common.CommunityCategory;
 import com.getcode.dto.member.MemberInfoDto;
 
 import java.time.format.DateTimeFormatter;

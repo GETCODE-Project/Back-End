@@ -5,6 +5,7 @@ import com.getcode.domain.community.Community;
 import com.getcode.domain.community.CommunityComment;
 import com.getcode.domain.community.CommunityLike;
 
+import com.getcode.domain.community.WishCommunity;
 import com.getcode.domain.project.Project;
 import com.getcode.domain.project.ProjectComment;
 import com.getcode.domain.project.ProjectLike;
@@ -89,6 +90,10 @@ public class Member extends BaseTimeEntity {
     @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<CommunityLike> communityLikes = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<WishCommunity> communityWishes = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)

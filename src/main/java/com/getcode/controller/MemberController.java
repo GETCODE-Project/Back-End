@@ -101,6 +101,8 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.userInfo());
     }
 
+    //닉네임 수정
+
     @Operation(summary = "회원 정보 수정", description = "Acceess Token 인증 후, 사용자 개인정보 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "202", description = "Accepted")

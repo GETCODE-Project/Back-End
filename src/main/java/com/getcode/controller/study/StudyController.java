@@ -115,6 +115,7 @@ public class StudyController {
     })
     @PostMapping("/study-like/{id}")
     public ResponseEntity<String> addComment(@PathVariable(name = "id") Long id){
+        studyService.likeStudy(id);
         return ResponseEntity.status(HttpStatus.OK).body("좋아요 완료");
     }
 

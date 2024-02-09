@@ -30,7 +30,8 @@ public class StudyDetailResponseDto {
     private boolean checkWish;
     private boolean isWriter;
 
-    public static StudyDetailResponseDto toDto(Study study, boolean checkLike, boolean checkWish,boolean isWriter) {
+    public static StudyDetailResponseDto toDto(Study study, List<StudyCommentResponseDto> studyCommentResponseDtos,
+                                               boolean checkLike, boolean checkWish,boolean isWriter) {
         return new StudyDetailResponseDto(
                 study.getId(),
                 study.getTitle(),
@@ -45,8 +46,7 @@ public class StudyDetailResponseDto {
                 study.getCreateDate(),
                 study.getModifiedDate(),
                 study.getMember().getNickname(),
-                study.getComments().stream()
-                .map(StudyCommentResponseDto::toDto).toList(),
+                studyCommentResponseDtos,
                 study.getFields().stream().map(sf -> sf.getField().print()).toList(),
                 checkLike,
                 checkWish,

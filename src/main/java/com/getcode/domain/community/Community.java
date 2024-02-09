@@ -1,6 +1,7 @@
 package com.getcode.domain.community;
 
 import com.getcode.domain.common.BaseTimeEntity;
+import com.getcode.domain.common.CommunityCategory;
 import com.getcode.domain.member.Member;
 import com.getcode.dto.community.requset.CommunityRequestDto;
 import jakarta.persistence.*;
@@ -45,18 +46,16 @@ public class Community extends BaseTimeEntity {
     private Member member;
 
     @Builder.Default
-    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommunityComment> comments = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommunityLike> likes = new ArrayList<>();
 
-    //연관관계 메서드//
-    public void foreignKey(Member member){
-        this.member = member;
-        member.getCommunity().add(this);
-    }
+    @Builder.Default
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WishCommunity> wishes = new ArrayList<>();
 
     public void increaseViews() {
         this.views +=1;
@@ -74,6 +73,5 @@ public class Community extends BaseTimeEntity {
         this.title = req.getTitle();
         this.content = req.getContent();
     }
-
 
 }
