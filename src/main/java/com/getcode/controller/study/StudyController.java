@@ -57,21 +57,21 @@ public class StudyController {
     @GetMapping("/search/studies")
     public ResponseEntity<List<StudyInfoResponseDto>> findAllStudy(
             @Parameter(description = "검색어")
-            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "keyword") String keyword,
             @Parameter(description = "지역-시,도")
-            @RequestParam(value = "siDo", required = false) String siDo,
+            @RequestParam(value = "siDo") String siDo,
             @Parameter(description = "지역-구,군")
-            @RequestParam(value = "guGun", required = false) String guGun,
+            @RequestParam(value = "guGun") String guGun,
             @Parameter(description = "모집여부(모집중 true, 모집 완료 false)")
-            @RequestParam(value = "recruitment", required = false) Boolean recruitment,
+            @RequestParam(value = "recruitment") Boolean recruitment,
             @Parameter(description = "스터디 유형(온라인 스터디 true, 오프라인 스터디 false)")
-            @RequestParam(value = "online", required = false) Boolean online,
+            @RequestParam(value = "online") Boolean online,
             @Parameter(description = "연도")
-            @RequestParam(value = "year", required = false) Integer year,
+            @RequestParam(value = "year") Integer year,
             @Parameter(description = "스터디 분야")
-            @RequestParam(value = "field", required = false) List<String> fields,
+            @RequestParam(value = "field") List<String> fields,
             @Parameter(description = "정렬 기준: latestOrder, pastOrder, likeCnt중 하나여야 합니다.")
-            @RequestParam(defaultValue = "latestOrder", required = false) String sort,
+            @RequestParam(defaultValue = "latestOrder") String sort,
             @Parameter(description = "페이지 번호")
             @RequestParam(value = "page") int page,
             @Parameter(description = "한 페이지의 아이템 갯수")
