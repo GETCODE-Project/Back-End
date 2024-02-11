@@ -213,9 +213,12 @@ public class StudyService {
      * */
     // 스터디 검색
     @Transactional(readOnly = true)
-    public List<StudyInfoResponseDto> searchStudy(String keyword, String siDo, String guGun, Boolean recruitment,
-                                                  Boolean online, Integer year, List<String> fields,
+    public List<StudyInfoResponseDto> searchStudy(String keyword, String siDo, String guGun, String recruitmentString,
+                                                  String onlineString, Integer year, List<String> fields,
                                                   int page, int size, String sort) {
+        boolean recruitment = recruitmentString.equals("O");
+        boolean online = onlineString.equals("O");
+
         Specification<Study> spec = (root, query, criteriaBuilder) -> null;
 
         if (keyword != null) {
@@ -230,11 +233,11 @@ public class StudyService {
             spec = spec.and(StudySpecification.equalsGuGun(guGun));
         }
 
-        if (recruitment != null) {
+        if (!recruitmentString.equals("N")) {
             spec = spec.and(StudySpecification.equalsRecruitment(recruitment));
         }
 
-        if (online != null) {
+        if (!onlineString.equals("N")) {
             spec = spec.and(StudySpecification.equalsOnline(online));
         }
 
