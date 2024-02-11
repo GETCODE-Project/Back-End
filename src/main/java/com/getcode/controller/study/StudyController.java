@@ -62,10 +62,12 @@ public class StudyController {
             @RequestParam(value = "siDo") String siDo,
             @Parameter(description = "지역-구,군")
             @RequestParam(value = "guGun") String guGun,
-            @Parameter(description = "모집여부(모집중 true, 모집 완료 false)")
-            @RequestParam(value = "recruitment") Boolean recruitment,
-            @Parameter(description = "스터디 유형(온라인 스터디 true, 오프라인 스터디 false)")
-            @RequestParam(value = "online") Boolean online,
+            @Parameter(description = "모집여부(모집중 O, 모집 완료 X, 상관없음 N)")
+            @RequestParam(value = "recruitment") String recruitment,
+            @Parameter(description = "스터디 유형(온라인 스터디 O," +
+                    "오프라인 스터디 X," +
+                    "상관없음 N)")
+            @RequestParam(value = "online") String online,
             @Parameter(description = "연도")
             @RequestParam(value = "year") Integer year,
             @Parameter(description = "스터디 분야")
