@@ -257,7 +257,13 @@ public class StudyService {
 
         Page<Study> studies = studyRepository
                 .findAll(spec, PageRequest.of(page-1, size, sortCriteria));
+
+
         String currentMemberEmail = getCurrentMemberEmail();
+        if (currentMemberEmail.equals("false")) {
+            return studies.map(s -> StudyInfoResponseDto.toDto(s,false, false))
+                    .toList();
+        }
         Member member = memberRepository.findByEmail(currentMemberEmail)
                 .orElseThrow(NotFoundMemberException::new);
         Long memberId = member.getId();

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "게시판 관련 API 명세")
+@Tag(name = "커뮤니티 게시판 관련 API 명세")
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -116,8 +116,7 @@ public class CommunityController {
     })
     @PostMapping("/community-wish/{id}")
     public ResponseEntity<String> wishCommunity(@PathVariable(name = "id") Long id){
-        communityService.wishCommunity(id);
-        return ResponseEntity.status(HttpStatus.OK).body("");
+        return ResponseEntity.status(HttpStatus.OK).body(communityService.wishCommunity(id));
     }
 
     @Operation(summary = "커뮤니티 게시글에 댓글", description = "게시글 Id를 입력받아 해당 게시글을 찾은 후 댓글")
