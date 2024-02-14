@@ -7,9 +7,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum CommunityCategory {
 
-    QNA("질문"), FREE("자유게시판"), COUNSEL("고민상담");
+    QNA("QnA"), FREE("자유게시판"), COUNSEL("고민상담");
 
     private final String category;
+
+    public static CommunityCategory fromString(String reqValue) {
+        for (CommunityCategory category : CommunityCategory.values()) {
+            if (category.category.equalsIgnoreCase(reqValue)) {
+                return category;
+            }
+        }
+        throw new IllegalArgumentException();
+    }
 
     public String print(){
         return category;

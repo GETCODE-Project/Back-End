@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProjectRecruitmentDetailResDto {
-
+    private Long projectRecruitmentId;
     private String title;
     private String content;
     private String siDo;

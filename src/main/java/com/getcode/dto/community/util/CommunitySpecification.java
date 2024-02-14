@@ -9,7 +9,12 @@ import org.springframework.data.jpa.domain.Specification;
 public class CommunitySpecification {
 
     public static Specification<Community> equalsCategory(String category) {
-        return (root, query, builder) -> builder.equal(builder.function("category", CommunityCategory.class, root.get("category")), category);
+        return (root, query, builder) -> {
+
+            CommunityCategory category1 = CommunityCategory.fromString(category);
+
+            return builder.equal(root.get("category"), category1);
+        };
     }
 
     public static Specification<Community> equalsKeyword(String keyword) {
