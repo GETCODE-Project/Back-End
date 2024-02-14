@@ -25,12 +25,13 @@ public class ProjectDetailResponseDto {
     private int likeCnt;
     private List<ProjectStackResponseDto> techStacks;
     private String subject;
-    //private List<ProjectImageUrlResponseDto> imageUrls;
+    private List<ProjectImageUrlResponseDto> imageUrls;
     private MemberInfoDto member;
     private boolean isWriter;
     private boolean checkWish;
     private boolean checkLike;
     private LocalDateTime createdDate, modifiedDate;
+    private String introduction;
 
 
     public ProjectDetailResponseDto(Project project, Boolean checkLike, Boolean checkWish, Boolean checkWriter){
@@ -46,11 +47,11 @@ public class ProjectDetailResponseDto {
                                                     .collect(Collectors.toList());
 
         this.subject  = project.getSubject().print();
-        /*
+
         this.imageUrls  = project.getProjectImages().stream()
                                                     .map(ProjectImageUrlResponseDto::new)
                                                     .collect(Collectors.toList());
-        */
+
         this.member =MemberInfoDto.toDto(project.getMember());
 
         this.checkLike = checkLike;
@@ -58,7 +59,7 @@ public class ProjectDetailResponseDto {
         this.isWriter = checkWriter;
         this.createdDate = project.getCreateDate();
         this.modifiedDate = project.getModifiedDate();
-
+        this.introduction = project.getIntroduction();
 
     }
 

@@ -11,4 +11,5 @@ public interface StudyLikeRepository extends JpaRepository<StudyLike, Long> {
     @Query("SELECT sl FROM StudyLike sl WHERE sl.member.id = :memberId AND sl.study.id = :studyId")
     Optional<StudyLike> findByMemberIdAndStudyId(@Param("memberId") Long memberId, @Param("studyId") Long studyId);
 
+    Boolean existsByStudyIdAndMemberId(Long studyId, Long memberId);
 }

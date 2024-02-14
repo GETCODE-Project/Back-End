@@ -7,4 +7,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface WishStudyRepository extends JpaRepository<WishStudy, Long> {
     Optional<WishStudy> findByMemberIdAndStudyId(@Param("memberId") Long memberId, @Param("studyId") Long studyId);
+
+    Boolean existsByStudyIdAndMemberId(Long studyId, Long memberId);
 }

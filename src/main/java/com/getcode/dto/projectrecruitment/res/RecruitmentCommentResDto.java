@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @AllArgsConstructor
@@ -18,12 +19,15 @@ public class RecruitmentCommentResDto {
     private String content;
     private String memberNickName;
     private Boolean isWriter;
-    private String modifiedDate;
+    private LocalDateTime modifiedDate;
+    private LocalDateTime createDate;
 
     public RecruitmentCommentResDto(ProjectRecruitmentComment projectRecruitmentComment){
         this.id = projectRecruitmentComment.getId();
         this.content = projectRecruitmentComment.getContent();
         this.memberNickName = projectRecruitmentComment.getMember().getNickname();
+        this.modifiedDate = projectRecruitmentComment.getModifiedDate();
+        this.createDate = projectRecruitmentComment.getCreateDate();
         if(projectRecruitmentComment.getMember().getEmail().equals(SecurityUtil.getCurrentMemberEmail())){
             isWriter = true;
         }else {

@@ -1,6 +1,7 @@
 package com.getcode.controller.mypage;
 
 import com.getcode.config.security.SecurityUtil;
+import com.getcode.dto.community.response.CommunityInfoResponseDto;
 import com.getcode.dto.project.res.ProjectInfoResponseDto;
 import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentInfoResDto;
 import com.getcode.dto.study.response.StudyInfoResponseDto;
@@ -29,7 +30,7 @@ public class MyPageController {
     private final MyPageService myPageService;
 
     @Operation(summary = "본인이 작성한 프로젝트 조회")
-    @GetMapping("/my/project")
+    @GetMapping("/project")
     ResponseEntity<?> getMyProject(@Parameter(description = "페이지 수") @RequestParam int page,
                                    @Parameter(description = "객체 수") @RequestParam int size){
 
@@ -42,7 +43,7 @@ public class MyPageController {
 
 
     @Operation(summary = "본인이 찜한 프로젝트 조회")
-    @GetMapping("/my/project/wish")
+    @GetMapping("/project/wish")
     ResponseEntity<?> getMyWishProject(@Parameter(description = "페이지 수") @RequestParam int page,
                                        @Parameter(description = "객체 수") @RequestParam int size){
 
@@ -54,7 +55,7 @@ public class MyPageController {
     }
 
     @Operation(summary = "본인이 작성한 프로젝트 모집 조회")
-    @GetMapping("/my/recruit")
+    @GetMapping("/recruit")
     ResponseEntity<?> getMyRecruitment(@Parameter(description = "페이지 수") @RequestParam int page,
                                        @Parameter(description = "객체 수") @RequestParam int size){
 
@@ -67,7 +68,7 @@ public class MyPageController {
 
 
     @Operation(summary = "본인이 찜한 프로젝트 모집 조회")
-    @GetMapping("/my/recruit/wish")
+    @GetMapping("/recruit/wish")
     ResponseEntity<?> getMyWishRecruitment(@Parameter(description = "페이지 수") @RequestParam int page,
                                        @Parameter(description = "객체 수") @RequestParam int size){
 
@@ -78,14 +79,53 @@ public class MyPageController {
         return ResponseEntity.status(HttpStatus.OK).body(myWishRecruitment);
     }
 
-    @Operation(summary = "로그인한 사용자가 작성한 스터디 모집글 전체 조회", description = "특정 사용자가 작성한 게시물 조회")
+    @Operation(summary = "본인이 작성한 스터디 모집글 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK")
     })
-    @GetMapping("/studies")
-    public ResponseEntity<List<StudyInfoResponseDto>> findAllStudyByMember() {
-        return ResponseEntity.status(HttpStatus.OK).body(myPageService.findAllStudyByMember());
+    @GetMapping("/study")
+    public ResponseEntity<List<StudyInfoResponseDto>> findAllStudyByMember(@Parameter(description = "페이지 수") @RequestParam int page,
+                                                                           @Parameter(description = "객체 수") @RequestParam int size) {
+        return ResponseEntity.status(HttpStatus.OK).body(myPageService.findAllStudyByMember(page, size));
     }
+
+
+    @Operation(summary = "본인이 찜한 스터디 모집글 조회")
+    @GetMapping("/study/wish")
+    ResponseEntity<?> getMyWishStudy(@Parameter(description = "페이지 수") @RequestParam int page,
+                                     @Parameter(description = "객체 수") @RequestParam int size){
+        String memberEmail = SecurityUtil.getCurrentMemberEmail();
+        List<StudyInfoResponseDto> myWishStudy = myPageService.getMyWishStudy(memberEmail, size, page);
+        return ResponseEntity.status(HttpStatus.OK).body(myWishStudy);
+    }
+
+
+    @Operation(summary = "본인이 작성한 커뮤니티 글 조회")
+    @GetMapping("/community")
+    ResponseEntity<?> getMyCommunity(@Parameter(description = "페이지 수") @RequestParam int page,
+                                   @Parameter(description = "객체 수") @RequestParam int size){
+
+        String memberEmail = SecurityUtil.getCurrentMemberEmail();
+
+        List<CommunityInfoResponseDto> myCommunity = myPageService.getMyCommunity(memberEmail, size, page);
+
+        return ResponseEntity.status(HttpStatus.OK).body(myCommunity);
+    }
+
+
+    @Operation(summary = "본인이 찜한 프로젝트 조회")
+    @GetMapping("/community/wish")
+    ResponseEntity<?> getMyWishCommunity(@Parameter(description = "페이지 수") @RequestParam int page,
+                                       @Parameter(description = "객체 수") @RequestParam int size){
+
+        String memberEmail = SecurityUtil.getCurrentMemberEmail();
+
+        List<CommunityInfoResponseDto> myWishCommunity = myPageService.getMyWishCommunity(memberEmail, size, page);
+
+        return ResponseEntity.status(HttpStatus.OK).body(myWishCommunity);
+    }
+
+
 
 
 }

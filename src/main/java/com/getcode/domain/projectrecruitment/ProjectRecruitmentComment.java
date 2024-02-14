@@ -1,6 +1,7 @@
 package com.getcode.domain.projectrecruitment;
 
 
+import com.getcode.domain.common.BaseTimeEntity;
 import com.getcode.domain.member.Member;
 import com.getcode.dto.projectrecruitment.req.RecruitmentCommentUpdateDto;
 import jakarta.persistence.*;
@@ -11,7 +12,7 @@ import lombok.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class ProjectRecruitmentComment {
+public class ProjectRecruitmentComment extends BaseTimeEntity {
 
 
     @Id

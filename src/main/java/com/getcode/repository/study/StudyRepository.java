@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -17,4 +18,10 @@ public interface StudyRepository extends JpaRepository<Study, Long>, JpaSpecific
     Page<Study> findAll(Specification<Study> specification, Pageable pageable);
     @Query("SELECT s FROM Study s WHERE s.title LIKE %:keyword% OR s.content LIKE %:keyword%")
     List<Study> findByTitleOrContentContaining(@Param("keyword") String keyword, Pageable pageable);
+
+
+    @Query("select s from Study s where s.id in (select ws.study.id from WishStudy ws where ws.member.id = :memberId)")
+    List<Study> findAllByWishStudyMemberId(Pageable pageable, Long memberId);
+
+    List<Study> findAllByMemberId(Pageable pageable, @Param("memberId") Long memberId);
 }

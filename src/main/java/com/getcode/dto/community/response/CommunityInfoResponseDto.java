@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 @Data
 @AllArgsConstructor
 public class CommunityInfoResponseDto {
+    private Long id;
     private String title;
     private String content;
     private int views;
@@ -23,8 +24,9 @@ public class CommunityInfoResponseDto {
 
     public static CommunityInfoResponseDto toDto(Community community, boolean checkLike, boolean checkWish) {
         return new CommunityInfoResponseDto(
+                community.getId(),
                 community.getTitle(),
-                community.getContent().substring(0,15),
+                community.getContent(),
                 community.getViews(),
                 community.getLikeCnt(),
                 community.getCreateDate(),

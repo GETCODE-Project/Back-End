@@ -38,7 +38,7 @@ public class StudyInfoResponseDto {
         return new StudyInfoResponseDto(
                 study.getId(),
                 study.getTitle(),
-                study.getContent().substring(0,15),
+                study.getContent(),
                 study.getSiDo(),
                 study.getGuGun(),
                 study.isRecruitment(),

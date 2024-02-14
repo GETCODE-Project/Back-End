@@ -280,4 +280,16 @@ public class StudyService {
         }).toList();
     }
 
+
+
+
+    public Boolean isStudyLikedByUser(Long studyId, Long memberId) {
+        return studyLikeRepository.existsByStudyIdAndMemberId(studyId, memberId);
+    }
+
+    public Boolean isStudyWishedByUser(Long studyId, Long memberId) {
+        return wishStudyRepository.existsByStudyIdAndMemberId(studyId, memberId);
+    }
+
+
 }

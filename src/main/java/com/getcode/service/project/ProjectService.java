@@ -376,7 +376,7 @@ public class ProjectService {
         projectPage.forEach((project) ->{
 
             ProjectInfoResponseDto dto = new ProjectInfoResponseDto(project);
-            //로그인 하지 않았을 때
+            //로그인 했을 때
             if(member != null) {
                 dto.setCheckLike(isProjectLikedByUser(project.getId(), member.getId()));
                 dto.setCheckWish(isProjectWishedByUser(project.getId(), member.getId()));
@@ -385,7 +385,6 @@ public class ProjectService {
                 dto.setCheckWish(Boolean.FALSE);
             }
                 responseDto.add(dto);
-                // 좋아요 및 찜 정보 가져오기
 
         });
 
