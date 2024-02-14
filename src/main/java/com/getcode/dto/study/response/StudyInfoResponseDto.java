@@ -54,4 +54,25 @@ public class StudyInfoResponseDto {
                 checkWish
         );
     }
+
+/*
+    public  StudyInfoResponseDto (Study study, boolean checkLike, boolean checkWish) {
+                this.id = study.getId(),
+                this.title = study.getTitle(),
+                this.content = study.getContent(),
+                this.siDo = study.getSiDo(),
+                this.guGun = study.getGuGun(),
+                this.recruitment = study.isRecruitment(),
+                this.online = study.isOnline(),
+                this.views = study.getViews(),
+                this.likeCnt = study.getLikeCnt(),
+                this.contact = Arrays.stream(study.getContact().split("\\^")).toList(),
+                this.createDate = study.getCreateDate(),
+                this.modifiedDate = study.getModifiedDate(),
+                this.memberNickName = study.getMember().getNickname(),
+                this.studyFields = study.getFields().stream().map(sf -> sf.getField().print()).toList(),
+                this.checkLike = checkLike,
+                this.checkWish = checkWish;
+    }
+*/
 }

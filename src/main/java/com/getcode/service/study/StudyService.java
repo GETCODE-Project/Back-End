@@ -1,5 +1,6 @@
 package com.getcode.service.study;
 
+import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.study.Study;
 import com.getcode.domain.study.StudyComment;
@@ -219,17 +220,19 @@ public class StudyService {
         boolean recruitment = recruitmentString.equals("O");
         boolean online = onlineString.equals("O");
 
+        Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseGet(() -> null);
+
         Specification<Study> spec = (root, query, criteriaBuilder) -> null;
 
-        if (keyword != null) {
+        if (keyword != null && !keyword.isEmpty()) {
             spec = spec.and(StudySpecification.equalsKeyword(keyword));
         }
 
-        if (siDo != null) {
+        if (siDo != null && !siDo.isEmpty()) {
             spec = spec.and(StudySpecification.equalsSiDo(siDo));
         }
 
-        if (guGun != null) {
+        if (guGun != null && !guGun.isEmpty()) {
             spec = spec.and(StudySpecification.equalsGuGun(guGun));
         }
 
@@ -245,7 +248,7 @@ public class StudyService {
             spec = spec.and(StudySpecification.equalsYear(year));
         }
 
-        if (fields != null) {
+        if (fields != null && !fields.isEmpty()) {
             spec = spec.and(StudySpecification.containsFields(fields));
         }
 
@@ -262,22 +265,26 @@ public class StudyService {
                 .findAll(spec, PageRequest.of(page-1, size, sortCriteria));
 
 
+        log.info(studies.toString());
+
+/*
         String currentMemberEmail = getCurrentMemberEmail();
         if (currentMemberEmail.equals("false")) {
             return studies.map(s -> StudyInfoResponseDto.toDto(s,false, false))
                     .toList();
         }
-        Member member = memberRepository.findByEmail(currentMemberEmail)
-                .orElseThrow(NotFoundMemberException::new);
-        Long memberId = member.getId();
+*/
+            return studies.map(s -> {
+                if(member.getId() != null) {
+                    boolean likeCond = isStudyLikedByUser(member.getId(), s.getId());
+                    boolean wishCond = isStudyWishedByUser(member.getId(), s.getId());
+                    return StudyInfoResponseDto.toDto(s, likeCond, wishCond);
+                } else{
+                    return StudyInfoResponseDto.toDto(s, Boolean.FALSE, Boolean.FALSE);
+                }
 
-        return studies.map(s -> {
-            boolean likeCond = studyLikeRepository
-                    .findByMemberIdAndStudyId(memberId, s.getId()).isPresent();
-            boolean wishCond = wishStudyRepository
-                    .findByMemberIdAndStudyId(memberId, s.getId()).isPresent();
-            return StudyInfoResponseDto.toDto(s,likeCond, wishCond);
-        }).toList();
+            }).toList();
+
     }
 
 
