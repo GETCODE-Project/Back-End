@@ -26,7 +26,7 @@ public class CommunityRequestDto {
     @Length(min = 2, max = 1000)
     private String content;
 
-    @Schema(description = "게시판 종류", defaultValue = "qna")
+    @Schema(description = "게시판 종류: QnA, 자유게시판, 고민상담 중 1개")
     private String category;
 
     public Community toEntity(Member member) {
@@ -36,7 +36,7 @@ public class CommunityRequestDto {
                 .views(0)
                 .likeCnt(0)
                 .member(member)
-                .category(CommunityCategory.valueOf(category.toUpperCase()))
+                .category(CommunityCategory.fromString(category))
                 .build();
     }
 }
