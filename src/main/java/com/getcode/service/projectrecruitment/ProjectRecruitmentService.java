@@ -227,9 +227,12 @@ public class ProjectRecruitmentService {
     @Transactional(readOnly = true)
     public List<ProjectRecruitmentInfoResDto> getAllRecuritment(String sort, int pageNumber, int size, String keyword,
                                                                 String subject, List<String> techStack, Integer year,
-                                                                Boolean online, Boolean recruitment, String siDo,
+                                                                String onlineString, String recruitmentString, String siDo,
                                                                 String guGun
     ) {
+
+        boolean recruitment = recruitmentString.equals("O");
+        boolean online = onlineString.equals("O");
 
         Sort sortCriteria;
 
@@ -263,11 +266,11 @@ public class ProjectRecruitmentService {
             specifications.add(ProjectRecruitmentSpecification.keywordLikeTitleOrContent(keyword));
         }
 
-        if (recruitment != null) {
+        if (!recruitmentString.equals("N") && recruitmentString != null) {
             specifications.add(ProjectRecruitmentSpecification.recruitmentLike(recruitment));
         }
 
-        if (online != null) {
+        if (!onlineString.equals("N") && onlineString != null) {
             specifications.add(ProjectRecruitmentSpecification.onlineLike(online));
         }
 
