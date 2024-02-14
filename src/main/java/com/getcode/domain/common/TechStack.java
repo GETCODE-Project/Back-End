@@ -27,7 +27,10 @@ public enum TechStack {
     FLUTTER("Flutter"), DART("Dart"),
 
     //기타
-    GIT("Git"), GITHUB("Github"), AWS("AWS");
+    GIT("Git"), GITHUB("Github"), AWS("AWS"),
+
+    //미정
+    UNDEFINEDED("미정");
 
     private String stack;
 
@@ -36,12 +39,14 @@ public enum TechStack {
     }
 
     public static TechStack fromString(String reqValue) {
-        for (TechStack techStack : TechStack.values()) {
-            if (techStack.stack.equalsIgnoreCase(reqValue)) {
-                return techStack;
+        if(reqValue != null) {
+            for (TechStack techStack : TechStack.values()) {
+                if (techStack.stack.equalsIgnoreCase(reqValue)) {
+                    return techStack;
+                }
             }
         }
-        throw new IllegalArgumentException();
+            return null;
     }
 
     public static List<String> techStackList() {

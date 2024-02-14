@@ -17,7 +17,8 @@ public enum Subject {
     GAME("게임"),
     REAL_ESTATE("부동산"),
     BEAUTY("뷰티"),
-    FASION("패션");
+    FASION("패션"),
+    UNDEFINEDED("미정");
 
     private String subject;
 
@@ -30,12 +31,14 @@ public enum Subject {
     }
 
     public static Subject fromString(String reqValue) {
-        for (Subject subject : Subject.values()) {
-            if (subject.subject.equalsIgnoreCase(reqValue)) {
-                return subject;
+        if(reqValue != null) {
+            for (Subject subject : Subject.values()) {
+                if (subject.subject.equalsIgnoreCase(reqValue)) {
+                    return subject;
+                }
             }
         }
-        throw new IllegalArgumentException();
+        return null;
     }
 
     public static List<String> subjectList() {

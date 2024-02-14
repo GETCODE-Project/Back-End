@@ -234,4 +234,13 @@ public class CommunityService {
                 .orElseThrow(NotFoundCommentException::new);
         communityCommentRepository.delete(communityComment);
     }
+
+    public Boolean isCommunityLikedByUser(Long communityId, Long memberId) {
+        return communityLikeRepository.existsByCommunityIdAndMemberId(communityId, memberId);
+    }
+
+    public Boolean isCommunityWishedByUser(Long communityId, Long memberId) {
+        return wishCommunityRepository.existsByCommunityIdAndMemberId(communityId, memberId);
+    }
+
 }

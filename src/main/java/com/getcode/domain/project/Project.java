@@ -51,7 +51,7 @@ public class Project extends BaseTimeEntity {
     private Member member;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "subject_name")
+    @Column(name = "subject_name", nullable = true)
     private Subject subject;
 
 

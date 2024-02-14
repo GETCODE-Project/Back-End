@@ -42,10 +42,10 @@ public class ProjectRecruitment extends BaseTimeEntity {
     @Column(nullable = false)
     private String guGun;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private boolean recruitment;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private boolean online;
 
     @Column(nullable = false)
@@ -63,7 +63,7 @@ public class ProjectRecruitment extends BaseTimeEntity {
     private Member member;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "subject_name")
+    @Column(name = "subject_name", nullable = true)
     private Subject subject;
 
     @Builder.Default

@@ -10,4 +10,6 @@ public interface CommunityLikeRepository extends JpaRepository<CommunityLike, Lo
     @Query("SELECT sl FROM CommunityLike sl WHERE sl.member.id = :memberId AND sl.community.id = :communityId")
     Optional<CommunityLike> findByMemberIdAndCommunityId(@Param("memberId") Long memberId,
                                                          @Param("communityId") Long communityId);
+
+    Boolean existsByCommunityIdAndMemberId(Long communityId, Long memberId);
 }
