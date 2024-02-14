@@ -1,5 +1,6 @@
 package com.getcode.service.community;
 
+import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.community.Community;
 import com.getcode.domain.community.CommunityComment;
 import com.getcode.domain.community.CommunityLike;
@@ -56,10 +57,14 @@ public class CommunityService {
     }
 
     // 커뮤니티 게시글 검색 및 태그 조회
+    @Transactional(readOnly = true)
     public List<CommunityInfoResponseDto> searchCommunity(String keyword,
                                                           String category,
                                                           String sort,
                                                           int page, int size){
+
+        Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseGet(() -> null);
+
         Specification<Community> spec = (root, query, criteriaBuilder) -> null;
 
         if (keyword != null) {
@@ -80,17 +85,17 @@ public class CommunityService {
         }
         Page<Community> communities = communityRepository
                 .findAll(spec, PageRequest.of(page-1, size, sortCriteria));
-        String currentMemberEmail = getCurrentMemberEmail();
-        Member member = memberRepository.findByEmail(currentMemberEmail)
-                .orElseThrow(NotFoundMemberException::new);
-        Long memberId = member.getId();
+
 
         return communities.map(c -> {
-            boolean likeCond = communityLikeRepository
-                    .findByMemberIdAndCommunityId(memberId, c.getId()).isPresent();
-            boolean wishCond = wishCommunityRepository
-                    .findByMemberIdAndCommunityId(memberId, c.getId()).isPresent();
-            return CommunityInfoResponseDto.toDto(c,likeCond, wishCond);
+
+            if(member.getId() != null) {
+                boolean likeCond = isCommunityLikedByUser(member.getId(), c.getId());
+                boolean wishCond =isCommunityWishedByUser(member.getId(), c.getId());
+                return CommunityInfoResponseDto.toDto(c, likeCond, wishCond);
+            } else {
+                return CommunityInfoResponseDto.toDto(c, Boolean.FALSE, Boolean.FALSE);
+            }
         }).toList();
     }
 

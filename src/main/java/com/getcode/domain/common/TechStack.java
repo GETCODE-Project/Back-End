@@ -30,7 +30,7 @@ public enum TechStack {
     GIT("Git"), GITHUB("Github"), AWS("AWS"),
 
     //미정
-    UNDEFINEDED("미정");
+    UNDEFINEDED("추후 협의");
 
     private String stack;
 
@@ -39,14 +39,12 @@ public enum TechStack {
     }
 
     public static TechStack fromString(String reqValue) {
-        if(reqValue != null) {
             for (TechStack techStack : TechStack.values()) {
                 if (techStack.stack.equalsIgnoreCase(reqValue)) {
                     return techStack;
                 }
             }
-        }
-            return null;
+        throw new IllegalArgumentException();
     }
 
     public static List<String> techStackList() {
