@@ -236,11 +236,11 @@ public class StudyService {
             spec = spec.and(StudySpecification.equalsGuGun(guGun));
         }
 
-        if (!recruitmentString.equals("N")) {
+        if (!recruitmentString.equals("N") && recruitmentString != null) {
             spec = spec.and(StudySpecification.equalsRecruitment(recruitment));
         }
 
-        if (!onlineString.equals("N")) {
+        if (!onlineString.equals("N") && onlineString != null) {
             spec = spec.and(StudySpecification.equalsOnline(online));
         }
 
@@ -265,6 +265,7 @@ public class StudyService {
                 .findAll(spec, PageRequest.of(page-1, size, sortCriteria));
 
 
+
         log.info(studies.toString());
 
 /*
@@ -274,13 +275,14 @@ public class StudyService {
                     .toList();
         }
 */
+
             return studies.map(s -> {
-                if(member.getId() != null) {
-                    boolean likeCond = isStudyLikedByUser(member.getId(), s.getId());
-                    boolean wishCond = isStudyWishedByUser(member.getId(), s.getId());
-                    return StudyInfoResponseDto.toDto(s, likeCond, wishCond);
+                if(member != null) {
+                    Boolean likeCond = isStudyLikedByUser(member.getId(), s.getId());
+                    Boolean wishCond = isStudyWishedByUser(member.getId(), s.getId());
+                    return new StudyInfoResponseDto(s, likeCond, wishCond);
                 } else{
-                    return StudyInfoResponseDto.toDto(s, Boolean.FALSE, Boolean.FALSE);
+                    return new StudyInfoResponseDto(s, Boolean.FALSE, Boolean.FALSE);
                 }
 
             }).toList();

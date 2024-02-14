@@ -158,8 +158,10 @@ public class ProjectRecruitmentController {
                                                @Parameter(description = "주제") @RequestParam(defaultValue = "", required = false) String subject,
                                                @Parameter(description = "기술스택") @RequestParam(defaultValue = "", required = false) List<String> techStack,
                                                @Parameter(description = "년도") @RequestParam(defaultValue = "2024", required = false) Integer year,
-                                               @Parameter(description = "온라인, 오프라인 여부") @RequestParam(defaultValue = "", required = false) Boolean online,
-                                               @Parameter(description = "모집여부") @RequestParam(defaultValue = "", required = false) Boolean recruitment,
+                                               @Parameter(description = "프로젝트 모집 유형(온라인 스터디 O," +
+                                                       "오프라인 스터디 X," +
+                                                       "상관없음 N)") @RequestParam(defaultValue = "", required = false) String online,
+                                               @Parameter(description = "모집여부(모집중 O, 모집 완료 X, 상관없음 N)") @RequestParam(defaultValue = "", required = false) String recruitment,
                                                @Parameter(description = "지역:시/도") @RequestParam(defaultValue = "", required = false) String siDo,
                                                @Parameter(description = "지역:구/군") @RequestParam(defaultValue = "", required = false) String guGun)
     {

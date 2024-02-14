@@ -89,7 +89,7 @@ public class CommunityService {
 
         return communities.map(c -> {
 
-            if(member.getId() != null) {
+            if(member != null) {
                 boolean likeCond = isCommunityLikedByUser(member.getId(), c.getId());
                 boolean wishCond =isCommunityWishedByUser(member.getId(), c.getId());
                 return CommunityInfoResponseDto.toDto(c, likeCond, wishCond);
