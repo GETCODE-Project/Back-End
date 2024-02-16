@@ -7,6 +7,7 @@ import com.getcode.dto.study.request.StudyRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,6 +85,7 @@ public class Study extends BaseTimeEntity {
         this.guGun = req.getGuGun();
         this.online = req.isOnline();
         this.recruitment = req.isRecruitment();
+        this.setModifiedDate(LocalDateTime.now());
         List<StudyField> oldFields = this.fields;
         oldFields.clear();
     }

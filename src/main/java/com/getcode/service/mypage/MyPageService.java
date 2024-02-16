@@ -50,7 +50,7 @@ public class MyPageService {
 
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(NotFoundMemberException::new);
 
-        Sort sort = Sort.by(Sort.Direction.DESC, "modifiedDate");
+        Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
 
         Pageable pageable = PageRequest.of(page-1, size, sort);
 
@@ -78,7 +78,7 @@ public class MyPageService {
 
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(NotFoundMemberException::new);
 
-        Sort sort = Sort.by(Sort.Direction.DESC, "modifiedDate");
+        Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
 
         Pageable pageable = PageRequest.of(page-1, size, sort);
 
@@ -102,7 +102,7 @@ public class MyPageService {
 
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(NotFoundMemberException::new);
 
-        Sort sort = Sort.by(Sort.Direction.DESC, "modifiedDate");
+        Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
 
         Pageable pageable = PageRequest.of(page-1, size, sort);
 
@@ -128,7 +128,7 @@ public class MyPageService {
 
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(NotFoundMemberException::new);
 
-        Sort sort = Sort.by(Sort.Direction.DESC, "modifiedDate");
+        Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
 
         Pageable pageable = PageRequest.of(page-1, size, sort);
 
@@ -155,7 +155,7 @@ public class MyPageService {
     @Transactional(readOnly = true)
     public List<StudyInfoResponseDto> findAllStudyByMember(int page, int size) {
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
-        Sort sort = Sort.by(Sort.Direction.DESC, "modifiedDate");
+        Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
 
         Pageable pageable = PageRequest.of(page-1, size, sort);
 
@@ -170,7 +170,7 @@ public class MyPageService {
     public List<StudyInfoResponseDto> getMyWishStudy(String memberEmail, int size, int page) {
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(NotFoundMemberException::new);
 
-        Sort sort = Sort.by(Sort.Direction.DESC, "modifiedDate");
+        Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
 
         Pageable pageable = PageRequest.of(page-1, size, sort);
 
@@ -192,7 +192,7 @@ public class MyPageService {
     @Transactional(readOnly = true)
     public List<CommunityInfoResponseDto> getMyCommunity(String memberEmail, int size, int page) {
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
-        Sort sort = Sort.by(Sort.Direction.DESC, "modifiedDate");
+        Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
 
         Pageable pageable = PageRequest.of(page-1, size, sort);
 
@@ -211,7 +211,7 @@ public class MyPageService {
     @Transactional(readOnly = true)
     public List<CommunityInfoResponseDto> getMyWishCommunity(String memberEmail, int size, int page) {
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
-        Sort sort = Sort.by(Sort.Direction.DESC, "modifiedDate");
+        Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
 
         Pageable pageable = PageRequest.of(page-1, size, sort);
 

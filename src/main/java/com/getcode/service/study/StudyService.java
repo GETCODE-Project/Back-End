@@ -258,7 +258,7 @@ public class StudyService {
         } else if (sort.equals("likeCnt")) {
             sortCriteria = Sort.by(Sort.Direction.DESC, "likeCnt");
         } else {
-            sortCriteria = Sort.by(Sort.Direction.DESC, "modifiedDate");
+            sortCriteria = Sort.by(Sort.Direction.DESC, "createDate");
         }
 
         Page<Study> studies = studyRepository

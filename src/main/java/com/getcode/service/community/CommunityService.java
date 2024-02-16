@@ -84,7 +84,7 @@ public class CommunityService {
         } else if (sort.equals("likeCnt")) {
             sortCriteria = Sort.by(Sort.Direction.DESC, "likeCnt");
         } else {
-            sortCriteria = Sort.by(Sort.Direction.DESC, "modifiedDate");
+            sortCriteria = Sort.by(Sort.Direction.DESC, "createDate");
         }
         Page<Community> communities = communityRepository
                 .findAll(spec, PageRequest.of(page-1, size, sortCriteria));

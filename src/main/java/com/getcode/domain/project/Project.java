@@ -8,6 +8,8 @@ import com.getcode.dto.project.req.ProjectUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -84,7 +86,7 @@ public class Project extends BaseTimeEntity {
             this.introduction = requestDto.getIntroduction();
             this.githubUrl = requestDto.getGithubUrl();
             this.subject = Subject.fromString(requestDto.getSubject());
-
+            this.setModifiedDate(LocalDateTime.now());
         //casecade 타입을 all로 설정해놓아서 기존 부모와 연결된 List객체를 삭제하고 새로 만들어준다.
         /*
         if(requestDto.getImageUrls() != null) {
