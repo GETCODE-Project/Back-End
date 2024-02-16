@@ -19,4 +19,6 @@ public class EnumService {
     public List<String> getStudyFieldList(){
         return Field.studyFieldList();
     }
+
+
 }

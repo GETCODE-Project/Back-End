@@ -1,5 +1,6 @@
 package com.getcode.dto.study.response;
 ;
+import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.study.StudyComment;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,6 @@ public class StudyCommentResponseDto {
                 studyComment.getMember().getEmail(),
                 studyComment.getMember().getNickname(),
                 isWriter
-        );
+                );
     }
 }

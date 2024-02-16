@@ -72,7 +72,7 @@ public class StudyService {
             study.increaseViews();
             List<StudyCommentResponseDto> dtos = study.getComments().stream()
                     .map(sc -> StudyCommentResponseDto.toDto(sc, false)).toList();
-            return StudyDetailResponseDto.toDto(study,dtos,false,false,false);
+            return StudyDetailResponseDto.toDto(study,false,false,false);
         }
 
         Member member = memberRepository.findByEmail(currentMemberEmail)
@@ -89,7 +89,7 @@ public class StudyService {
         boolean isWriter = study.getMember().equals(member);
 
         study.increaseViews();
-        return StudyDetailResponseDto.toDto(study, dtos, likeCond, wishCond, isWriter);
+        return StudyDetailResponseDto.toDto(study, likeCond, wishCond, isWriter);
     }
 
     // 스터디 수정
@@ -300,5 +300,23 @@ public class StudyService {
         return wishStudyRepository.existsByStudyIdAndMemberId(studyId, memberId);
     }
 
+    @Transactional(readOnly = true)
+    public List<StudyCommentResponseDto> getStudyComments(Long id) {
 
+        List<StudyComment> studyComments = studyCommentRepository.findByStudyId(id);
+        List<StudyCommentResponseDto> dtos = new ArrayList<>();
+        boolean isWriter;
+
+        for(StudyComment studyComment : studyComments){
+
+            if(studyComment.getMember().getEmail().equals(SecurityUtil.getCurrentMemberEmail())){
+                isWriter = true;
+            }else {
+                isWriter = false;
+            };
+
+            dtos.add(StudyCommentResponseDto.toDto(studyComment,isWriter));
+        }
+        return dtos;
+    }
 }
