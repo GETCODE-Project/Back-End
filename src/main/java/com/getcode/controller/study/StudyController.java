@@ -151,4 +151,12 @@ public class StudyController {
         studyService.wishStudy(id);
     }
 
+    @Operation(summary = "스터디 게시글 상세정보 댓글 조회api")
+    @GetMapping("/study/{id}/comments")
+    public ResponseEntity<?> getStudyComments(@PathVariable(name = "id") Long id){
+        List<StudyCommentResponseDto> responseDtos = studyService.getStudyComments(id);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDtos);
+    }
+
+
 }

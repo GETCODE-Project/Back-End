@@ -243,7 +243,7 @@ public class ProjectRecruitmentService {
         } else if (sort.equals("likeCnt")) {
             sortCriteria = Sort.by(Sort.Direction.DESC, "likeCnt");
         } else {
-            sortCriteria = Sort.by(Sort.Direction.DESC, "modifiedDate");
+            sortCriteria = Sort.by(Sort.Direction.DESC, "createDate");
         }
 
         Pageable pageable = PageRequest.of(pageNumber -1, size, sortCriteria);

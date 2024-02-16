@@ -6,6 +6,7 @@ import com.getcode.dto.community.response.CommunityCommentResponseDto;
 import com.getcode.dto.community.response.CommunityDetailResponseDto;
 import com.getcode.dto.community.response.CommunityInfoResponseDto;
 import com.getcode.dto.community.response.CreatedCommunityResponseDto;
+import com.getcode.dto.study.response.StudyCommentResponseDto;
 import com.getcode.dto.study.response.StudyInfoResponseDto;
 import com.getcode.service.community.CommunityService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -150,5 +151,14 @@ public class CommunityController {
         communityService.deleteComment(id);
         return ResponseEntity.status(HttpStatus.OK).body("댓글 삭제 성공");
     }
+
+    @Operation(summary = "커뮤니티 상세정보 댓글 조회api")
+    @GetMapping("/community/{id}/comments")
+    public ResponseEntity<?> getStudyComments(@PathVariable(name = "id") Long id){
+        List<CommunityCommentResponseDto> responseDtos = communityService.getCommunityComments(id);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDtos);
+    }
+
+
 
 }

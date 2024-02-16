@@ -11,6 +11,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -110,6 +111,7 @@ public class ProjectRecruitment extends BaseTimeEntity {
                     .collect(Collectors.toList());
             this.techStacks.addAll(newStack);
         }
+        this.setModifiedDate(LocalDateTime.now());
 
 
     }

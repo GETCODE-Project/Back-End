@@ -5,6 +5,8 @@ import com.getcode.domain.common.CommunityCategory;
 import com.getcode.domain.member.Member;
 import com.getcode.dto.community.requset.CommunityRequestDto;
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -72,6 +74,8 @@ public class Community extends BaseTimeEntity {
     public void editCommunity(CommunityRequestDto req) {
         this.title = req.getTitle();
         this.content = req.getContent();
+        this.category = CommunityCategory.fromString(req.getCategory());
+        this.setModifiedDate(LocalDateTime.now());
     }
 
 }

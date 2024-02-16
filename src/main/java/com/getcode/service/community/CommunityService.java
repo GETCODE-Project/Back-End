@@ -7,6 +7,7 @@ import com.getcode.domain.community.CommunityLike;
 import com.getcode.domain.community.WishCommunity;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.study.Study;
+import com.getcode.domain.study.StudyComment;
 import com.getcode.dto.community.requset.CommunityCommentRequestDto;
 import com.getcode.dto.community.requset.CommunityLikeDto;
 import com.getcode.dto.community.requset.CommunityRequestDto;
@@ -15,6 +16,7 @@ import com.getcode.dto.community.response.CommunityDetailResponseDto;
 import com.getcode.dto.community.response.CommunityInfoResponseDto;
 import com.getcode.dto.community.response.CreatedCommunityResponseDto;
 import com.getcode.dto.community.util.CommunitySpecification;
+import com.getcode.dto.study.response.StudyCommentResponseDto;
 import com.getcode.dto.study.response.StudyInfoResponseDto;
 import com.getcode.dto.study.util.StudySpecification;
 import com.getcode.exception.community.NotFoundCommunityException;
@@ -34,6 +36,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,7 +84,7 @@ public class CommunityService {
         } else if (sort.equals("likeCnt")) {
             sortCriteria = Sort.by(Sort.Direction.DESC, "likeCnt");
         } else {
-            sortCriteria = Sort.by(Sort.Direction.DESC, "modifiedDate");
+            sortCriteria = Sort.by(Sort.Direction.DESC, "createDate");
         }
         Page<Community> communities = communityRepository
                 .findAll(spec, PageRequest.of(page-1, size, sortCriteria));
@@ -247,5 +250,25 @@ public class CommunityService {
     public Boolean isCommunityWishedByUser(Long communityId, Long memberId) {
         return wishCommunityRepository.existsByCommunityIdAndMemberId(communityId, memberId);
     }
+
+    public List<CommunityCommentResponseDto> getCommunityComments(Long id) {
+
+        List<CommunityComment> communityComments = communityCommentRepository.findByCommunityId(id);
+        List<CommunityCommentResponseDto> dtos = new ArrayList<>();
+        boolean isWriter;
+
+        for(CommunityComment communityComment : communityComments){
+
+            if(communityComment.getMember().getEmail().equals(SecurityUtil.getCurrentMemberEmail())){
+                isWriter = true;
+            }else {
+                isWriter = false;
+            };
+
+            dtos.add(CommunityCommentResponseDto.toDto(communityComment,isWriter));
+        }
+        return dtos;
+    }
+
 
 }
