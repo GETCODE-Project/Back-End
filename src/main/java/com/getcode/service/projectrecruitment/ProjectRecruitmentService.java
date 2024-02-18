@@ -41,11 +41,12 @@ public class ProjectRecruitmentService {
 
     //프로젝트 모집글 등록
     @Transactional
-    public void insertProjectRecruitment(ProjectRecruitmentRequestDto requestDto) {
+    public Long insertProjectRecruitment(ProjectRecruitmentRequestDto requestDto) {
 
         Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
 
         ProjectRecruitment projectRecruitment = requestDto.toEntity(member);
+
 
         projectRecruitmentRepository.save(projectRecruitment);
 
@@ -55,7 +56,7 @@ public class ProjectRecruitmentService {
             projectRecruitmentStackRepository.save(ProjectRecruitmentTechDto.toEntity(projectRecruitment, techStack));
         }
 
-
+        return projectRecruitment.getId();
 
     }
     //프로젝트 모집글 삭제

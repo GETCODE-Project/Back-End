@@ -47,9 +47,9 @@ public class ProjectController {
 
         String memberEmail = SecurityUtil.getCurrentMemberEmail();
 
-        projectService.addProject(projectRequestDto, memberEmail);
+        Long id = projectService.addProject(projectRequestDto, memberEmail);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("등록이 완료되었습니다.");
+        return ResponseEntity.status(HttpStatus.CREATED).body("글 등록 완료"+ '\n' + "id = " + id);
 
     }
 

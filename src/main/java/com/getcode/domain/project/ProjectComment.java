@@ -1,5 +1,6 @@
 package com.getcode.domain.project;
 
+import com.getcode.domain.common.BaseTimeEntity;
 import com.getcode.domain.member.Member;
 import com.getcode.dto.project.req.CommentUpdateRequestDto;
 import jakarta.persistence.*;
@@ -10,7 +11,7 @@ import lombok.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class ProjectComment {
+public class ProjectComment extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
