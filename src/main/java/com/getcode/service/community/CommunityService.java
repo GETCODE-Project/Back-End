@@ -6,6 +6,8 @@ import com.getcode.domain.community.CommunityComment;
 import com.getcode.domain.community.CommunityLike;
 import com.getcode.domain.community.WishCommunity;
 import com.getcode.domain.member.Member;
+import com.getcode.domain.project.ProjectLike;
+import com.getcode.domain.project.WishProject;
 import com.getcode.domain.study.Study;
 import com.getcode.domain.study.StudyComment;
 import com.getcode.dto.community.requset.CommunityCommentRequestDto;
@@ -157,27 +159,21 @@ public class CommunityService {
                 .orElseThrow(NotFoundCommunityException::new);
         community.increaseViews();
 
-        if (!getCurrentMemberEmail().equals("false")){
-            List<CommunityCommentResponseDto> list = community.getComments().stream()
-                    .map(cc -> CommunityCommentResponseDto.toDto(cc, false)).toList();
-            return CommunityDetailResponseDto
-                    .toDto(community,list,false, false, false);
+        Boolean checkLike = false;
+        Boolean checkWish = false;
+        Boolean checkWriter = false;
+
+        Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseGet(() -> null);
+
+        if(member != null) {
+            checkLike = isCommunityLikedByUser(community.getId(), member.getId());
+            checkWish = isCommunityWishedByUser(community.getId(), member.getId());
+            if(community.getMember().equals(member)){
+                checkWriter = true;
+            }
         }
 
-        Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow();
-        Long communityId = community.getId();
-        Long memberId = member.getId();
-        List<CommunityCommentResponseDto> dtos = community
-                .getComments().stream()
-                .map(cc -> CommunityCommentResponseDto.toDto(cc, cc.getMember().equals(member)))
-                .toList();
-        boolean checkLike = communityLikeRepository
-                .findByMemberIdAndCommunityId(memberId, communityId).isPresent();
-        boolean checkWish = wishCommunityRepository
-                .findByMemberIdAndCommunityId(memberId, communityId).isPresent();
-        boolean isWriter = community.getMember().equals(member);
-
-        return CommunityDetailResponseDto.toDto(community,dtos,checkLike, checkWish, isWriter);
+        return new CommunityDetailResponseDto(community,checkLike, checkWish, checkWriter);
     }
 
     // 게시글 좋아요

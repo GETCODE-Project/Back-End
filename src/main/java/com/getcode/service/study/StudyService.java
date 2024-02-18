@@ -67,29 +67,22 @@ public class StudyService {
     public StudyDetailResponseDto findStudy(Long id) {
         Study study = studyRepository.findById(id)
                 .orElseThrow(NotFoundStudyException::new);
-        String currentMemberEmail = getCurrentMemberEmail();
-        if(!currentMemberEmail.equals("false")) {
-            study.increaseViews();
-            List<StudyCommentResponseDto> dtos = study.getComments().stream()
-                    .map(sc -> StudyCommentResponseDto.toDto(sc, false)).toList();
-            return StudyDetailResponseDto.toDto(study,false,false,false);
-        }
-
-        Member member = memberRepository.findByEmail(currentMemberEmail)
-                .orElseThrow(NotFoundMemberException::new);
-        Long memberId = member.getId();
-        Long studyId = study.getId();
-        List<StudyCommentResponseDto> dtos = study.getComments().stream()
-                .map(sc -> StudyCommentResponseDto.toDto(sc, sc.getMember().equals(member)))
-                .toList();
-        boolean likeCond = studyLikeRepository
-                .findByMemberIdAndStudyId(memberId, studyId).isPresent();
-        boolean wishCond = wishStudyRepository
-                .findByMemberIdAndStudyId(memberId, studyId).isPresent();
-        boolean isWriter = study.getMember().equals(member);
-
         study.increaseViews();
-        return StudyDetailResponseDto.toDto(study, likeCond, wishCond, isWriter);
+
+        Boolean checkLike = false;
+        Boolean checkWish = false;
+        Boolean checkWriter = false;
+
+        Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseGet(() -> null);
+
+        if(member != null) {
+            checkLike = isStudyLikedByUser(study.getId(), member.getId());
+            checkWish = isStudyWishedByUser(study.getId(), member.getId());
+            if(study.getMember().equals(member)){
+                checkWriter = true;
+            }
+        }
+        return new StudyDetailResponseDto(study, checkLike, checkWish, checkWriter);
     }
 
     // 스터디 수정
