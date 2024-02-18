@@ -48,7 +48,7 @@ public class StudyService {
     private final StudyFieldRepository studyFieldRepository;
 
     @Transactional
-    public CreatedStudyResponseDto createStudy(StudyRequestDto req) {
+    public Long createStudy(StudyRequestDto req) {
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
 
         List<String> fields = req.getFields();
@@ -58,8 +58,8 @@ public class StudyService {
         for (String field : fields) {
             studyFieldRepository.save(StudyFieldDto.toEntity(study, field));
         }
+        return study.getId();
 
-        return CreatedStudyResponseDto.toDto(study, member, fields);
     }
 
     // 특정 게시글 조회

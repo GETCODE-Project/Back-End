@@ -35,9 +35,11 @@ public class CommunityController {
             @ApiResponse(responseCode = "201", description = "CREATED")
     })
     @PostMapping("/community")
-    public ResponseEntity<CreatedCommunityResponseDto> createCommunity(@Valid @RequestBody CommunityRequestDto req) {
+    public ResponseEntity<?> createCommunity(@Valid @RequestBody CommunityRequestDto req) {
+        Long id = communityService.createCommunity(req);
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(communityService.createCommunity(req));
+                .body("글 등록 완료"+ '\n' + "id = " + id);
     }
     @Operation(summary = "모든 스터디 모집글 전체 조회", description = "pageNumber 필수 => 10개씩 반환"
             + "criteria => default: modifiedDate(최신순) / views(조회수), count(좋아요))"

@@ -24,8 +24,6 @@ public class ProjectRequestDto {
     private String content;
     private String introduction;
     private String githubUrl;
-    private int views;
-    private int likeCnt;
     //private List<String> imageUrls;
     private List<String> techStacks;
     private String subject;
@@ -39,8 +37,8 @@ public class ProjectRequestDto {
                 .content(content)
                 .introduction(introduction)
                 .githubUrl(githubUrl)
-                .likeCnt(likeCnt)
-                .views(views)
+                .likeCnt(0)
+                .views(0)
                 .subject(Subject.fromString(subject))
                 .build();
     }

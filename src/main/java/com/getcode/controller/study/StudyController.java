@@ -34,9 +34,9 @@ public class StudyController {
             @ApiResponse(responseCode = "201", description = "CREATED")
     })
     @PostMapping("/study")
-    public ResponseEntity<CreatedStudyResponseDto> createStudy(@Valid @RequestBody StudyRequestDto req) {
-        CreatedStudyResponseDto study = studyService.createStudy(req);
-        return ResponseEntity.status(HttpStatus.CREATED).body(study);
+    public ResponseEntity<?> createStudy(@Valid @RequestBody StudyRequestDto req) {
+        Long id = studyService.createStudy(req);
+        return ResponseEntity.status(HttpStatus.CREATED).body("글 등록 완료"+ '\n' + "id = " + id);
     }
 
     @Operation(summary = "스터디 모집글 조회", description = "PathVariable을 입력받아 게시글 조회후 조회수 1 증가")

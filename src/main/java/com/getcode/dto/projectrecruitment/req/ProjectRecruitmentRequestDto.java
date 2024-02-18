@@ -25,8 +25,6 @@ public class ProjectRecruitmentRequestDto {
         private String guGun;
         private boolean online;
         private boolean recruitment;
-        private int views;
-        private int likeCnt;
         private List<String> contact;
         private String subject;
         private List<String> techStack;
@@ -38,8 +36,8 @@ public class ProjectRecruitmentRequestDto {
                     .siDo(siDo)
                     .guGun(guGun)
                     .online(online)
-                    .views(views)
-                    .likeCnt(likeCnt)
+                    .views(0)
+                    .likeCnt(0)
                     .recruitment(recruitment)
                     .member(member)
                     .contact(String.join("^", contact))

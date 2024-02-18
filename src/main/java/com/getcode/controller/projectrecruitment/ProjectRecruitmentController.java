@@ -37,8 +37,8 @@ public class ProjectRecruitmentController {
                                                           @Valid
                                                           @RequestBody ProjectRecruitmentRequestDto requestDto){
 
-        projectRecruitmentService.insertProjectRecruitment(requestDto);
-        return ResponseEntity.ok().body("글 등록 완료");
+        Long id = projectRecruitmentService.insertProjectRecruitment(requestDto);
+        return ResponseEntity.ok().body("글 등록 완료"+ '\n' + "id = " + id);
 
     }
 

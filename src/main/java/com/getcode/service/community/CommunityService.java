@@ -53,10 +53,10 @@ public class CommunityService {
 
     // 게시판 생성
     @Transactional
-    public CreatedCommunityResponseDto createCommunity(CommunityRequestDto req) {
+    public Long createCommunity(CommunityRequestDto req) {
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
         Community community = communityRepository.save(req.toEntity(member));
-        return CreatedCommunityResponseDto.toDto(community);
+        return community.getId();
     }
 
     // 커뮤니티 게시글 검색 및 태그 조회

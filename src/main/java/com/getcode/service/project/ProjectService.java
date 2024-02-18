@@ -97,7 +97,7 @@ public class ProjectService {
 
     //프로젝트 등록
     @Transactional
-    public void addProject(ProjectRequestDto projectRequestDto, String memberEmail) {
+    public Long addProject(ProjectRequestDto projectRequestDto, String memberEmail) {
 
         Member member = memberRepository.findByEmail(memberEmail).orElseThrow(NotFoundMemberException::new);
 
@@ -127,6 +127,7 @@ public class ProjectService {
             projectStackRepository.save(ProjectTechDto.toEntity(project, techStack));
         }
 
+        return project.getId();
 
 
     }

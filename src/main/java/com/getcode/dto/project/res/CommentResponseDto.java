@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -16,7 +18,8 @@ public class CommentResponseDto {
     @Schema(description = "댓글 내용")
     private String content;
     private Boolean isWriter;
-
+    private LocalDateTime createDate;
+    private LocalDateTime modifiedDate;
     public CommentResponseDto(ProjectComment projectComment){
 
         this.id = projectComment.getId();
@@ -27,6 +30,8 @@ public class CommentResponseDto {
         }else {
             isWriter = false;
         }
+        this.createDate = projectComment.getCreateDate();
+        this.modifiedDate = projectComment.getModifiedDate();
     }
 
 }
