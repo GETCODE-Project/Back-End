@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CommunityCommentResponseDto {
+    private Long id;
     private String content;
     private LocalDateTime createDate;
     private LocalDateTime modifiedDate;
@@ -21,6 +22,7 @@ public class CommunityCommentResponseDto {
     private boolean isWriter;
     public static CommunityCommentResponseDto toDto(CommunityComment communityComment, boolean isWriter) {
         return new CommunityCommentResponseDto(
+                communityComment.getId(),
                 communityComment.getContent(),
                 communityComment.getCreateDate(),
                 communityComment.getModifiedDate(),
