@@ -24,7 +24,7 @@ public class ProjectRecruitmentInfoResDto {
     private int views;
     private int likeCnt;
     private LocalDateTime createDate, modifiedDate;
-    private List<ProjectRecruitmentSubjectResDto> subjects;
+    private String subject;
     private List<ProjectRecruitmentStackResDto> techStacks;
     private String memberNickName;
     private Boolean checkLike;
@@ -43,7 +43,7 @@ public class ProjectRecruitmentInfoResDto {
         this.views = projectRecruitment.getViews();
         this.likeCnt = projectRecruitment.getLikeCnt();
         this.techStacks = projectRecruitment.getTechStacks().stream().map(ProjectRecruitmentStackResDto::new).collect(Collectors.toList());
-        this.subjects = projectRecruitment.getSubjects().stream().map(ProjectRecruitmentSubjectResDto::new).collect(Collectors.toList());
+        this.subject = projectRecruitment.getSubject().print();
         this.modifiedDate = projectRecruitment.getModifiedDate();
         this.createDate = projectRecruitment.getCreateDate();
         this.memberNickName = projectRecruitment.getMember().getNickname();

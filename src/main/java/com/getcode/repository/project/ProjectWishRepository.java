@@ -5,9 +5,11 @@ import com.getcode.domain.project.Project;
 import com.getcode.domain.project.WishProject;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface ProjectWishRepository extends JpaRepository<WishProject, Long> {
     WishProject findByProjectAndMember(Project project, Member member);
 
-    WishProject findByProject(Project project);
+    List<WishProject> findByProject(Project project);
     Boolean existsByProjectIdAndMemberId(Long projectId, Long memberId);
 }

@@ -1,4 +1,4 @@
-package com.getcode.dto.study;
+package com.getcode.dto.study.response;
 
 import com.getcode.domain.member.Member;
 import com.getcode.domain.study.Study;
@@ -14,31 +14,35 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreatedStudyResponseDto {
+    private Long id;
     private String title;
     private String content;
-    private String region;
+    private String siDo;
+    private String guGun;
     private boolean recruitment;
     private boolean online;
     private int views;
-    private int count;
+    private int likeCnt;
     private String contact;
     private String date;
     private MemberInfoDto member;
-    private List<String> subjects;
+    private List<String> fields;
 
-    public static CreatedStudyResponseDto toDto(Study study, Member member, List<String> subjects) {
+    public static CreatedStudyResponseDto toDto(Study study, Member member, List<String> fields) {
         return new CreatedStudyResponseDto(
+                study.getId(),
                 study.getTitle(),
                 study.getContent(),
-                study.getRegion(),
+                study.getSiDo(),
+                study.getGuGun(),
                 study.isRecruitment(),
                 study.isOnline(),
                 study.getViews(),
-                study.getCount(),
+                study.getLikeCnt(),
                 study.getContact(),
                 study.getCreateDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
                 MemberInfoDto.toDto(member),
-                subjects
+                fields
         );
     }
 

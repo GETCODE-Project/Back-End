@@ -4,12 +4,14 @@ import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.projectrecruitment.ProjectRecruitment;
 import com.getcode.domain.projectrecruitment.ProjectRecruitmentLike;
 import com.getcode.domain.projectrecruitment.WishProjectRecruitment;
+import com.getcode.dto.member.MemberInfoDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,7 +19,7 @@ import java.util.stream.Collectors;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProjectRecruitmentDetailResDto {
-
+    private Long projectRecruitmentId;
     private String title;
     private String content;
     private String siDo;
@@ -27,15 +29,15 @@ public class ProjectRecruitmentDetailResDto {
     private int views;
     private int likeCnt;
     private LocalDateTime createDate, modifiedDate;
-    private List<ProjectRecruitmentSubjectResDto> subjects;
+    private String subject;
     private List<ProjectRecruitmentStackResDto> techStacks;
-    private List<RecruitmentCommentResDto> comments;
     private boolean isWriter;
     private boolean checkLike;
     private boolean checkWish;
+    private MemberInfoDto member;
+    private List<String> contact;
 
-
-    public ProjectRecruitmentDetailResDto(ProjectRecruitment projectRecruitment, ProjectRecruitmentLike projectRecruitmentLike, WishProjectRecruitment wishProjectRecruitment){
+    public ProjectRecruitmentDetailResDto(ProjectRecruitment projectRecruitment, Boolean checkLike, Boolean checkWish, Boolean checkWriter){
                     this.title = projectRecruitment.getTitle();
                     this.content = projectRecruitment.getContent();
                     this.siDo = projectRecruitment.getSiDo();
@@ -45,29 +47,14 @@ public class ProjectRecruitmentDetailResDto {
                     this.views = projectRecruitment.getViews();
                     this.likeCnt = projectRecruitment.getLikeCnt();
                     this.techStacks = projectRecruitment.getTechStacks().stream().map(ProjectRecruitmentStackResDto::new).collect(Collectors.toList());
-                    this.subjects = projectRecruitment.getSubjects().stream().map(ProjectRecruitmentSubjectResDto::new).collect(Collectors.toList());
-                    this.comments = projectRecruitment.getComments().stream().map(RecruitmentCommentResDto::new).collect(Collectors.toList());
+                    this.subject = projectRecruitment.getSubject().print();
                     this.createDate = projectRecruitment.getCreateDate();
                     this.modifiedDate = projectRecruitment.getModifiedDate();
-        if (projectRecruitment.getMember().getEmail().equals(SecurityUtil.getCurrentMemberEmail())) {
-            this.isWriter = true;
-        } else {
-            this.isWriter = false;
-        }
-
-        if(projectRecruitmentLike != null && projectRecruitmentLike.getMember().getEmail().equals(SecurityUtil.getCurrentMemberEmail())){
-            this.checkLike = true;
-        } else {
-            this.checkLike = false;
-        }
-
-        if(wishProjectRecruitment != null && wishProjectRecruitment.getMember().getEmail().equals(SecurityUtil.getCurrentMemberEmail())){
-            this.checkWish = true;
-        } else {
-            this.checkWish = false;
-        }
-
-
+                    this.member =MemberInfoDto.toDto(projectRecruitment.getMember());
+                    this.isWriter = checkWriter;
+                    this.checkLike = checkLike;
+                    this.checkWish = checkWish;
+                    this.contact = Arrays.stream(projectRecruitment.getContact().split("\\^")).toList();
     }
 
 

@@ -1,34 +1,24 @@
 package com.getcode.controller.study;
 
-import com.getcode.dto.study.CreatedStudyResponseDto;
-import com.getcode.dto.study.StudyCommentRequestDto;
-import com.getcode.dto.study.StudyCommentResponseDto;
-import com.getcode.dto.study.StudyEditDto;
-import com.getcode.dto.study.StudyInfoResponseDto;
-import com.getcode.dto.study.StudyRequestDto;
+import com.getcode.dto.study.response.StudyCommentResponseDto;
+import com.getcode.dto.study.response.StudyDetailResponseDto;
+import com.getcode.dto.study.response.StudyInfoResponseDto;
+import com.getcode.dto.study.request.StudyCommentRequestDto;
+import com.getcode.dto.study.request.StudyRequestDto;
+import com.getcode.dto.study.response.CreatedStudyResponseDto;
 import com.getcode.service.study.StudyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 @Tag(name = "스터디 관련 API 명세")
 @RestController
@@ -44,9 +34,9 @@ public class StudyController {
             @ApiResponse(responseCode = "201", description = "CREATED")
     })
     @PostMapping("/study")
-    public ResponseEntity<CreatedStudyResponseDto> createStudy(@Valid @RequestBody StudyRequestDto req) {
-        CreatedStudyResponseDto study = studyService.createStudy(req);
-        return ResponseEntity.status(HttpStatus.CREATED).body(study);
+    public ResponseEntity<?> createStudy(@Valid @RequestBody StudyRequestDto req) {
+        Long id = studyService.createStudy(req);
+        return ResponseEntity.status(HttpStatus.CREATED).body("글 등록 완료"+ '\n' + "id = " + id);
     }
 
     @Operation(summary = "스터디 모집글 조회", description = "PathVariable을 입력받아 게시글 조회후 조회수 1 증가")
@@ -54,7 +44,7 @@ public class StudyController {
             @ApiResponse(responseCode = "200", description = "OK")
     })
     @GetMapping("/study/{id}")
-    public ResponseEntity<StudyInfoResponseDto> findStudy(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<StudyDetailResponseDto> findStudy(@PathVariable(name = "id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(studyService.findStudy(id));
     }
 
@@ -66,19 +56,31 @@ public class StudyController {
     })
     @GetMapping("/search/studies")
     public ResponseEntity<List<StudyInfoResponseDto>> findAllStudy(
-            @RequestParam(value = "keyword", required = false) String keyword,
-            @RequestParam(value = "region", required = false) String region,
-            @RequestParam(value = "recruitment", required = false) Boolean recruitment,
-            @RequestParam(value = "online", required = false) Boolean online,
-            @RequestParam(value = "year", required = false) Integer year,
-            @RequestParam(value = "subjects", required = false) List<String> subjects,
-            @RequestParam(value = "criteria", required = false) String criteria,
-            @RequestParam(value = "pageNumber") Integer pageNumber) {
+            @Parameter(description = "검색어")
+            @RequestParam(defaultValue = "", required = false) String keyword,
+            @Parameter(description = "지역-시,도")
+            @RequestParam(defaultValue = "", required = false) String siDo,
+            @Parameter(description = "지역-구,군")
+            @RequestParam(defaultValue = "", required = false) String guGun,
+            @Parameter(description = "모집여부(모집중 O, 모집 완료 X, 상관없음 N)")
+            @RequestParam(defaultValue = "", required = false) String recruitment,
+            @Parameter(description = "스터디 유형(온라인 스터디 O," +
+                    "오프라인 스터디 X," +
+                    "상관없음 N)")
+            @RequestParam(defaultValue = "", required = false) String online,
+            @Parameter(description = "연도")
+            @RequestParam(defaultValue = "2024", required = false) Integer year,
+            @Parameter(description = "스터디 분야")
+            @RequestParam(defaultValue = "", required = false) List<String> fields,
+            @Parameter(description = "정렬 기준: latestOrder, pastOrder, likeCnt중 하나여야 합니다.")
+            @RequestParam(defaultValue = "latestOrder", required = false) String sort,
+            @Parameter(description = "페이지 번호")
+            @RequestParam(value = "page") int page,
+            @Parameter(description = "한 페이지의 아이템 갯수")
+            @RequestParam(value = "size") int size) {
         return ResponseEntity.status(HttpStatus.OK).body(studyService.searchStudy(
-                keyword, region, recruitment, online, year, subjects, pageNumber, criteria));
+                keyword, siDo, guGun, recruitment, online, year, fields, page, size, sort));
     }
-
-
 
     @Operation(summary = "스터디 게시글에 댓글", description = "스터디 Id를 입력받아 해당 스터디를 찾은 후 댓글")
     @ApiResponses(value = {
@@ -114,8 +116,9 @@ public class StudyController {
             @ApiResponse(responseCode = "200", description = "OK")
     })
     @PostMapping("/study-like/{id}")
-    public ResponseEntity<StudyInfoResponseDto> addComment(@PathVariable(name = "id") Long id){
-        return ResponseEntity.status(HttpStatus.OK).body(studyService.likeStudy(id));
+    public ResponseEntity<String> addComment(@PathVariable(name = "id") Long id){
+        studyService.likeStudy(id);
+        return ResponseEntity.status(HttpStatus.OK).body("좋아요 완료");
     }
 
     @Operation(summary = "스터디 모집글 수정", description = "PathVariable, 스터디 변경내용을 입력받아 스터디 수정")
@@ -124,7 +127,7 @@ public class StudyController {
     })
     @PutMapping("/study/{id}")
     public ResponseEntity<StudyInfoResponseDto> editStudy(@PathVariable(name = "id") Long id,
-                                                      @RequestBody StudyEditDto req) {
+                                                      @RequestBody StudyRequestDto req) {
         return ResponseEntity.status(HttpStatus.OK).body(studyService.editStudy(id, req));
     }
 
@@ -147,5 +150,13 @@ public class StudyController {
     public void wishStudy(@PathVariable(name = "id") Long id) {
         studyService.wishStudy(id);
     }
+
+    @Operation(summary = "스터디 게시글 상세정보 댓글 조회api")
+    @GetMapping("/study/{id}/comments")
+    public ResponseEntity<?> getStudyComments(@PathVariable(name = "id") Long id){
+        List<StudyCommentResponseDto> responseDtos = studyService.getStudyComments(id);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDtos);
+    }
+
 
 }

@@ -12,8 +12,9 @@ import lombok.NoArgsConstructor;
 public class MemberInfoDto {
     private String email;
     private String nickname;
+    protected String profileImg;
 
     public static MemberInfoDto toDto(Member member) {
-        return new MemberInfoDto(member.getEmail(), member.getNickname());
+        return new MemberInfoDto(member.getEmail(), member.getNickname(), member.getImageUrl());
     }
 }

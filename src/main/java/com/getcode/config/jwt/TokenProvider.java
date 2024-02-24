@@ -1,20 +1,10 @@
 package com.getcode.config.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.security.Key;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +16,12 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import java.security.Key;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -189,11 +185,11 @@ public class TokenProvider {
         log.info("Access Token, Refresh Token 헤더 설정 완료");
     }
     public void setAccessTokenHeader(HttpServletResponse response, String accessToken) {
-        response.setHeader("Authorization", accessToken);
+        response.setHeader(AUTHORIZATION_HEADER, accessToken);
     }
 
     public void setRefreshTokenHeader(HttpServletResponse response, String refreshToken) {
-        response.setHeader("Authorization-refresh", refreshToken);
+        response.setHeader(REFRESH_HEADER, refreshToken);
     }
 
     public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken) {
@@ -205,7 +201,7 @@ public class TokenProvider {
     // Request Header에 Access Token 정보를 추출하는 메서드
     public String resolveAccessToken(HttpServletRequest request) {
         log.info("JwtTokenProvider.resolveAccessToken excute, request = {}", request.toString());
-        String bearerToken = request.getHeader("Authorization");
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }
@@ -215,7 +211,7 @@ public class TokenProvider {
     // Request Header에 Refresh Token 정보를 추출하는 메서드
     public String resolveRefreshToken(HttpServletRequest request) {
         log.info("JwtTokenProvider.resolveRefreshToken excute, request = {}", request.toString());
-        String bearerToken = request.getHeader("Authorization-refresh");
+        String bearerToken = request.getHeader(REFRESH_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }

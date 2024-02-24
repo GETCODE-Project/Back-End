@@ -1,9 +1,8 @@
-package com.getcode.dto.community;
+package com.getcode.dto.community.requset;
 
 import com.getcode.domain.community.Community;
-import com.getcode.domain.community.CommunityCategory;
+import com.getcode.domain.common.CommunityCategory;
 import com.getcode.domain.member.Member;
-import com.getcode.domain.study.Study;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
@@ -27,7 +26,7 @@ public class CommunityRequestDto {
     @Length(min = 2, max = 1000)
     private String content;
 
-    @Schema(description = "게시판 종류", defaultValue = "qna")
+    @Schema(description = "게시판 종류: QnA, 자유게시판, 고민상담 중 1개")
     private String category;
 
     public Community toEntity(Member member) {
@@ -35,9 +34,9 @@ public class CommunityRequestDto {
                 .title(title)
                 .content(content)
                 .views(0)
-                .count(0)
+                .likeCnt(0)
                 .member(member)
-                .category(CommunityCategory.valueOf(category.toUpperCase()))
+                .category(CommunityCategory.fromString(category))
                 .build();
     }
 }

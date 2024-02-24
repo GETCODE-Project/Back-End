@@ -1,10 +1,12 @@
 package com.getcode.domain.community;
 
 import com.getcode.domain.common.BaseTimeEntity;
+import com.getcode.domain.common.CommunityCategory;
 import com.getcode.domain.member.Member;
-import com.getcode.dto.community.CommunityEditDto;
-import com.getcode.global.CommunityTypeConverter;
+import com.getcode.dto.community.requset.CommunityRequestDto;
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -32,13 +34,13 @@ public class Community extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "integer default 0", nullable = false)
     private int views;
 
-    @Column(nullable = false)
-    private int count;
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private int likeCnt;
 
-    @Convert(converter = CommunityTypeConverter.class)
+    @Enumerated(EnumType.STRING)
     private CommunityCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,35 +48,34 @@ public class Community extends BaseTimeEntity {
     private Member member;
 
     @Builder.Default
-    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommunityComment> comments = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommunityLike> likes = new ArrayList<>();
 
-    //연관관계 메서드//
-    public void foreignKey(Member member){
-        this.member = member;
-        member.getCommunity().add(this);
-    }
+    @Builder.Default
+    @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WishCommunity> wishes = new ArrayList<>();
 
     public void increaseViews() {
         this.views +=1;
     }
 
     public void increaseCount() {
-        this.count +=1;
+        this.likeCnt +=1;
     }
 
     public void decreaseCount() {
-        this.count -=1;
+        this.likeCnt -=1;
     }
 
-    public void editCommunity(CommunityEditDto req) {
+    public void editCommunity(CommunityRequestDto req) {
         this.title = req.getTitle();
         this.content = req.getContent();
+        this.category = CommunityCategory.fromString(req.getCategory());
+        this.setModifiedDate(LocalDateTime.now());
     }
-
 
 }

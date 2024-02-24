@@ -2,9 +2,7 @@ package com.getcode.dto.projectrecruitment;
 
 import com.getcode.domain.common.Subject;
 import com.getcode.domain.common.TechStack;
-import com.getcode.domain.project.Project;
 import com.getcode.domain.projectrecruitment.ProjectRecruitment;
-import com.getcode.domain.projectrecruitment.ProjectRecruitmentSubject;
 import com.getcode.domain.projectrecruitment.ProjectRecruitmentTech;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -18,7 +16,12 @@ public class ProjectRecruitmentSpecification {
     //기술스택 조건 검사
     public static Specification<ProjectRecruitment> techStackLike(List<String> techStacks){
         return (root, query, criteriaBuilder) -> {
-
+/*
+            query.distinct(true);
+            if(ProjectRecruitment.class.equals(query.getResultType())){
+                root.fetch("techStacks", JoinType.LEFT);
+            }
+*/
             Join<ProjectRecruitment, ProjectRecruitmentTech> projectRecruitmentTechJoin = root.join("techStacks", JoinType.LEFT);
             Predicate[] predicates = new Predicate[techStacks.size()];
             //여러개의 기술을 검색할 경우 배열에 저장하는 for문
@@ -34,18 +37,12 @@ public class ProjectRecruitmentSpecification {
 
 
     //주제 조건 검사
-    public static Specification<ProjectRecruitment> subjectLike(List<String> subjects){
+    public static Specification<ProjectRecruitment> subjectLike(String subject){
         return (root, query, criteriaBuilder) -> {
 
-            Join<ProjectRecruitment, ProjectRecruitmentSubject> projectRecruitmentSubjectJoin = root.join("Subjects", JoinType.LEFT);
-            Predicate[] predicates = new Predicate[subjects.size()];
+                Subject subject1 = Subject.fromString(subject);
+                return criteriaBuilder.equal(root.get("subject"), subject);
 
-            for(int i=0; i<subjects.size(); i++){
-                Subject subject = Subject.fromString(subjects.get(i));
-                predicates[i] = criteriaBuilder.equal(projectRecruitmentSubjectJoin.get("subject"), subject);
-            }
-
-            return criteriaBuilder.or(predicates);
         };
     }
 
@@ -65,6 +62,15 @@ public class ProjectRecruitmentSpecification {
 
     }
 
+    public static Specification<ProjectRecruitment> onlineLike(Boolean online){
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("online"), online);
+    }
+
+    public static Specification<ProjectRecruitment> recruitmentLike(Boolean recruitment){
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("recruitment"), recruitment);
+    }
+
+
     public static Specification<ProjectRecruitment> combineSpecifications(List<Specification<ProjectRecruitment>> specifications) {
         Specification<ProjectRecruitment> combinedSpec = Specification.where(null);
 
@@ -75,6 +81,10 @@ public class ProjectRecruitmentSpecification {
         return combinedSpec;
     }
 
-
-
+    public static Specification<ProjectRecruitment> siDoLike(String siDo) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("siDo"), siDo);
+    }
+    public static Specification<ProjectRecruitment> guGunLike(String guGun) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("guGun"), guGun);
+    }
 }

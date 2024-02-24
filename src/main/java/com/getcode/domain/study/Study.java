@@ -1,30 +1,15 @@
 package com.getcode.domain.study;
 
 import com.getcode.domain.common.BaseTimeEntity;
-import com.getcode.domain.community.Community;
+import com.getcode.domain.common.Field;
 import com.getcode.domain.member.Member;
-import com.getcode.dto.study.StudyEditDto;
+import com.getcode.dto.study.request.StudyRequestDto;
+import jakarta.persistence.*;
+import lombok.*;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 
 @Getter
@@ -46,7 +31,10 @@ public class Study extends BaseTimeEntity {
     private String content;
 
     @Column(nullable = false)
-    private String region;
+    private String siDo;
+
+    @Column(nullable = false)
+    private String guGun;
 
     @Column(nullable = false)
     private boolean recruitment;
@@ -54,8 +42,11 @@ public class Study extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean online;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "integer default 0",nullable = false)
     private int views;
+
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private int likeCnt;
 
     private String contact;
 
@@ -70,37 +61,32 @@ public class Study extends BaseTimeEntity {
     private List<StudyLike> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "study", cascade = CascadeType.ALL)
-    private List<StudySubject> subjects = new ArrayList<>();
+    private List<StudyField> fields = new ArrayList<>();
 
     @OneToMany(mappedBy = "study", cascade = CascadeType.ALL)
     private List<WishStudy> wishes = new ArrayList<>();
-
-    @Column(nullable = false)
-    private int count;
-
-    //연관관계 메서드//
-    public void foreignKey(Member member){
-        this.member = member;
-        member.getStudy().add(this);
-    }
 
     public void increaseViews() {
         this.views +=1;
     }
 
     public void increaseCount() {
-        this.count +=1;
+        this.likeCnt +=1;
     }
 
     public void decreaseCount() {
-        this.count -=1;
+        this.likeCnt -=1;
     }
 
-    public void editStudy(StudyEditDto req) {
+    public void editStudy(StudyRequestDto req) {
         this.title = req.getTitle();
         this.content = req.getContent();
-        this.region = req.getRegion();
+        this.siDo = req.getSiDo();
+        this.guGun = req.getGuGun();
         this.online = req.isOnline();
         this.recruitment = req.isRecruitment();
+        this.setModifiedDate(LocalDateTime.now());
+        List<StudyField> oldFields = this.fields;
+        oldFields.clear();
     }
 }

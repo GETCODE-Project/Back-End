@@ -20,23 +20,20 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
+
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "사용자 관련 API 명세")
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Validated
 public class MemberController {
     private final MemberService memberService;
     private final RedisService redisService;
@@ -59,7 +56,7 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "OK")
     })
     @PostMapping("/auth/login")
-    public ResponseEntity<TokenDto> login(@RequestBody MemberLoginRequestDto memberRequestDto) {
+    public ResponseEntity<TokenDto> login(@Valid @RequestBody MemberLoginRequestDto memberRequestDto) {
         return ResponseEntity.ok(memberService.login(memberRequestDto));
     }
 
@@ -68,10 +65,9 @@ public class MemberController {
             @ApiResponse(responseCode = "202", description = "Accepted")
     })
     @PatchMapping("/logout")
-    public void logout(HttpServletRequest request) {
-        String accessToken = tokenProvider.resolveAccessToken(request);
-        String ref = tokenProvider.resolveRefreshToken(request);
-        memberService.logout(ref, accessToken);
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        memberService.logout(request);
+        return ResponseEntity.ok().body("로그아웃 성공");
     }
 
     // 이메일 인증번호 보내기
@@ -80,7 +76,7 @@ public class MemberController {
             @ApiResponse(responseCode = "202", description = "Accepted")
     })
     @PostMapping("/emails/verification-requests")
-    public ResponseEntity<?> sendMessage(@RequestParam("email") @Valid String email) {
+    public ResponseEntity<?> sendMessage(@RequestParam("email") @Email String email) {
         memberService.sendCodeToEmail(email);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -90,7 +86,7 @@ public class MemberController {
             @ApiResponse(responseCode = "202", description = "Accepted")
     })
     @GetMapping("/emails/verifications")
-    public ResponseEntity<EmailVerificationResultDto> verificationEmail(@RequestParam("email") @Valid String email,
+    public ResponseEntity<EmailVerificationResultDto> verificationEmail(@RequestParam("email") @Email String email,
                                                                         @RequestParam("code") String authCode) {
         EmailVerificationResultDto res = memberService.verifiedCode(email, authCode);
         return ResponseEntity.status(HttpStatus.OK).body(res);
@@ -105,16 +101,26 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(memberService.userInfo());
     }
 
-    @Operation(summary = "회원 정보 수정", description = "Acceess Token 인증 후, 사용자 개인정보 수정")
+    //닉네임 수정
+    @Operation(summary = "회원 정보 수정-닉네임", description = "Acceess Token 인증 후, 사용자 개인정보 수정")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "202", description = "Accepted")
+            @ApiResponse(responseCode = "200", description = "Accepted")
     })
-    @PostMapping("/update-profile")
-    public ResponseEntity<S3FileUpdateDto> updateImageUrl(@RequestPart(name = "fileType") String fileType,
-                                                          @RequestPart(name = "files") List<MultipartFile> multipartFiles) {
+    @PatchMapping("/update-nickname")
+    public ResponseEntity<String> updateNickname(@RequestParam(name = "nickname")String nickname) {
+        memberService.changeNickname(nickname);
+        return ResponseEntity.ok("닉네임 변경 성공");
+    }
+
+    @Operation(summary = "회원 정보 수정-프로필 이미지", description = "Acceess Token 인증 후, 사용자 개인정보 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Accepted")
+    })
+    @PatchMapping("/update-profileImg")
+    public ResponseEntity<String> updateImageUrl(@RequestPart(name = "fileType") String fileType,
+                                                 @RequestPart(name = "files") List<MultipartFile> multipartFiles) {
         S3FileDto file = s3Service.uploadFiles(fileType, multipartFiles).get(0);
         S3FileUpdateDto fileUrl = new S3FileUpdateDto(file.getUploadFileUrl());
-        memberService.addProfile(fileUrl);
-        return ResponseEntity.status(HttpStatus.OK).body(fileUrl);
+        return ResponseEntity.status(HttpStatus.OK).body(memberService.addProfile(fileUrl).getImageUrl());
     }
 }

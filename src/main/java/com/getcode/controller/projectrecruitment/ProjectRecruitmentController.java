@@ -37,15 +37,15 @@ public class ProjectRecruitmentController {
                                                           @Valid
                                                           @RequestBody ProjectRecruitmentRequestDto requestDto){
 
-        projectRecruitmentService.insertProjectRecruitment(requestDto);
-        return ResponseEntity.ok().body("글 등록 완료");
+        Long id = projectRecruitmentService.insertProjectRecruitment(requestDto);
+        return ResponseEntity.ok().body("글 등록 완료"+ '\n' + "id = " + id);
 
     }
 
     @Operation(summary = "프로젝트 모집 글 삭제 api")
     @DeleteMapping("/{id}/delete")
     public ResponseEntity<?> deleteProjectRecruitment(@Parameter(description = "프로젝트 모집 아이디")
-                                                      @PathVariable Long id){
+                                                      @PathVariable(name = "id") Long id){
         int result = 0;
         result = projectRecruitmentService.deleteProjectRecruitment(id);
 
@@ -60,7 +60,7 @@ public class ProjectRecruitmentController {
     @Operation(summary = "프로젝트 모집 댓글 등록 api")
     @PostMapping("/detail/{id}/comment/add")
     public ResponseEntity<?> addComment(@Parameter(description = "프로젝트 모집 아이디")
-                                        @PathVariable Long id,
+                                        @PathVariable(name = "id") Long id,
                                         @RequestBody RecruitmentCommentRequestDto requestDto)
     {
         projectRecruitmentService.addComment(id, requestDto);
@@ -71,9 +71,9 @@ public class ProjectRecruitmentController {
     @Operation(summary = "프로젝트 모집 댓글 수정 api")
     @PutMapping("/detail/{recruitmentId}/comment/update/{id}")
     public ResponseEntity<?> updateComment(@Parameter(description = "프로젝트 모집 아이디")
-                                           @PathVariable Long recruitmentId,
+                                           @PathVariable(name = "recruitmentId") Long recruitmentId,
                                            @Parameter(description = "프로젝트 모집 댓글 아이디")
-                                           @PathVariable Long id,
+                                           @PathVariable(name = "id") Long id,
                                            @RequestBody RecruitmentCommentUpdateDto requestDto
                                            ){
 
@@ -85,9 +85,9 @@ public class ProjectRecruitmentController {
     @Operation(summary = "프로젝트 모집 댓글 삭제 api")
     @DeleteMapping("/detail/{recruitmentId}/comment/delete/{id}")
     public ResponseEntity<?> deleteComment(@Parameter(description = "프로젝트 모집 아이디")
-                                               @PathVariable Long recruitmentId,
+                                               @PathVariable(name = "recruitmentId") Long recruitmentId,
                                            @Parameter(description = "프로젝트 모집 댓글 아이디")
-                                               @PathVariable Long id)
+                                               @PathVariable(name = "id") Long id)
     {
         projectRecruitmentService.deleteComment(recruitmentId, id);
         return ResponseEntity.status(HttpStatus.OK).body("댓글 삭제 완료");
@@ -97,14 +97,17 @@ public class ProjectRecruitmentController {
     @Operation(summary = "프로젝트 모집 좋아요 api")
     @PostMapping("/{recruitmentId}/like")
     public ResponseEntity<?> likeProjectRecruitment(@Parameter(description = "프로젝트 모집 아이디")
-                                                        @PathVariable Long recruitmentId)
+                                                        @PathVariable(name = "recruitmentId") Long recruitmentId)
     {
 
         int result = projectRecruitmentService.likeProjectRecruitment(recruitmentId);
+        Boolean checkLike = false;
+
         if(result == 1){
-            return ResponseEntity.status(HttpStatus.OK).body("좋아요 등록");
+            checkLike = true;
+            return ResponseEntity.status(HttpStatus.OK).body("좋아요 등록"+ "\n"+ "checkLike: "+checkLike);
         } else if (result == -1) {
-            return ResponseEntity.status(HttpStatus.OK).body("좋아요 삭제");
+            return ResponseEntity.status(HttpStatus.OK).body("좋아요 삭제"+ "\n"+ "checkLike: "+checkLike);
         } else {
           return ResponseEntity.status(HttpStatus.OK).body("좋아요 등록 또는 삭제 실패");
         }
@@ -114,14 +117,17 @@ public class ProjectRecruitmentController {
     @Operation(summary = "프로젝트 모집 찜 api")
     @PostMapping("/{recruitmentId}/wish")
     public ResponseEntity<?> wishProjectRecruitment(@Parameter(description = "프로젝트 모집 아이디")
-                                                        @PathVariable Long recruitmentId)
+                                                        @PathVariable(name = "recruitmentId") Long recruitmentId)
     {
 
         int result = projectRecruitmentService.wishProjectRecruitment(recruitmentId);
+        Boolean checkWish = false;
+
         if(result == 1){
-            return ResponseEntity.status(HttpStatus.OK).body("찜 등록");
+            checkWish = true;
+            return ResponseEntity.status(HttpStatus.OK).body("찜 등록"+ "\n"+ "checkWish: "+checkWish);
         } else if (result == -1) {
-            return ResponseEntity.status(HttpStatus.OK).body("찜 삭제");
+            return ResponseEntity.status(HttpStatus.OK).body("찜 삭제"+ "\n"+ "checkWish: "+checkWish);
         } else {
           return ResponseEntity.status(HttpStatus.OK).body("찜 등록 또는 삭제 실패");
         }
@@ -131,7 +137,7 @@ public class ProjectRecruitmentController {
     @Operation(summary = "프로젝트 모집 상세조회 api")
     @GetMapping("/detail/{id}")
     public ResponseEntity<?> getDetailRecruitment(@Parameter(description = "프로젝트 모집 아이디")
-                                                  @PathVariable Long id)
+                                                  @PathVariable(name = "id") Long id)
     {
 
         ProjectRecruitmentDetailResDto resDto = projectRecruitmentService.getDetailRecruitment(id);
@@ -144,18 +150,23 @@ public class ProjectRecruitmentController {
                                                    @RequestParam(defaultValue = "latestOrder", required = false) String sort,
                                                @Parameter(description = "페이지 수")
                                                    @Min(value = 0, message = "page값은 0이상이어야 합니다")
-                                                   @RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "1") int pageNumber,
                                                @Parameter(description = "한 페이지에 담기는 개수")
                                                    @Positive(message = "size값은 1이상이어야 합니다")
-                                                   @RequestParam(defaultValue = "10") int size,
-                                               @Parameter(description = "검색어") @RequestParam(defaultValue = "", required = false) String keyword,
-                                               @Parameter(description = "검색 조건") @RequestParam(defaultValue = "", required = false) List<String> subject,
+                                                       @RequestParam(defaultValue = "10") int size,
+                                                       @Parameter(description = "검색어") @RequestParam(defaultValue = "", required = false) String keyword,
+                                               @Parameter(description = "주제") @RequestParam(defaultValue = "", required = false) String subject,
                                                @Parameter(description = "기술스택") @RequestParam(defaultValue = "", required = false) List<String> techStack,
                                                @Parameter(description = "년도") @RequestParam(defaultValue = "2024", required = false) Integer year,
-                                               @Parameter(description = "사용자 id")@RequestParam(required = false) Long memberId)
+                                               @Parameter(description = "프로젝트 모집 유형(온라인 스터디 O," +
+                                                       "오프라인 스터디 X," +
+                                                       "상관없음 N)") @RequestParam(defaultValue = "", required = false) String online,
+                                               @Parameter(description = "모집여부(모집중 O, 모집 완료 X, 상관없음 N)") @RequestParam(defaultValue = "", required = false) String recruitment,
+                                               @Parameter(description = "지역:시/도") @RequestParam(defaultValue = "", required = false) String siDo,
+                                               @Parameter(description = "지역:구/군") @RequestParam(defaultValue = "", required = false) String guGun)
     {
 
-        List<ProjectRecruitmentInfoResDto> resDtoList = projectRecruitmentService.getAllRecuritment(sort, page, size, keyword, subject, techStack, year, memberId);
+        List<ProjectRecruitmentInfoResDto> resDtoList = projectRecruitmentService.getAllRecuritment(sort, pageNumber, size, keyword, subject, techStack, year, online, recruitment, siDo, guGun);
 
         return ResponseEntity.status(HttpStatus.OK).body(resDtoList);
     }
@@ -163,7 +174,7 @@ public class ProjectRecruitmentController {
     @Operation(summary = "프로젝트 모집글 수정 api")
     @PutMapping("/{id}/update")
     public ResponseEntity<?> updateRecruitment(@RequestBody RecruitmentUpdateRequestDto requestDto,
-                                               @Parameter(description = "프로젝트 모집글 id") @PathVariable Long id)
+                                               @Parameter(description = "프로젝트 모집글 id") @PathVariable(name = "id") Long id)
     {
 
         projectRecruitmentService.updateRecruitment(requestDto, id);
@@ -174,7 +185,7 @@ public class ProjectRecruitmentController {
 
     @Operation(summary = "프로젝트 모집글 댓글 조회 api")
     @GetMapping("/{recruitmentId}/comment")
-    ResponseEntity<?> getRecruitmentComment(@Parameter(description = "프로젝트 아이디")@PathVariable Long recruitmentId){
+    ResponseEntity<?> getRecruitmentComment(@Parameter(description = "프로젝트 아이디")@PathVariable(name = "recruitmentId") Long recruitmentId){
         List<RecruitmentCommentResDto> resDtos = projectRecruitmentService.getRecruitmentComment(recruitmentId);
         return ResponseEntity.status(HttpStatus.OK).body(resDtos);
     }

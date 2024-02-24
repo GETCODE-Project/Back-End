@@ -1,5 +1,10 @@
 package com.getcode.domain.common;
 
+import org.springframework.data.domain.Sort;
+
+import java.util.List;
+import java.util.stream.Stream;
+
 public enum TechStack {
 
     //백엔드 언어
@@ -8,7 +13,7 @@ public enum TechStack {
 
     //프레임 워크
     SPRING("Spring"), DJANGO("Django"), EXPRESSJS("Express.js"), FLASK("Flask"), RAILS("Rails"),
-    VEUJS("vue.js"), SPRINGBOOT("Springboot"), NEXTJS("Next.js"), NESTJS("Nest.js"),
+    VEU("vue.js"), SPRINGBOOT("Springboot"), NEXT("Next.js"), NEST("Nest.js"),
 
     //데이터베이스
     MYSQL("MySQL"), ORACLE("Oracle"), POSTGRESQL("PostgreSQL"), MARIADB("MariaDB"),
@@ -22,8 +27,10 @@ public enum TechStack {
     FLUTTER("Flutter"), DART("Dart"),
 
     //기타
-    GIT("Git"), GITHUB("Github"), AWS("AWS")
-    ;
+    GIT("Git"), GITHUB("Github"), AWS("AWS"),
+
+    //미정
+    UNDEFINEDED("추후 협의");
 
     private String stack;
 
@@ -32,17 +39,21 @@ public enum TechStack {
     }
 
     public static TechStack fromString(String reqValue) {
-        for (TechStack techStack : TechStack.values()) {
-            if (techStack.stack.equalsIgnoreCase(reqValue)) {
-                return techStack;
+            for (TechStack techStack : TechStack.values()) {
+                if (techStack.stack.equalsIgnoreCase(reqValue)) {
+                    return techStack;
+                }
             }
-        }
         throw new IllegalArgumentException();
+    }
+
+    public static List<String> techStackList() {
+        return Stream.of(TechStack.values())
+                .map(TechStack::print)
+                .toList();
     }
 
     public String print(){
         return stack;
     }
-
-
 }

@@ -5,6 +5,7 @@ import com.getcode.domain.community.Community;
 import com.getcode.domain.community.CommunityComment;
 import com.getcode.domain.community.CommunityLike;
 
+import com.getcode.domain.community.WishCommunity;
 import com.getcode.domain.project.Project;
 import com.getcode.domain.project.ProjectComment;
 import com.getcode.domain.project.ProjectLike;
@@ -92,6 +93,10 @@ public class Member extends BaseTimeEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<WishCommunity> communityWishes = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<StudyComment> studyComments = new ArrayList<>();
 
     @Builder.Default
@@ -129,9 +134,6 @@ public class Member extends BaseTimeEntity {
     @Builder.Default
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<ProjectRecruitmentComment> projectRecruitmentComments = new ArrayList<>();
-    public void updateEmailVerified() {
-        this.emailVerified = true;
-    }
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }

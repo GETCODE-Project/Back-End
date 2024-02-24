@@ -1,6 +1,8 @@
-package com.getcode.dto.community;
+package com.getcode.dto.community.response;
 
 import com.getcode.domain.community.CommunityComment;
+
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -11,16 +13,22 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CommunityCommentResponseDto {
+    private Long id;
     private String content;
-    private String modifiedDate;
+    private LocalDateTime createDate;
+    private LocalDateTime modifiedDate;
     private String email;
     private String nickname;
-    public static CommunityCommentResponseDto toDto(CommunityComment communityComment) {
+    private boolean isWriter;
+    public static CommunityCommentResponseDto toDto(CommunityComment communityComment, boolean isWriter) {
         return new CommunityCommentResponseDto(
+                communityComment.getId(),
                 communityComment.getContent(),
-                communityComment.getModifiedDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
+                communityComment.getCreateDate(),
+                communityComment.getModifiedDate(),
                 communityComment.getMember().getEmail(),
-                communityComment.getMember().getNickname()
+                communityComment.getMember().getNickname(),
+                isWriter
         );
     }
 }

@@ -1,13 +1,9 @@
 package com.getcode.repository.study;
 
-import static org.assertj.core.api.Assertions.*;
-
+import com.getcode.domain.common.Field;
 import com.getcode.domain.study.Study;
-import com.getcode.domain.study.StudySpecification;
-import com.getcode.domain.study.StudySubject;
-import com.getcode.domain.study.StudySubject.StudySubjectBuilder;
-import java.util.List;
-import org.assertj.core.api.Assertions;
+import com.getcode.domain.study.StudyField;
+import com.getcode.dto.study.util.StudySpecification;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +15,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class StudyRepositoryTest {
@@ -26,7 +26,7 @@ class StudyRepositoryTest {
     private StudyRepository studyRepository;
 
     @Autowired
-    private StudySubjectRepository studySubjectRepository;
+    private StudyFieldRepository studyFieldRepository;
 
     @Test
     @DisplayName("StudyRepository 연결 여부 확인")
@@ -78,33 +78,34 @@ class StudyRepositoryTest {
         Study study4 = createStudy("title4", "content4", 0);
         Study study5 = createStudy("title5", "content5", 0);
         studyRepository.saveAll(List.of(study1, study2, study3, study4, study5));
-        StudySubject ss1 = StudySubject.builder()
+        StudyField ss1 = StudyField.builder()
                 .study(study1)
-                .subject("CS")
+                .field(Field.CS)
                 .build();
-        StudySubject ss2 = StudySubject.builder()
+        StudyField ss2 = StudyField.builder()
                 .study(study1)
-                .subject("Algo")
+                .field(Field.CI_CD)
                 .build();
 
-        StudySubject ss3 = StudySubject.builder()
+        StudyField ss3 = StudyField.builder()
                 .study(study2)
-                .subject("CS")
+                .field(Field.ALGORITHM)
                 .build();
-        StudySubject s4 = StudySubject.builder()
+        StudyField s4 = StudyField.builder()
                 .study(study4)
-                .subject("CS")
+                .field(Field.INTERVIEW)
                 .build();
 
-        studySubjectRepository.saveAll(List.of(ss1, ss2, ss3, s4));
+        studyFieldRepository.saveAll(List.of(ss1, ss2, ss3, s4));
 
         //when
         Specification<Study> spec = (root, query, criteriaBuilder) -> null;
-        spec = spec.and(StudySpecification.equalsRegion("LA"));
+        spec = spec.and(StudySpecification.equalsSiDo("LA"));
+        spec = spec.and(StudySpecification.equalsGuGun("LA"));
         spec = spec.and(StudySpecification.equalsRecruitment(true));
         spec = spec.and(StudySpecification.equalsOnline(true));
         spec = spec.and(StudySpecification.equalsYear(2024));
-        spec = spec.and(StudySpecification.containsSubjects(List.of("CS")));
+        spec = spec.and(StudySpecification.containsFields(List.of("CS")));
         spec = spec.and(StudySpecification.equalsKeyword("title1"));
         List<Study> studies = studyRepository.findAll(spec);
 
@@ -117,11 +118,11 @@ class StudyRepositoryTest {
         return Study.builder()
                 .title(title)
                 .content(content)
-                .region("LA")
+                .siDo("LA")
                 .recruitment(true)
                 .online(true)
                 .views(0)
-                .count(count)
+                .likeCnt(count)
                 .build();
     }
 

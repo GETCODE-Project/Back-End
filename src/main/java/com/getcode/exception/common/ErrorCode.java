@@ -9,10 +9,11 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
-    DUPLICATE_EMAIL_EXCEPTION(409, "이미 사용중인 이메일입니다.", BAD_REQUEST),
-    DUPLICATE_NICKNAME_EXCEPTION(409, "이미 사용중인 닉네임입니다.", BAD_REQUEST),
+    DUPLICATE_EMAIL_EXCEPTION(409, "이미 사용중인 이메일입니다.", CONFLICT),
+    DUPLICATE_NICKNAME_EXCEPTION(409, "이미 사용중인 닉네임입니다.", CONFLICT),
     NOT_VERIFIED_EXCEPTION(401, "아직 인증되지 않은 이메일입니다.", UNAUTHORIZED),
     NOT_FOUND_MEMBER_EXCEPTION(404, "사용자가 존재하지 않습니다.", NOT_FOUND),
+    WRONG_VERIFIED_CODE_EXCEPTION(400, "인증번호가 일치하지 않습니다.", BAD_REQUEST),
     NOT_FOUND_STUDY_EXCEPTION(404, "해당 스터디가 존재하지 않습니다.", NOT_FOUND),
     MATCH_MEMBER_EXCEPTION(401, "해당 접근권한이 없습니다", UNAUTHORIZED),
     DUPLICATE_LIKE_EXCEPTION(409, "좋아요는 1번만 가능합니다.", BAD_REQUEST),
@@ -21,7 +22,8 @@ public enum ErrorCode {
     NOT_FOUND_COMMUNITY_EXCEPTION(409, "존재하지 게시글입니다.", BAD_REQUEST),
     NOT_FOUND_COMMENT_EXCEPTION(409, "존재하지 않는 댓글입니다.", BAD_REQUEST),
     NOT_FOUND_PROJECT_EXCEPTION(404, "프로젝트가 존재하지 않습니다", NOT_FOUND),
-    NOT_FOUND_PROJECT_RECRUITMENT_EXCEPTION(404, "프로젝트 모집글이 존재하지 않습니다", BAD_REQUEST);
+    NOT_FOUND_PROJECT_RECRUITMENT_EXCEPTION(404, "프로젝트 모집글이 존재하지 않습니다", BAD_REQUEST),
+    TOKEN_NOT_EXIST(404, "로그인 정보가 누락되었습니다.",BAD_REQUEST);
 
     private final int status;
     private final String message;

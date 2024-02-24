@@ -1,6 +1,7 @@
 package com.getcode.domain.projectrecruitment;
 
 import com.getcode.domain.common.BaseTimeEntity;
+import com.getcode.domain.common.Subject;
 import com.getcode.domain.member.Member;
 
 
@@ -10,6 +11,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,11 +43,14 @@ public class ProjectRecruitment extends BaseTimeEntity {
     @Column(nullable = false)
     private String guGun;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private boolean recruitment;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private boolean online;
+
+    @Column(nullable = false)
+    private String contact;
 
     //조회수 default 값 설정
     @Column(columnDefinition = "integer default 0", nullable = false)
@@ -58,17 +63,21 @@ public class ProjectRecruitment extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "subject_name", nullable = true)
+    private Subject subject;
+
     @Builder.Default
     @OneToMany(mappedBy = "projectRecruitment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectRecruitmentTech> techStacks = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "projectRecruitment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProjectRecruitmentSubject> subjects = new ArrayList<>();
+    private List<ProjectRecruitmentLike> likes = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "projectRecruitment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProjectRecruitmentLike> likes = new ArrayList<>();
+    private List<WishProjectRecruitment> wishes = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "projectRecruitment", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -97,7 +106,7 @@ public class ProjectRecruitment extends BaseTimeEntity {
         this.guGun = requestDto.getGuGun();
         this.online = requestDto.getOnline();
         this.recruitment = requestDto.getRecruitment();
-
+        this.subject = Subject.fromString(requestDto.getSubject());
         //casecade 타입을 all로 설정해놓아서 기존 부모와 연결된 List객체를 삭제하고 새로 만들어준다.
         if(requestDto.getTechStackList() != null) {
             this.getTechStacks().clear();
@@ -106,13 +115,8 @@ public class ProjectRecruitment extends BaseTimeEntity {
                     .collect(Collectors.toList());
             this.techStacks.addAll(newStack);
         }
+        this.setModifiedDate(LocalDateTime.now());
 
-        if(requestDto.getSubjects() != null) {
-            this.subjects.clear();
-            List<ProjectRecruitmentSubject> newSubject = requestDto.getSubjects().stream()
-                    .map(recruitmentSubject -> new ProjectRecruitmentSubject(this,  recruitmentSubject))
-                    .collect(Collectors.toList());
-            this.subjects.addAll(newSubject);
-        }
+
     }
 }

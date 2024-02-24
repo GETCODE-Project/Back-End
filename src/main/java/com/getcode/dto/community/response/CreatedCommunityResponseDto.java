@@ -1,11 +1,11 @@
-package com.getcode.dto.community;
+package com.getcode.dto.community.response;
 
 import com.getcode.domain.community.Community;
-import com.getcode.domain.community.CommunityCategory;
+import com.getcode.domain.common.CommunityCategory;
 import com.getcode.dto.member.MemberInfoDto;
+
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.stream.Collectors;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,8 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CommunityResponseDto {
-
+public class CreatedCommunityResponseDto {
     private String title;
     private String content;
     private int views;
@@ -23,18 +22,16 @@ public class CommunityResponseDto {
     private String date;
     private CommunityCategory category;
     private MemberInfoDto member;
-    private List<CommunityCommentResponseDto> comments;
 
-    public static CommunityResponseDto toDto(Community community) {
-        return new CommunityResponseDto(
+    public static CreatedCommunityResponseDto toDto(Community community) {
+        return new CreatedCommunityResponseDto(
                 community.getTitle(),
                 community.getContent(),
                 community.getViews(),
-                community.getCount(),
+                community.getLikeCnt(),
                 community.getModifiedDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
                 community.getCategory(),
-                MemberInfoDto.toDto(community.getMember()),
-                community.getComments().stream().map(CommunityCommentResponseDto::toDto).collect(Collectors.toList())
+                MemberInfoDto.toDto(community.getMember())
         );
     }
 }

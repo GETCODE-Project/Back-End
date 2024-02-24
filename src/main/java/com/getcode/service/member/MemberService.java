@@ -23,6 +23,8 @@ import io.jsonwebtoken.Claims;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.Random;
+
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
@@ -59,15 +61,18 @@ public class MemberService {
     // 회원가입
     @Transactional
     public Member signup(SignUpDto signUpDto) {
-        Optional<Member> memberEmail = memberRepository.findByEmail(signUpDto.getEmail());
-        Optional<Member> memberNickname = memberRepository.findByNickname(signUpDto.getNickname());
 
-        if (memberEmail.isPresent()) {
+
+        if (memberRepository.findByEmail(signUpDto.getEmail()).isPresent()) {
             throw new DuplicateEmailException();
         }
 
-        if (memberNickname.isPresent()) {
+        if (memberRepository.findByNickname(signUpDto.getNickname()).isPresent()) {
             throw new DuplicateNicknameException();
+        }
+
+        if (!signUpDto.getEmailVerified()) {
+            throw new NotVerifiedException();
         }
 
         Member member = signUpDto.toEntity();
@@ -81,7 +86,12 @@ public class MemberService {
     public TokenDto login(MemberLoginRequestDto memberRequestDto) {
         String email = memberRequestDto.getEmail();
 
-        Member member = memberRepository.findByEmail(email).orElseThrow(NotFoundMemberException::new);
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(NotFoundMemberException::new);
+
+        if (!member.isEmailVerified()) {
+            throw new NotVerifiedException();
+        }
 
         UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
@@ -102,15 +112,15 @@ public class MemberService {
     }
 
     // 로그아웃 => Http Request / Response에 대해서는 Service 계층에서 알 필요없다.
-    public void logout(String refreshToken, String accessToken) {
-        Claims claims = tokenProvider.parseClaims(refreshToken);
-        String email = claims.getSubject();
-        String redisRefreshToken = redisService.getValue(email);
+    public void logout(HttpServletRequest request) {
+        String redisRefreshToken = redisService
+                .getValue(tokenProvider.parseClaims(tokenProvider
+                .resolveRefreshToken(request)).getSubject());
 
         if (redisService.checkExistsValue(redisRefreshToken)) {
-            redisService.deleteValues(email);
+            redisService.deleteValues(tokenProvider.parseClaims(tokenProvider.resolveRefreshToken(request)).getSubject());
             long accessTokenExpirationMillis = tokenProvider.getAccessTokenExpirationMillis();
-            redisService.setValues(accessToken, "logout", Duration.ofMillis(accessTokenExpirationMillis));
+            redisService.setValues(tokenProvider.resolveAccessToken(request), "logout", Duration.ofMillis(accessTokenExpirationMillis));
         }
     }
 
@@ -130,6 +140,10 @@ public class MemberService {
     public void sendCodeToEmail(String toEmail) {
         String authCode = createCode();
 
+        if (memberRepository.findByEmail(toEmail).isPresent()) {
+            throw new DuplicateEmailException();
+        }
+
         mailService.sendEmail(toEmail, authCode);
 
         redisService.setValues(AUTH_CODE_PREFIX + toEmail, authCode, Duration.ofMillis(authCodeExpirationMills));
@@ -140,12 +154,10 @@ public class MemberService {
     public EmailVerificationResultDto verifiedCode(String email, String authCode) {
         String redisAuthCode = redisService.getValue(AUTH_CODE_PREFIX + email);
         boolean authResult = redisService.checkExistsValue(redisAuthCode) && redisAuthCode.equals(authCode);
-
-        if (authResult) {
-            Member member = memberRepository.findByEmail(email).orElseThrow(IllegalArgumentException::new);
-            member.updateEmailVerified();
+        if (authResult){
+            return EmailVerificationResultDto.toDto(authResult);
         }
-        return EmailVerificationResultDto.toDto(authResult);
+        throw new NotVerifiedException();
     }
 
     // 프로필 추가
@@ -154,6 +166,24 @@ public class MemberService {
         Member member = memberRepository.findByEmail(getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
         member.updateImage(request.getImageUrl());
         return request;
+    }
+
+    @Transactional
+    public void changeNickname(String nickname){
+        Member member = memberRepository.findByEmail(getCurrentMemberEmail())
+                .orElseThrow(NotFoundMemberException::new);
+
+        if (memberRepository.findByNickname(nickname).isPresent()) {
+            throw new DuplicateNicknameException();
+        }
+        member.updateNickname(nickname);
+    }
+
+    @Transactional
+    public void deleteMember() {
+        Member member = memberRepository.findByEmail(getCurrentMemberEmail())
+                .orElseThrow(NotFoundMemberException::new);
+
     }
 
     // 인증번호 생성로직

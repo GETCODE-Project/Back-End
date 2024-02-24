@@ -1,12 +1,14 @@
-package com.getcode.dto.study;
+package com.getcode.dto.study.request;
 
+import com.getcode.domain.common.Field;
 import com.getcode.domain.member.Member;
 import com.getcode.domain.study.Study;
 
-import com.getcode.domain.study.StudySubject;
+import com.getcode.domain.study.StudyField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,28 +30,35 @@ public class StudyRequestDto {
     @Length(min = 2, max = 1000)
     private String content;
 
-    @Schema(description = "지역", defaultValue = "서울")
-    private String region;
+    @Schema(description = "지역-시,도", defaultValue = "서울")
+    private String siDo;
+
+    @Schema(description = "지역-구,군", defaultValue = "중구")
+    private String guGun;
+
+    @Schema(description = "", defaultValue = "true")
+    private boolean recruitment;
 
     @Schema(description = "온라인/오프라인", defaultValue = "true")
     private boolean online;
 
-    @Schema(description = "연락방법", defaultValue = "kyun9151@naver.com")
-    private String contact;
+    @Schema(description = "연락방법", defaultValue = "[\"010-1234-5678\",\"ojs258@naver.com\"]")
+    private List<String> contact;
 
-    @Schema(description = "스터디 주제", defaultValue = "코딩 테스트, 자격증")
-    private List<String> subjects;
+    @Schema(description = "스터디 주제", defaultValue ="[\"Algorithm\",\"CodingTest\"]")
+    private List<String> fields;
 
     public Study toEntity(Member member) {
         return Study.builder()
                 .title(title)
                 .content(content)
-                .region(region)
+                .siDo(siDo)
+                .guGun(guGun)
                 .recruitment(true)
                 .online(online)
                 .views(0)
-                .count(0)
-                .contact(contact)
+                .likeCnt(0)
+                .contact(String.join("^", contact))
                 .member(member)
                 .build();
     }

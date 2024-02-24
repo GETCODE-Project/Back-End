@@ -29,4 +29,9 @@ public class ProjectLike {
         member.getProjectLikes().add(this);
     }
 
+    public void foreignkey(Project project){
+        this.project = project;
+        project.getProjectLikes().add(this);
+    }
+
 }

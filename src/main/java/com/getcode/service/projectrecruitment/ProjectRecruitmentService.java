@@ -2,12 +2,7 @@ package com.getcode.service.projectrecruitment;
 
 import com.getcode.config.security.SecurityUtil;
 import com.getcode.domain.member.Member;
-import com.getcode.domain.project.Project;
-import com.getcode.domain.project.ProjectLike;
-import com.getcode.domain.project.WishProject;
 import com.getcode.domain.projectrecruitment.*;
-import com.getcode.dto.project.ProjectSpecification;
-import com.getcode.dto.project.res.ProjectInfoResponseDto;
 import com.getcode.dto.projectrecruitment.ProjectRecruitmentSpecification;
 import com.getcode.dto.projectrecruitment.req.*;
 import com.getcode.dto.projectrecruitment.res.ProjectRecruitmentDetailResDto;
@@ -16,8 +11,6 @@ import com.getcode.dto.projectrecruitment.res.RecruitmentCommentResDto;
 import com.getcode.exception.member.NotFoundMemberException;
 import com.getcode.exception.project.NotFoundCommentException;
 import com.getcode.exception.project.NotMatchMemberException;
-import com.getcode.exception.project.NotOwnLikeException;
-import com.getcode.exception.project.NotOwnWishException;
 import com.getcode.exception.projectrecruitment.NotFoundProjectRecruitmentException;
 import com.getcode.repository.member.MemberRepository;
 import com.getcode.repository.projectrecruitment.*;
@@ -41,7 +34,6 @@ public class ProjectRecruitmentService {
     private final MemberRepository memberRepository;
     private final ProjectRecruitmentRepository projectRecruitmentRepository;
     private final ProjectRecruitmentStackRepository projectRecruitmentStackRepository;
-    private final ProjectRecruitmentSubjectRepository projectRecruitmentSubjectRepository;
     private final ProjectRecruitmentCommentRepository projectRecruitmentCommentRepository;
     private final ProjectRecruitmentLikeRepository projectRecruitmentLikeRepository;
     private final ProjectRecruitmentWishRepository projectRecruitmentWishRepository;
@@ -49,24 +41,22 @@ public class ProjectRecruitmentService {
 
     //프로젝트 모집글 등록
     @Transactional
-    public void insertProjectRecruitment(ProjectRecruitmentRequestDto requestDto) {
+    public Long insertProjectRecruitment(ProjectRecruitmentRequestDto requestDto) {
 
         Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseThrow(NotFoundMemberException::new);
 
         ProjectRecruitment projectRecruitment = requestDto.toEntity(member);
 
+
         projectRecruitmentRepository.save(projectRecruitment);
 
         List<String> techStackList = requestDto.getTechStack();
-        List<String> subjectList = requestDto.getSubjects();
 
         for(String techStack : techStackList){
             projectRecruitmentStackRepository.save(ProjectRecruitmentTechDto.toEntity(projectRecruitment, techStack));
         }
-        for(String subject : subjectList){
-            projectRecruitmentSubjectRepository.save(ProjectRecruitmentSubjectDto.toEntity(projectRecruitment, subject));
-        }
 
+        return projectRecruitment.getId();
 
     }
     //프로젝트 모집글 삭제
@@ -144,11 +134,7 @@ public class ProjectRecruitmentService {
 
         ProjectRecruitmentLike projectRecruitmentLike = projectRecruitmentLikeRepository.findByProjectRecruitmentAndMember(projectRecruitment, member);
 
-        String owner = member.getEmail();
 
-        if(owner == projectRecruitment.getMember().getEmail()){
-            throw new NotOwnLikeException();
-        }
 
         if(projectRecruitmentLike != null){
             projectRecruitmentLikeRepository.delete(projectRecruitmentLike);
@@ -177,11 +163,6 @@ public class ProjectRecruitmentService {
 
         WishProjectRecruitment wishProjectRecruitment = projectRecruitmentWishRepository.findByProjectRecruitmentAndMember(projectRecruitment, member);
 
-        String owner = member.getEmail();
-
-        if(owner == projectRecruitment.getMember().getEmail()){
-            throw new NotOwnWishException();
-        }
 
         if(wishProjectRecruitment != null){
             projectRecruitmentWishRepository.delete(wishProjectRecruitment);
@@ -208,38 +189,73 @@ public class ProjectRecruitmentService {
         ProjectRecruitment projectRecruitment = projectRecruitmentRepository.findById(id).orElseThrow(NotFoundProjectRecruitmentException::new);
         projectRecruitment.viewCntUp();
 
-        ProjectRecruitmentLike projectRecruitmentLike = projectRecruitmentLikeRepository.findByProjectRecruitment(projectRecruitment);
-        WishProjectRecruitment wishProjectRecruitment = projectRecruitmentWishRepository.findByProjectRecruitment(projectRecruitment);
+        List<ProjectRecruitmentLike> projectRecruitmentLike = projectRecruitmentLikeRepository.findByProjectRecruitment(projectRecruitment);
+        List<WishProjectRecruitment> wishProjectRecruitment = projectRecruitmentWishRepository.findByProjectRecruitment(projectRecruitment);
 
-        ProjectRecruitmentDetailResDto resDto =  new ProjectRecruitmentDetailResDto(projectRecruitment, projectRecruitmentLike, wishProjectRecruitment);
+
+        Boolean checkLike = false;
+        Boolean checkWish = false;
+        Boolean checkWriter = false;
+
+        if(SecurityUtil.getCurrentMemberEmail() != null) {
+            String memberEmail = SecurityUtil.getCurrentMemberEmail();
+
+            for (ProjectRecruitmentLike checkLiked : projectRecruitmentLike) {
+                if(checkLiked.getMember().getEmail().equals(memberEmail)){
+                    checkLike = true;
+                    break;
+                }
+            }
+            for (WishProjectRecruitment checkWished : wishProjectRecruitment) {
+                if(checkWished.getMember().getEmail().equals(memberEmail)){
+                    checkWish = true;
+                    break;
+                }
+            }
+
+            if (projectRecruitment.getMember().getEmail().equals(memberEmail)){
+                checkWriter = true;
+            }
+
+        }
+
+
+        ProjectRecruitmentDetailResDto resDto =  new ProjectRecruitmentDetailResDto(projectRecruitment, checkLike, checkWish, checkWriter);
         return resDto;
     }
 
     //프로젝트 모집글 전체 조회
     @Transactional(readOnly = true)
-    public List<ProjectRecruitmentInfoResDto> getAllRecuritment(String sort, int page, int size, String keyword,
-                                                                List<String> subject, List<String> techStack, Integer year,
-                                                                Long memberId) {
+    public List<ProjectRecruitmentInfoResDto> getAllRecuritment(String sort, int pageNumber, int size, String keyword,
+                                                                String subject, List<String> techStack, Integer year,
+                                                                String onlineString, String recruitmentString, String siDo,
+                                                                String guGun
+    ) {
+
+        boolean recruitment = recruitmentString.equals("O");
+        boolean online = onlineString.equals("O");
 
         Sort sortCriteria;
+
+        Member member = memberRepository.findByEmail(SecurityUtil.getCurrentMemberEmail()).orElseGet(() -> null);
 
         if(sort.equals("pastOrder")){
             sortCriteria = Sort.by(Sort.Direction.ASC, "modifiedDate");
         } else if (sort.equals("likeCnt")) {
             sortCriteria = Sort.by(Sort.Direction.DESC, "likeCnt");
         } else {
-            sortCriteria = Sort.by(Sort.Direction.DESC, "modifiedDate");
+            sortCriteria = Sort.by(Sort.Direction.DESC, "createDate");
         }
 
-        Pageable pageable = PageRequest.of(page -1, size, sortCriteria);
+        Pageable pageable = PageRequest.of(pageNumber -1, size, sortCriteria);
 
         List<Specification<ProjectRecruitment>> specifications = new ArrayList<>();
 
-        if (!techStack.isEmpty() && techStack != null) {
+        if (techStack != null && !techStack.isEmpty()) {
             specifications.add(ProjectRecruitmentSpecification.techStackLike(techStack));
         }
 
-        if (!subject.isEmpty() && subject != null) {
+        if (subject != null && !subject.isEmpty()) {
             specifications.add(ProjectRecruitmentSpecification.subjectLike(subject));
         }
 
@@ -251,6 +267,21 @@ public class ProjectRecruitmentService {
             specifications.add(ProjectRecruitmentSpecification.keywordLikeTitleOrContent(keyword));
         }
 
+        if (!recruitmentString.equals("N") && recruitmentString != null) {
+            specifications.add(ProjectRecruitmentSpecification.recruitmentLike(recruitment));
+        }
+
+        if (!onlineString.equals("N") && onlineString != null) {
+            specifications.add(ProjectRecruitmentSpecification.onlineLike(online));
+        }
+
+        if (siDo != null && !siDo.isEmpty()) {
+            specifications.add(ProjectRecruitmentSpecification.siDoLike(siDo));
+        }
+
+        if (guGun != null && !guGun.isEmpty()) {
+            specifications.add(ProjectRecruitmentSpecification.guGunLike(guGun));
+        }
 
 
         Specification<ProjectRecruitment> combinedSpec = ProjectRecruitmentSpecification.combineSpecifications(specifications);
@@ -259,12 +290,16 @@ public class ProjectRecruitmentService {
 
         List<ProjectRecruitmentInfoResDto> responseDto = new ArrayList<>();
 
-        recruitmentPage.forEach(recruitment -> {
+        recruitmentPage.forEach(ProjectRecruitment -> {
 
-            ProjectRecruitmentInfoResDto dto = new ProjectRecruitmentInfoResDto(recruitment);
-            if(memberId != null) {
-                dto.setCheckLike(isRecruitmentLikedByUser(recruitment.getId(), memberId));
-                dto.setCheckWish(isRecruitmentWishedByUser(recruitment.getId(), memberId));
+            ProjectRecruitmentInfoResDto dto = new ProjectRecruitmentInfoResDto(ProjectRecruitment);
+
+            if(member != null) {
+                dto.setCheckLike(isRecruitmentLikedByUser(ProjectRecruitment.getId(), member.getId()));
+                dto.setCheckWish(isRecruitmentWishedByUser(ProjectRecruitment.getId(), member.getId()));
+            } else{
+                dto.setCheckLike(Boolean.FALSE);
+                dto.setCheckWish(Boolean.FALSE);
             }
             responseDto.add(dto);
         });
@@ -289,11 +324,11 @@ public class ProjectRecruitmentService {
 
     }
 
-    private Boolean isRecruitmentLikedByUser(Long projectRecruitmentId, Long memberId) {
+    public Boolean isRecruitmentLikedByUser(Long projectRecruitmentId, Long memberId) {
         return projectRecruitmentLikeRepository.existsByProjectRecruitmentIdAndMemberId(projectRecruitmentId, memberId);
     }
 
-    private Boolean isRecruitmentWishedByUser(Long projectRecruitmentId, Long memberId) {
+    public Boolean isRecruitmentWishedByUser(Long projectRecruitmentId, Long memberId) {
         return projectRecruitmentWishRepository.existsByProjectRecruitmentIdAndMemberId(projectRecruitmentId, memberId);
     }
 
